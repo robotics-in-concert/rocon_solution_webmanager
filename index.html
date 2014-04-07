@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
-<html class="redesign"><!-- <html lang="en-US" dir="ltr" id="developer-mozilla-org" class="redesign"> -->
- <head><!-- <head prefix="og: http://ogp.me/ns#"> -->
+<html class="redesign">
+ <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <!-- <script type="text/javascript" async="" src="./ga.js"></script> -->
@@ -17,31 +17,19 @@
   <link rel="stylesheet" media="all" href="./css/mdn-min.css"><!-- 상단 메뉴 Style -->
   <link rel="stylesheet" media="all" href="./css/wiki-min.css"><!-- 상단 Style -->
   <!-- <link rel="stylesheet" type="text/css" href="../Template_CustomCSS_raw=1.css"> --> 
-        
-  <!-- common social tags -->
-  <!-- <meta property="og:type" content="website">
-  <meta property="og:image" content="https://developer.mozilla.org/media/redesign/img/opengraph-logo.png">
-  <meta property="og:site_name" content="Mozilla Developer Network">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:image" content="https://developer.mozilla.org/media/redesign/img/opengraph-logo.png">
-  <meta name="twitter:site" content="@mozhacks">
-  <meta name="twitter:creator" content="@mozhacks"> -->
-
-  <!-- <link rel="search" type="application/opensearchdescription+xml" href="https://developer.mozilla.org/en-US/search/xml" title="Developer Network"> -->
-
 
   <!-- <!--[if IE]> -->
   <!-- <meta http-equiv="imagetoolbar" content="no"> -->
-  <!-- <script src="https://developer.cdn.mozilla.net/media/js/libs/html5.js"></script> -->
+  <!-- <script src="./media/js/libs/html5.js"></script> -->
   <!-- <![endif]--> 
 
   <!-- <link rel="alternate" type="application/json" href="/en-US/docs/FileGuide/FileUpDown$json">
-  <link rel="canonical" href="https://developer.mozilla.org/en-US/docs/FileGuide/FileUpDown"> -->
+  <link rel="canonical" href="./en-US/docs/FileGuide/FileUpDown"> -->
   
   <!-- document-specific social tags -->
   <!-- <meta property="og:title" content="Uploading and Downloading Files">
-  <meta property="og:url" content="https://developer.mozilla.org/en-US/docs/FileGuide/FileUpDown">
-  <meta name="twitter:url" content="https://developer.mozilla.org/en-US/docs/FileGuide/FileUpDown">
+  <meta property="og:url" content="./en-US/docs/FileGuide/FileUpDown">
+  <meta name="twitter:url" content="./en-US/docs/FileGuide/FileUpDown">
   <meta name="twitter:title" content="Uploading and Downloading Files">
     <meta property="og:description" content="File and Stream Guide : [ nsIScriptableIO | Accessing Files | Getting File Information | Reading from Files | Writing to Files | Moving, Copying and Deleting Files | Uploading and Downloading Files | Working With Directories ]">
   <meta name="description" content="File and Stream Guide : [ nsIScriptableIO | Accessing Files | Getting File Information | Reading from Files | Writing to Files | Moving, Copying and Deleting Files | Uploading and Downloading Files | Working With Directories ]">
@@ -76,7 +64,7 @@
   */
 </script>
 
-<!-- <link type="text/css" rel="stylesheet" href="https://developer.cdn.mozilla.net/media/css/syntax-prism-min.css"> -->
+<!-- <link type="text/css" rel="stylesheet" href="./media/css/syntax-prism-min.css"> -->
 </head>
 
   <!-- <frameset rows="*,0" frameborder="NO" border="0" framespacing="0">
@@ -121,7 +109,7 @@
 		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://www.futurerobot.co.kr', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';">Future Robot</a></li>              
 		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://www.futuremarketing.co.kr', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';">futuremarketing</a></li>
 		<!-- <li><a href="http://yujinrobot.com/">ROCON GitHub</a></li> -->
-		<!-- <li><a href="https://www.mozilla.org/research/?icn=tabz">Research</a></li>    -->         
+		<!-- <li><a href="./research/?icn=tabz">Research</a></li>    -->         
 	  </ul>          
 	</div>        
 	</li>        
@@ -172,7 +160,7 @@
     // Ensures gettext always returns something, is always set
     gettext: function(x) { return x; },
     // The path to media (images, CSS, JS) in MDN
-    mediaPath: 'https://developer.cdn.mozilla.net/media/',
+    mediaPath: '',
     // Wiki-specific settings will be placed here
     wiki: {
       autosuggestTitleUrl: '/en-US/docs/get-documents'
@@ -191,7 +179,7 @@
 <header id="main-header">
   <div class="center">
     <div class="clear header-login">
-	  <a href="#" id="tabzilla" aria-label="Mozilla links"></a>
+	  <a href="#" id="tabzilla"></a> 
 	    <ul class="user-state signed-out">
           <li class="user-signin menu">
           <form class="browserid" action="/en-US/users/browserid_verify" method="POST">
@@ -381,7 +369,7 @@ function resizeHeight()
 	  <!-- <p><strong><a href="/en-US/docs/FileGuide/IO" title="FileGuide/IO">File and Stream Guide</a>:</strong> <strong>[</strong> <code><a href="/en-US/docs/XPCOM_Interface_Reference/nsIScriptableIO" title="">nsIScriptableIO</a></code> | <a href="/en-US/docs/FileGuide/Accessing_Files" title="FileGuide/Accessing_Files">Accessing Files</a> | <a href="/en-US/docs/FileGuide/FileInfo" title="FileGuide/FileInfo">Getting File Information</a> | <a href="/en-US/docs/FileGuide/FileReading" title="FileGuide/FileReading">Reading from Files</a> | <a href="/en-US/docs/FileGuide/FileWriting" title="FileGuide/FileWriting">Writing to Files</a> | <a href="/en-US/docs/FileGuide/MoveCopyDelete" title="FileGuide/MoveCopyDelete">Moving, Copying and Deleting Files</a> | <a href="/en-US/docs/FileGuide/FileUpDown" title="FileGuide/FileUpDown">Uploading and Downloading Files</a> | <a href="/en-US/docs/FileGuide/Directories" title="FileGuide/Directories">Working With Directories</a> <strong>]</strong></p> -->
 
 <!-- <div class="warning">
-  <strong>Important note:</strong> The pages from the <em>File and Stream Guide</em> use the <code>IO</code>&nbsp;object&nbsp;(<code>nsIScriptableIO</code>), which was not available in any released version of the platform (pending <a class="external link-https" href="https://bugzilla.mozilla.org/show_bug.cgi?id=396051" title="https://bugzilla.mozilla.org/show_bug.cgi?id=396051">some fixes</a>). There are alternative XPCOM&nbsp;APIs you can use, your help in updating this pages to use the supported API&nbsp;is very much welcome!</div> -->
+  <strong>Important note:</strong> The pages from the <em>File and Stream Guide</em> use the <code>IO</code>&nbsp;object&nbsp;(<code>nsIScriptableIO</code>), which was not available in any released version of the platform (pending <a class="external link-https" href="./show_bug.cgi?id=396051" title="./show_bug.cgi?id=396051">some fixes</a>). There are alternative XPCOM&nbsp;APIs you can use, your help in updating this pages to use the supported API&nbsp;is very much welcome!</div> -->
 <!-- <p>Other documentation on files and I/O not using the unavailable nsIScriptableIO APIs: <a href="/en-US/docs/Code_snippets/File_I_O">Code snippets: File I/O.</a></p> -->
 
 <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
@@ -434,15 +422,8 @@ function resizeHeight()
   <footer>
     <div class="center">
       <div class="column-container">
-        <div class="column-main">
-          <!-- <p><bdi>© 2009-2014 FUTUREROBOT Co.,Ltd.  -->
-		  <p>© 2009-2014 FUTUREROBOT Co.,Ltd. 
-		  <!-- <br> Content is available under 
-		  <a href="/en-US/docs/Project:MDN/About#Copyrights_and_licenses">these licenses</a> · 
-		  <a href="/en-US/docs/Project:MDN/About">About MDN</a> · 
-		  <a href="//github.com/mozilla/kuma">Contribute to the code</a> · 
-		  <a href="//www.mozilla.org/privacy/policies/websites/">Privacy policy</a>-->
-		  <!-- </bdi> -->
+        <div class="column-main">         
+		  <p>© 2009-2014 FUTUREROBOT Co.,Ltd. 		  
 		  </p> 
         </div>
         <div class="column-strip">
