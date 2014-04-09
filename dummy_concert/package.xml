@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>dummy_concert</name>
+  <version>0.0.0</version>
+  <description>The dummy_concert package</description>
+
+  <maintainer email="jihoonl@yujinrobot.com">Jihoon</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rocon_msgs</build_depend>
+  <run_depend>rocon_msgs</build_depend>
+
+  <export>
+  </export>
+</package>
