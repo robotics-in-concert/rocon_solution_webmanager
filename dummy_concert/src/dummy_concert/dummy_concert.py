@@ -18,6 +18,7 @@ class DummyConcert(object):
     SERVICE_LIST_TOPIC_NAME = '/concert/service/list'
 
     DOT_GRAPH_CONDUCTOR = '/concert/conductor/concert_clients_dotgraph'
+    DOT_GRAPH_GATEWAY   = '/concert/gateway/dotgraph'
 
     def __init__(self):
         
@@ -38,11 +39,16 @@ class DummyConcert(object):
     def load_dotgraph(self):
         self.graph = {}
 
-        filename = rospy.get_param('~conductor_graph')
+        self.graph['conductor_graph'] = self.load_file('conductor_graph')
+        self.graph['gateway_graph'] = self.load_file('gateway_graph')
+
+    def load_file(self, name):
+
+        param_name = '~' + str(name)
+        filename = rospy.get_param(param_name)
         with open(filename) as f:
             data = f.read()
-
-        self.graph['conductor_graph'] = data
+        return data
 
     def init_rosapis(self):
         self.srv = {}
@@ -51,6 +57,7 @@ class DummyConcert(object):
         self.pub = {}
         self.pub['service_list'] = rospy.Publisher(self.SERVICE_LIST_TOPIC_NAME, concert_msgs.Services, latch=True)
         self.pub['conductor_graph'] = rospy.Publisher(self.DOT_GRAPH_CONDUCTOR, std_msgs.String, latch=True)
+        self.pub['gateway_graph'] = rospy.Publisher(self.DOT_GRAPH_GATEWAY, std_msgs.String, latch=True)
 
     def process_enable_service(self, req):
         en = 'enabled' if req.enable else 'disabled'
@@ -72,6 +79,7 @@ class DummyConcert(object):
     def spin(self):
         self.pub['service_list'].publish(self.services)
         self.pub['conductor_graph'].publish(self.graph['conductor_graph'])
+        self.pub['gateway_graph'].publish(self.graph['gateway_graph'])
         rospy.spin()
 
     def loginfo(self, msg):
