@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="dummy_concert" name="dummy" type="concert.py" output="screen">
+    <param name="example_services" value="$(find dummy_concert)/yaml/example_services.yaml"/>
+    <param name="conductor_graph" value="$(find dummy_concert)/yaml/conductor_graph.string"/>
+  </node>
+</launch>
