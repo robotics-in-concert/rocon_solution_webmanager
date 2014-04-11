@@ -22,20 +22,8 @@
   <!-- <meta http-equiv="imagetoolbar" content="no"> -->
   <!-- <script src="./media/js/libs/html5.js"></script> -->
   <!-- <![endif]--> 
-
-  <!-- <link rel="alternate" type="application/json" href="/en-US/docs/FileGuide/FileUpDown$json">
-  <link rel="canonical" href="./en-US/docs/FileGuide/FileUpDown"> -->
   
-  <!-- document-specific social tags -->
-  <!-- <meta property="og:title" content="Uploading and Downloading Files">
-  <meta property="og:url" content="./en-US/docs/FileGuide/FileUpDown">
-  <meta name="twitter:url" content="./en-US/docs/FileGuide/FileUpDown">
-  <meta name="twitter:title" content="Uploading and Downloading Files">
-    <meta property="og:description" content="File and Stream Guide : [ nsIScriptableIO | Accessing Files | Getting File Information | Reading from Files | Writing to Files | Moving, Copying and Deleting Files | Uploading and Downloading Files | Working With Directories ]">
-  <meta name="description" content="File and Stream Guide : [ nsIScriptableIO | Accessing Files | Getting File Information | Reading from Files | Writing to Files | Moving, Copying and Deleting Files | Uploading and Downloading Files | Working With Directories ]">
-  <meta name="twitter:description" content="File and Stream Guide : [ nsIScriptableIO | Accessing Files | Getting File Information | Reading from Files | Writing to Files | Moving, Copying and Deleting Files | Uploading and Downloading Files | Working With Directories ]"> -->
-  
-  <script type="text/javascript" src="./js/scripts.js">
+  <!-- <script type="text/javascript" src="./js/scripts.js">
   // http://cfsimplicity.com/61/removing-analytics-clutter-from-campaign-urls
   /*
   var removeUtms = function(){
@@ -62,9 +50,30 @@
     var s = d.getElementsByTagName(a)[0]; s.parentNode.insertBefore(ga, s);
   })('script', document);
   */
+</script> -->
+<script language="javascript">
+function ChangeSubTitle()
+{	
+	document.getElementById("BreadcrumbTitle").innerHTML = "Solution Manager";
+	document.getElementById("pageTitle").innerHTML = "Solution Configuration Manager";
+}
+
+function ChangeSigninTitle(status)
+{
+	if (status == "IN")
+	{
+		document.getElementById("signin").innerHTML = "Sign out <i aria-hidden='true' class='icon-ok'></i>";		
+	}
+	else
+	{
+		document.getElementById("signin").innerHTML = "Sign in <i aria-hidden='true' class='icon-ok'></i>";
+		localStorage.clear(); //Sign out ; access_token 삭제_2014-04-10
+	}	
+}
+
 </script>
 
-<!-- <link type="text/css" rel="stylesheet" href="./media/css/syntax-prism-min.css"> -->
+<!-- <link type="text/css" rel="stylesheet" href="./css/syntax-prism-min.css"> -->
 </head>
 
   <!-- <frameset rows="*,0" frameborder="NO" border="0" framespacing="0">
@@ -73,21 +82,22 @@
   </frameset> -->
 
 <body data-slug="FileGuide/FileUpDown" data-docid="5791" contextmenu="edit-history-menu" class="html-ltr document">
+
+<!------------------------------------------------------------------------------>
 <div id="tabzilla-panel" class="tabzilla-closed" tabindex="-1">  
-  <div id="tabzilla-contents">    
+  <div id="tabzilla-contents">   
     <div id="tabzilla-promo">      
       <div class="snippet" id="tabzilla-promo-fxos">        
         <a href="#" onclick="javascript:getElementById('subframe').src='http://www.robotconcert.org/wiki/Main_Page', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';" title="ROCON Wiki"><h4>Look ahead</h4><p>Learn all about ROCON»</p></a>      
-      </div>    
-    </div>    
-  <div id="tabzilla-nav">     
-  <ul>        
+      </div><!-- snippet -->    
+    </div><!-- tabzilla-promo -->    
+    <div id="tabzilla-nav">     
+    <ul>        
     <li><h2>Function</h2>          
 	<div>            
 	  <ul>              
-	    <li><a href="https://github.com/meddugi723/ROStest1/archive/master.zip">All Files Download</a></li>
-		<li><a href="https://github.com/meddugi723/ROStest1" target="_blank">ROStest1</a></li>
-		<li><a href="https://github.com/meddugi723/ROStest44" target="_blank">ROStest44</a></li>		
+		<li><a href="https://github.com/robotics-in-concert/rocon_solution_webmanager" target="_blank">rocon solution</a></li>
+	    <li><a href="https://github.com/meddugi723/ROStest1/archive/master.zip">All Files Download</a></li>				
 		<li><a href="https://github.com/" target="_blank">GitHub</a></li>
 		<li><a href="https://developer.github.com/v3/repos/contents/" target="_blank">Contents GitHub API</a></li>
 	  </ul>          
@@ -96,9 +106,10 @@
 	<li><h2>Page</h2>          
 	<div>            
 	  <ul>              
-	    <li><a href="#" onclick="javascript:getElementById('subframe').src='Default.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager</a></li>              
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='Webgraphviz.html', getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', getElementById('pageTitle').innerHTML='Data Visualizer';">Data Visualizer</a></li>              
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://m.naver.com', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler</a></li>                          
+	    <li><a href="#" onclick="javascript:getElementById('subframe').src='Default.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager</a></li>
+		<li><a href="#" onclick="javascript:getElementById('subframe').src='Webgraphviz.html', getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', getElementById('pageTitle').innerHTML='Data Visualizer';">Data Visualizer</a></li>
+		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://dhtmlx.com/docs/products/dhtmlxScheduler/sample_basic.shtml', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler</a></li>
+		<!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='list2.html', getElementById('BreadcrumbTitle').innerHTML='Solution Folder List', getElementById('pageTitle').innerHTML='Solution Folder List';">Solution Folder List</a></li> -->
       </ul>          
 	</div>        
 	</li>        
@@ -112,13 +123,12 @@
 		<!-- <li><a href="./research/?icn=tabz">Research</a></li>    -->         
 	  </ul>          
 	</div>        
-	</li>        
-	    
+	</li>        	    
 	</ul>    
-    </div>  
-  </div>
-</div>
-
+    </div><!-- tabzilla-nav -->  
+  </div><!-- tabzilla-contents -->
+</div><!-- tabzilla-panel -->
+<!------------------------------------------------------------------------------>
 
 <script type="text/javascript">
   (function(){
@@ -149,7 +159,7 @@
     "SAMPLES": SAMPLES
   };
 })();
-
+/*
   // This represents the site configuration : 상단 메뉴 over 메뉴  
   window.mdn = {
     build: 'af3100b',
@@ -158,26 +168,27 @@
     // Feature test results and methods will be placed here
     features: {},
     // Ensures gettext always returns something, is always set
-    gettext: function(x) { return x; },
+//    gettext: function(x) { return x; },
     // The path to media (images, CSS, JS) in MDN
     mediaPath: '',
     // Wiki-specific settings will be placed here
     wiki: {
-      autosuggestTitleUrl: '/en-US/docs/get-documents'
+      //autosuggestTitleUrl: '/en-US/docs/get-documents'
     }
   };
-
+*/
 </script>
   
-  <!-- <ul id="nav-access">
-    <li><a href="#content">Skip to main content</a></li>
+<!-- <ul id="nav-access">
+	<li><a href="#content">Skip to main content</a></li>
     <li><a id="skip-language" href="#language">Select language</a></li>
     <li><a href="#q" id="skip-search">Skip to search</a></li>
-  </ul> -->
+</ul> -->
 
 <!-- Header -->
 <header id="main-header">
   <div class="center">
+	<!------------------------------------------------------------------------------>
     <div class="clear header-login">
 	  <a href="#" id="tabzilla"></a> 
 	    <ul class="user-state signed-out">
@@ -192,7 +203,7 @@
 		  </li>
 	    </ul>
     </div>
-	
+	<!------------------------------------------------------------------------------>
 	<!-- Main Logo -->
     <b class="logo">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b>
 
@@ -200,8 +211,8 @@
     <nav id="main-nav" role="navigation">
 	  <ul>
 	    <li>
-		  <a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager<i aria-hidden="true" class="icon-caret-down"></i></a>
-          <div class="submenu submenu-single" id="nav-zones-submenu" aria-hidden="true" style="z-index: 99998; display: none;">
+		  <a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager<!-- <i aria-hidden="true" class="icon-caret-down"> --></i></a>
+          <!-- <div class="submenu submenu-single" id="nav-zones-submenu" aria-hidden="true" style="z-index: 99998; display: none;">
             <div class="submenu-column">
               <ul>			    
 				<li><a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">File Git API</a></li>
@@ -216,14 +227,14 @@
             <button class="submenu-close transparent">
 			  <span class="offscreen">Close submenu</span><i aria-hidden="true" class="icon-remove-sign"></i>
  		    </button>
-		  </div>
+		  </div> -->
         </li>
 		
 		<!-- <li><a href="#">Data Visualizer</a></li> -->
 		<li><a href="#" onclick="javascript:getElementById('subframe').src='Webgraphviz.html', getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', getElementById('pageTitle').innerHTML='Data Visualizer';">Data Visualizer</a></li>
 
 		<li><!-- &amp; //& -->
-		  <a href="#" onclick="javascript:getElementById('subframe').src='http://m.naver.com', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler<!-- <i aria-hidden="true" class="icon-caret-down"></i> --></a>
+		  <a href="#" onclick="javascript:getElementById('subframe').src='http://dhtmlx.com/docs/products/dhtmlxScheduler/sample_basic.shtml', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler<!-- <i aria-hidden="true" class="icon-caret-down"></i> --></a>
             <!-- <div class="submenu" id="nav-platform-submenu" aria-hidden="true" style="z-index:99998; display:none;">
             <div class="submenu-column">
               <div class="title">Service List</div>
@@ -260,18 +271,20 @@
             </div>
           </form>
 		</li>
+
       </ul>
 	</nav>
   </div>
 </header>
+<!------------------------------------------------------------------------------>
 
-  <!-- Content will go here -->
-  <main id="content" role="main">
-  <div class="center clear">
+<!-- Content will go here -->
+<main id="content" role="main">
+<div class="center clear">
 
   <div class="wiki-main-content">
   <div class="center">
-	<div class="article-meta">
+    <div class="article-meta">
       <!-- action buttons -->
 	  <ul class="page-buttons">
 	    <!-- <li>
@@ -287,9 +300,25 @@
 		</li> -->
 		
 		<li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='FileAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit<i aria-hidden="true" class="icon-pencil"></i></a>
+		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='list2.html', getElementById('BreadcrumbTitle').innerHTML='Solution Folder List', getElementById('pageTitle').innerHTML='Solution Folder List';">List<i aria-hidden="true" class="icon-list"></i></a>
 		</li>
 
+		<li>
+		  <a href="#" id="signin" class="button" onclick="javascript:getElementById('subframe').src='Signin.html', getElementById('BreadcrumbTitle').innerHTML='Sign in', getElementById('pageTitle').innerHTML='';ChangeSigninTitle('OUT');">Sign in<i aria-hidden="true" class="icon-ok"></i></a>
+		</li>
+
+		<li>
+		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='./ace-builds/scrollable-page.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit 1<i aria-hidden="true" class="icon-pencil"></i></a>
+		</li>
+
+		<li>
+		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='./ace-builds/textarea/editor.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit 2<i aria-hidden="true" class="icon-pencil"></i></a>
+		</li>
+
+		<!-- <li>
+		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='http://dhtmlx.com/docs/products/demoApps/dhtmlxXMLEditor/index.html', getElementById('BreadcrumbTitle').innerHTML='XML Editor', getElementById('pageTitle').innerHTML='XML Editor';">Edit 3<i aria-hidden="true" class="icon-pencil"></i></a>
+		</li> -->
+			
 		<li>
 		  <a href="javascript:;" id="advanced-menu" class="button only-icon" aria-haspopup="true" aria-owns="advanced-menu-submenu" aria-expanded="false"><span>Advanced</span><i aria-hidden="true" class="icon-cog"></i></a>
           <div class="submenu" id="advanced-menu-submenu">
@@ -303,9 +332,8 @@
             </div>
           </div>
 		</li>
-	  </ul>
-
-
+	  </ul><!-- page-buttons -->
+	  <!-- action buttons End-->
 
       <!-- Breadcrumb -->
 	  <nav class="crumbs" role="navigation">
@@ -315,19 +343,22 @@
           <li id="BreadcrumbTitle" class="crumb" typeof="v:Breadcrumb" property="v:title">Solution Manager</li>
         </ol>
 	  </nav>
-    </div>
+      <!-- Breadcrumb End-->
+
+    </div><!-- article-meta -->
 
 
   <!-- heading -->
   <div class="document-head">
     <h1><span id="pageTitle">Solution Configuration Manager</span></h1>      
   </div>
-  
-  <!-- start the main content container -->
+  <!-- heading End-->
+
+  <!-- start the main content container ★-->
   <div id="wiki-column-container" class="wiki-right-present wiki-left-closed wiki-left-none">
 	
-  <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ style="display:none;" -->
-  <iframe id="subframe" src="gitAPI.html" width="100%" height="1024px"></iframe> <P></P>
+  <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ style="display:none;" -->  
+  <iframe id="subframe" name="subframe" src="list2.html" style="width:100%; height:900px; margin-top:20px;" ></iframe><P></P>
 <!-- <script>
 function resizeHeight() 
 {
@@ -337,18 +368,16 @@ function resizeHeight()
 	fr.setExpression('height',ifrm_deal_board_tab.document.body.scrollHeight);
 }
 </script>
-  <iframe id="subframe" src="FileAPI.html" width="100%" height="100%" marginheight="0" scrolling="no" frameborder="0" onload="resizeHeight(this);"></iframe> -->
-  <P></P>
+  <iframe id="subframe" src="list2.html" width="100%" height="100%" marginheight="0" scrolling="no" frameborder="0" onload="resizeHeight(this);"></iframe> -->
   <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ -->
 
     <!-- content row with three strips -->
     <div class="column-container column-container-reverse">
-
+	
       <!-- TOC, approvals, etc -->
-      <div class="column-strip wiki-column" id="wiki-right">
-
+      <div class="column-strip wiki-column" id="wiki-right">	  
         <!-- table of contents -->
-        <div id="toc" class="toc toggleable" style="width:auto; max-height:none;">
+        <!--<div id="toc" class="toc toggleable" style="width:auto; max-height:none;">
           <a href="#toc" class="title toggler" data-open-icon="icon-plus" data-closed-icon="icon-minus" aria-haspopup="true">In This Article<i class="icon-minus"></i></a>
           <ol class="toggle-container">
             <code></code><code></code><code></code><li><ol>
@@ -357,22 +386,24 @@ function resizeHeight()
 		    <li><a href="#Downloading_Files" rel="internal">Subtitle 3</a></li>
 		    </ol></li>
           </ol>
-        </div>
-      </div>
-                         
-<!-- center: main article content -->
-<div id="wiki-content" class="column-main wiki-column text-content">
-                                                     
-  <!-- just the article content -->
-  <article id="wikiArticle">      
-    <!-- <p></p> -->
+        </div><!-- toc -->
+      </div><!-- column-strip -->
+	  <!-- TOC, approvals, etc END -->
+                        
+      <!-- center: main article content -->
+      <div id="wiki-content" class="column-main wiki-column text-content">
+                                        
+													 
+      <!-- just the article content -->
+      <!-- <article id="wikiArticle"> -->            
 	  <!-- <p><strong><a href="/en-US/docs/FileGuide/IO" title="FileGuide/IO">File and Stream Guide</a>:</strong> <strong>[</strong> <code><a href="/en-US/docs/XPCOM_Interface_Reference/nsIScriptableIO" title="">nsIScriptableIO</a></code> | <a href="/en-US/docs/FileGuide/Accessing_Files" title="FileGuide/Accessing_Files">Accessing Files</a> | <a href="/en-US/docs/FileGuide/FileInfo" title="FileGuide/FileInfo">Getting File Information</a> | <a href="/en-US/docs/FileGuide/FileReading" title="FileGuide/FileReading">Reading from Files</a> | <a href="/en-US/docs/FileGuide/FileWriting" title="FileGuide/FileWriting">Writing to Files</a> | <a href="/en-US/docs/FileGuide/MoveCopyDelete" title="FileGuide/MoveCopyDelete">Moving, Copying and Deleting Files</a> | <a href="/en-US/docs/FileGuide/FileUpDown" title="FileGuide/FileUpDown">Uploading and Downloading Files</a> | <a href="/en-US/docs/FileGuide/Directories" title="FileGuide/Directories">Working With Directories</a> <strong>]</strong></p> -->
 
 <!-- <div class="warning">
   <strong>Important note:</strong> The pages from the <em>File and Stream Guide</em> use the <code>IO</code>&nbsp;object&nbsp;(<code>nsIScriptableIO</code>), which was not available in any released version of the platform (pending <a class="external link-https" href="./show_bug.cgi?id=396051" title="./show_bug.cgi?id=396051">some fixes</a>). There are alternative XPCOM&nbsp;APIs you can use, your help in updating this pages to use the supported API&nbsp;is very much welcome!</div> -->
 <!-- <p>Other documentation on files and I/O not using the unavailable nsIScriptableIO APIs: <a href="/en-US/docs/Code_snippets/File_I_O">Code snippets: File I/O.</a></p> -->
 
-<h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
+
+<!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
 <p>Some web sites allow one to upload a file. This is done by using an HTML &lt;input&gt; element using the <code>file</code> type from within a form. When the user selects a file, it can be uploaded to a server. This operation can also be performed via a script using the XMLHttpRequest object. This is a common technique for uploading files as it is compatible with existing servers and <a href="#" title="/en-US/docs/DOM/XMLHttpRequest/FormData">FormData</a> interface makes that task fairly simple.</p>
 <pre class="brush:js;  language-js" data-number=""><code class=" language-js"><span class="token keyword">function</span> <span class="token function">upload<span class="token punctuation">(</span></span>postUrl<span class="token punctuation">,</span> fieldName<span class="token punctuation">,</span> filePath<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -382,7 +413,8 @@ function resizeHeight()
   req<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span><span class="token string">"POST"</span><span class="token punctuation">,</span> postUrl<span class="token punctuation">)</span><span class="token punctuation">;</span>
   req<span class="token punctuation">.</span>onload <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
   req<span class="token punctuation">.</span><span class="token function">send<span class="token punctuation">(</span></span>formData<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre>
+<span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre> -->
+
 
 <!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Services File</h4>
 <p>This is a common technique for uploading files as it is compatible with existing servers and interface makes that task fairly simple.</p>
@@ -392,30 +424,31 @@ function resizeHeight()
 
 <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">CMaleLists File</h4>
 <p>This is a common technique for uploading files as it is compatible with existing servers and interface makes that task fairly simple.</p> -->
-
-<!-- attachments list -->
-         
+       
 	<!-- contributors -->
 	<div class="wiki-block contributors">
 	  <h2 class="offscreen">Document Tags and Contributors</h2>
 		<div class="contributor-sub"> <i aria-hidden="true" class="icon-group"></i><strong>Contributors to this page:</strong> <a href="#">shkwak</a>, <a href="#">jyj</a></div>                              
-		<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">Mar 21, 2014 18:38:44 PM</time></div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
-</div> 
-<!-- ends "main-content" -->
+		<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">April 10, 2014 18:56:44 PM</time></div>
+    </div><!-- wiki-block -->
+	<!-- contributors END-->
 
-  <menu type="context" id="edit-history-menu">
+      </div><!-- wiki-content :  main article content END-->
+
+    </div><!-- column-container -->
+  </div><!-- wiki-column-container : start the main content container ★ End-->
+  </div><!-- center -->
+  </div><!-- wiki-main-content --> 
+  <!-- ends "main-content" -->
+
+  <!-- <menu type="context" id="edit-history-menu">
     <menuitem data-action="$edit" label="Edit page"></menuitem>
     <menuitem data-action="$history" label="View page history"></menuitem>
-  </menu>
+  </menu> -->
 
-  </div>
-  </main>
-
+</div><!-- center clear -->
+</main>
+<!------------------------------------------------------------------------------>
   
   
   <!-- Footer -->
@@ -436,8 +469,8 @@ function resizeHeight()
 
   <!-- site js -->
   <!-- <script src="./js/build_af3100b.js"></script> -->
-  <!--[if lte IE 8]><script src="/media/redesign/js/libs/selectivizr-1.0.2/selectivizr-build.js?build=af3100b"></script><div id="feature-test-old-ie"></div><![endif]-->
-  <script src="./js/jquery1-min.js"></script>
+  <!--[if lte IE 8]><script src="/media/redesign/js/libs/selectivizr-1.0.2/selectivizr-build.js?build=af3100b"></script><div id="feature-test-old-ie"></div><![endif]-->  
+  <script src="./js/jquery.min.js"></script><!-- <script src="./js/jquery1-min.js"></script> -->
   <script src="./js/redesign-main-min.js"></script>
   <div id="feature-test-element"></div>
   <script>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+    <!-- Le styles -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #fff; /*#f5f5f5;*/
+      }
+
+      .form-signin {
+        max-width: 300px;
+        padding: 19px 29px 29px;
+        margin: 0 auto 20px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        -webkit-border-radius: 5px;
+           -moz-border-radius: 5px;
+                border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+                box-shadow: 0 1px 2px rgba(0,0,0,.05);
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+        margin-bottom: 10px;
+      }
+      .form-signin input[type="text"],
+      .form-signin input[type="password"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+
+    </style>
+    <link href="./css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="./js/html5shiv.js"></script>
+    <![endif]-->
+
+<script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shortcut.js"></script>
+
+<script language="javascript">
+/*-- Sign in Button Shortcut 설정--*/
+shortcut.add("Enter", function() {
+	//alert("Hi");
+	UserAuthorization();	
+});   
+
+var base64IDPW = "";
+
+function UserAuthorization()
+{
+	var userID = document.getElementById("ID").value;
+	var userPW = document.getElementById("PW").value;
+	
+	if (userID == "" || userPW == "")
+	{
+		alert("User account와 Password를 입력하세요.");
+	}
+	else
+	{
+		var data = userID + ":" + userPW;
+		base64IDPW = Base64.encode(data);
+
+		/*--이전 base64UserIDPW 삭제--*/
+		//localStorage.removeItem("base64UserIDPW");
+
+		/*--base64UserIDPW 갱신--*/
+		localStorage.setItem("base64UserIDPW", base64IDPW);	//alert(localStorage.getItem('base64UserIDPW')); //ok
+
+		AuthorizationList();
+		//alert("End"); //ok
+	}
+}
+/*
+function localStorage_Clear(key)
+{
+	localStorage.removeItem(key);
+}
+*/
+
+function AuthorizationList()
+{	
+	var userID = document.getElementById("ID").value;
+	var exist = false;
+	var exist_num = 0;
+	var access_token = "";
+
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW); /*bWVkZHVnaTcyMzpzaGt3YWs3OTE4");*/
+		},
+		url: "https://api.github.com/authorizations",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data[0].app.name); //data.length : 4!!!, data[0].app.name : GitHub for Windows!!! Good
+			for (var i=0;i<data.length;i++)
+			{
+				//if (data[i].app.name == userID)
+				if (data[i].note == userID)
+				{
+					//alert("Auth exist! ");
+					exist_num++;
+					exist = true;
+					access_token = data[i].token; //★
+				}				
+			}		
+			
+			if (exist)
+			{
+				//alert("Auth : " + exist_num + "개 exist! " );							
+
+				/*--access_token localStorage 저장--*/
+				//localStorage.removeItem("access_token"); //remove 안해줘도 덮어쓸 듯!
+				localStorage.setItem("access_token", access_token);
+
+				/*--페이지 이동--*/
+				top.ChangeSubTitle(); //subTitle 변경
+				top.ChangeSigninTitle("IN");
+				location.href = "gitAPI.html";
+			}
+			else
+			{
+				//alert("Auth no exist! ");
+				/*--userID와 같은 name의 Auth 생성--*/
+				AuthorizationCreate();
+			}
+			
+		},
+		error: function (x, y, z) {
+			//alert(x + "\n" + y + "\n" + z);
+			alert("User account와 Password를 다시 확인해 주세요.");
+		}
+	});	
+}
+
+function AuthorizationCreate()
+{	
+	var userID = document.getElementById("ID").value;
+	//var note = userID; //meddugi723, futurerobot
+	var scope = [ "public_repo" ];
+	var cmds = {scopes : scope, note : userID};
+	//alert(JSON.stringify(cmds)); //ok
+
+	if (userID == "" || base64IDPW == "")
+	{
+		alert("User account를 입력하세요!");
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW);
+		},
+		url: "https://api.github.com/authorizations",
+		type: "POST",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			//alert("Create complete!");
+			/*--AuthorizationList() 함수 재실행, access_token 획득--*/
+			AuthorizationList();
+		},
+		error: function (x, y, z) {
+			//alert(x + "\n" + y + "\n" + z);
+			alert("Access Token 생성 중에 오류가 발생했습니다.");
+		}
+	});	
+	}
+}
+
+
+
+</script>
+
+</head>
+
+<body>
+  <p></p>
+  <div class="container">
+    <div class="form-signin">
+      <h2 class="form-signin-heading">Sign in</h2>
+      <input type="text" id="ID" class="input-block-level" placeholder="User account">
+      <input type="password" id="PW" class="input-block-level" placeholder="Password">
+      <label class="checkbox">
+        <input type="checkbox" value="remember-me" onclick="alert('now no service');"> Remember me
+      </label>
+      <button class="btn btn-large btn-primary" onclick="UserAuthorization();">Sign in</button>		
+    </div> <!-- form-signin -->
+  </div> <!-- container -->    
+
+</body>
+</html>

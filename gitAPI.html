@@ -127,16 +127,18 @@ function FileUpdate()
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value;
 	var fileName = document.getElementById('selectbox').value;
-	var access_token = document.getElementById('box_token').value;
-	//alert(owner + ", " + repo + ", " + fileName + ", " + access_token);	
+	
+	/*--access_token--*/
+	//var access_token = document.getElementById('box_token').value;
+	var access_token = localStorage.getItem("access_token");
+	
 	var msg = document.getElementById('updateMsg').value;
 	if (msg == ""){msg = "ROCON update commit";}
 	var content = document.getElementById('box1').value;
 	var sha = document.getElementById('box_sha').value;
 	var cmds = {message : msg, content : content, sha : sha}; //var cmds = [ cmd ]; //[ ] 삭제
-	//alert(msg + ", " + content + ", " + sha);	
 	//var data_str = JSON.stringify(cmds);
-	//alert(data_str);
+	
 	/*
 	if (fileName == "-----------" || content == "")
 	{
@@ -172,7 +174,10 @@ function FileDelete()
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value;
 	var fileName = document.getElementById('selectbox').value;
-	var access_token = document.getElementById('box_token').value;
+
+	/*--access_token--*/
+	//var access_token = document.getElementById('box_token').value;
+	var access_token = localStorage.getItem("access_token");
 
 	var msg = document.getElementById('updateMsg').value;
 	if (msg == ""){msg = "ROCON delete commit";}	
@@ -206,7 +211,10 @@ function FileCreate()
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value;
 	var fileName = document.getElementById('createFileName').value;
-	var access_token = document.getElementById('box_token').value;
+	
+	/*--access_token--*/
+	//var access_token = document.getElementById('box_token').value;
+	var access_token = localStorage.getItem("access_token");
 	
 	var msg = document.getElementById('createMsg').value;
 	if (msg == ""){msg = "ROCON create commit";}
@@ -254,6 +262,12 @@ function base64encode()
 	document.getElementById('box1').value = output;
 }
 
+function base64encode1(data)
+{
+	var output = Base64.encode(data);
+	return output;
+}
+
 function textareaClear()
 {
 	var input1 = document.getElementById('box1');
@@ -280,6 +294,71 @@ function JSON_stringify()
 	var str = JSON.stringify(cmds);
 	document.getElementById('box1').value = str;
 }
+
+/*============= Authorization ==============*/
+function AuthorizationList()
+{
+	var select = document.getElementById('selectbox2');
+	var base64IDPW = localStorage.getItem("base64UserIDPW");
+	if (base64IDPW == ""){base64IDPW = "bWVkZHVnaTcyMzpzaGt3YWs3OTE4";}	
+
+	/*--selectbox option 삭제--*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "-----------";
+	select.add(option_line);
+
+/*	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+*/	jQuery.support.cors = true;
+	$.ajax({
+		//header: {
+		//	Authorization : Basic bWVkZHVnaTcyMzpzaGt3YWs3OTE4; //meddugi723:PW base64 encode value!!
+		//},
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW); //bWVkZHVnaTcyMzpzaGt3YWs3OTE4");//meddugi723
+		},
+		url: "https://api.github.com/authorizations",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data[0].app.name); //data.length : 4!!!, data[0].app.name : GitHub for Windows!!! Good
+			//document.getElementById('box1').value = "";
+			for (var i=0;i<data.length;i++)
+			{
+				var option = document.createElement('option');
+		        option.value = option.text = data[i].note; //data[i].app.name; //name에는 [API]가 붙어있어서 note값 이용~!
+		        select.add(option);
+			}			
+			
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+//}
+}
+
+function ReadValue()
+{	
+	//localStorage.clear();
+	var item = localStorage.getItem("access_token");
+	alert(item);
+
+	//document.getElementById('box3').value = item;
+}
+
+function ChangeSubTitle()
+{
+	top.getElementById("BreadcrumbTitle").innerHTML = "Solution Manager";
+	top.getElementById("pageTitle").innerHTML = "Solution Configuration Manager";
+}
+
 </script>
 <style>
 body
@@ -317,7 +396,8 @@ body
 }
 </style>
 </head>
-<body onLoad="">
+<body onLoad="ChangeSubTitle()">
+	<p></p>
 	<!-- <textarea id="box" cols="80" rows="20"></textarea> -->
 	<span><b>GitHub Info : Owner <input type="text" id="gitUser" value="meddugi723" style="width:100px">, Repository <input type="text" id="gitRepo" value="ROStest1" style="width:100px"></b>&nbsp;</span>
 	<input type="button" id="" value="GetFileList" onclick="GetFileList()" class="button"/>&nbsp;
@@ -333,11 +413,13 @@ body
 	<input type="button" id="" value="CMakeLists.txt" onclick="GetData('CMakeLists.txt')"/>
 	<input type="button" id="" value="concert.launch" onclick="GetData('concert.launch')"/>	 
 	<p></p>-->
-	<textarea id="box1" style="width:40%;" rows="20" title="base64"></textarea>
-	<textarea id="box2" style="width:50%;" rows="20" title="source"></textarea>
+	<textarea id="box1" style="width:40%;" rows="12" title="base64"></textarea>
+	<textarea id="box2" style="width:40%;" rows="12" title="source"></textarea>
+	<textarea id="box3" style="width:40%;" rows="12" title=""></textarea>
+	<textarea id="box4" style="width:40%;" rows="12" title=""></textarea>
 	<p></p>
 	<input type="text" id="box_sha" title="sha value" style="width:40%;"/>
-	<input type="text" id="box_token" title="access_token value" value="3b73c955b787a17a88afcb10abae3aed72a5b678" style="width:50%;"/>
+	<!-- <input type="text" id="box_token" title="access_token value" value="3b73c955b787a17a88afcb10abae3aed72a5b678" style="width:50%;"/> -->
 	<p></p>
 	<input type="button" onclick="base64decode();" value="decode" class="button"/>
 	<input type="button" onclick="base64encode();" value="encode" class="button"/>
@@ -347,5 +429,10 @@ body
 	<input type="text" id="createMsg" value="" placeholder="Insert update message here!" style="width:200px">&nbsp;
 	<input type="button" id="" value="Create" onclick="FileCreate()" class="button"/>&nbsp;
 	<!-- <input type="button" onclick="JSON_stringify();" value="JSON.stringify1" class="button"/> -->
+	<input type="button" id="" value="AuthorizationList" onclick="AuthorizationList()" class="button"/>&nbsp;
+	<select id="selectbox2" onChange="">
+	  <option value="">-----------</option>
+	</select>&nbsp;
+	<input type="button" id="" value="ReadValue" onclick="ReadValue()" class="button"/>&nbsp;
 </body>
 </html>
