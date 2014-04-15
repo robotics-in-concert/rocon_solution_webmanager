@@ -1,0 +1,358 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html" charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+<title>New Solution</title>
+<!-- <link rel="stylesheet" href="./style9.css" type="text/css" /> -->
+
+<script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="javascript">
+var pre_content; //수정 전 content base64 값
+
+function GetFileList()
+{	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data.length); //2!!! Good
+
+			for (var i=0;i<data.length;i++)
+			{
+		        alert(data[i].name);
+			}	s
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetData(fileName)
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + fileName,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			document.getElementById('box1').value = data.content;
+			pre_content = data.content;
+			//document.getElementById('box1').value = data.sha;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+	}
+}
+/*============= Creat new solution ==============*/
+var i = 0;
+
+function SolutionCreate()
+{	//Required : message, content
+	/*--GitHub 사용자 정보--*/
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+
+	if (access_token == null)
+	{
+		alert("로그인을 하여야 솔루션 생성이 가능합니다.");
+	}
+	else
+	{
+
+	/*--생성될 솔루션 파일명(임시)--*///solution은 생성할 솔루션명이랑 같아야 할듯
+	var fileName = ["concert.launch", "solution.services", "package.xml", "CMakeLists.txt"];
+	var solutionName = document.getElementById('solutionName').value;
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+	//alert(box[0]); //for Test
+	
+//	for (var i=0;i<fileName.length;i++)
+//	{
+		var msg = "Create new solution "; 
+		var content = box[i]; 
+		var cmds = {message : msg, content : content};
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[i] + "?access_token=" + access_token,
+		type: "PUT",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			alert(fileName[i] + " FileCreate complete!");			
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+			//alert("동일한 Solution이 존재합니다.");
+		}
+	});
+	
+//	}
+	var timer = setTimeout('SolutionCreate()',200);
+	i++;
+	//alert(i);
+	if (i==4)
+	{	
+		i = 0;
+		var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
+		var box = document.getElementById('box_result');
+		box.value = text;
+		clearTimeout(timer);		
+	}
+
+	}
+}
+
+function base64encode1(data)
+{
+	var output = Base64.encode(data);
+	return output;
+}
+
+function SigninCheck()
+{
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+	
+	if (access_token == null)	
+	{
+		document.getElementById('signin').value = "Sign in";
+	}
+	else
+	{
+		document.getElementById('signin').value = "Sign out";
+	}
+}
+
+</script>
+<style>
+body
+{
+    font-family: 'Segoe UI' , Verdana, Helvetica, Sans-Serif;
+    font-size: 12pt;    
+    background-color: white;
+    color: #424242;
+	position: relative;
+    margin: 0px auto 0px auto;
+	/*
+	//height: 100%;
+    //min-width: 960px;
+    //max-width: 1080px;
+	*/
+    padding: 0px 20px 0px 20px;
+}
+
+.button
+{
+	font-size: 12px!important;	
+	/*font-family: 'Open Sans',sans-serif!important;*/
+	background-image: none!important;
+	background-color: #99ccff;/*#eaeff2!important;*/
+	color: #fff; /*#4d4e53!important;*/
+	padding: .35em .75em .2em;
+	border: 0;
+	-moz-border-radius: .2em;
+	-webkit-border-radius: .2em;
+	border-radius: 4px!important;
+	-webkit-box-shadow: inset 0 -1px #bbbfc2;
+	-moz-box-shadow: inset 0 -1px #bbbfc2;
+	-ms-box-shadow: inset 0 -1px #bbbfc2;
+	box-shadow: inset 0 -1px #bbbfc2;	
+
+	margin-top:5px;
+	cursor:pointer;
+}
+
+.button2
+{
+	font-size: 12px!important;	
+	/*font-family: 'Open Sans',sans-serif!important;*/
+	background-image: none!important;
+	background-color: #ccc!important;
+	color: #4d4e53!important;
+	padding: .35em .75em .2em;
+	border: 0;
+	-moz-border-radius: .2em;
+	-webkit-border-radius: .2em;
+	border-radius: 4px!important;
+	-webkit-box-shadow: inset 0 -1px #bbbfc2;
+	-moz-box-shadow: inset 0 -1px #bbbfc2;
+	-ms-box-shadow: inset 0 -1px #bbbfc2;
+	box-shadow: inset 0 -1px #bbbfc2;	
+
+	margin-top:5px;
+	cursor:pointer;
+}
+
+.margin_bottom
+{
+	margin-bottom:5px;
+{
+
+</style>
+</head>
+<body onLoad="SigninCheck()">
+	<div style="font-size:24px; color:#6699cc;">Create New Solution</div>
+	<hr><br>	
+	<div>Solution Create</div>
+	&nbsp; &nbsp; &nbsp; <span style="font-size:12px; color:">GitHub Repository에 새로운 솔루션을 생성합니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; 생성할 솔루션명을 입력하세요.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Name &nbsp;: &nbsp;
+	<input type="text" id="solutionName" style="font-size:11px; width:210px" placeholder="ex) my_solution">&nbsp;&nbsp;</span>
+	<input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;">&nbsp;
+	<input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;">&nbsp;
+	<br>
+	&nbsp; &nbsp; &nbsp; 
+	<input type="button" id="" value="Create new solution" onclick="SolutionCreate();" class="button" title="솔루션 파일을 생성합니다."/>&nbsp; 
+	<span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 솔루션 생성이 가능합니다.</span>	
+	<input type="button" id="signin" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;<br><br>
+
+	<div>Created Solution Files Description<br><span style="font-size:12px;" >
+	&nbsp; &nbsp; &nbsp; &nbsp; 새로운 솔루션을 생성하면 기본 구성파일로 아래와 같이 4개의 파일 생성됩니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>concert.launch</strong> : 솔루션 실행 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>solution.services</strong> : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>package.xml</strong> : 솔루션에 대한 메타 정보 및 의존성 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>CMakeLists.txt</strong> : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span>
+	</div><br>
+	
+	<div>Result Report<br><span style="font-size:12px;" >
+	&nbsp; &nbsp; &nbsp; &nbsp; 솔루션 생성 결과를 보여줍니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="5" title="source"></textarea></span><br>
+	</div><br>
+	
+	<div>Other Page Link<br><span style="font-size:12px;" >
+	&nbsp; &nbsp; &nbsp; &nbsp; 이동하고자 하는 페이지 버튼을 클릭하면 해당 페이지로 이동합니다..<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; 
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='gitAPI.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Solution Manager', top.document.getElementById('pageTitle').innerHTML='Solution Configuration Manager';" value="Solution Manager" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Webgraphviz.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', top.document.getElementById('pageTitle').innerHTML='Data Visualizer';" value="Data Visualizer" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Scheduler.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', top.document.getElementById('pageTitle').innerHTML='Service Scheduler';" value="Service Scheduler" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='TemplateEdit.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Template Editor', top.document.getElementById('pageTitle').innerHTML='Template Editor';" value="Template Editor" class="button2"/>&nbsp;
+	<!-- <input type="button" onclick="ReadValue()" value="v" class="button2"/>&nbsp; -->
+	</span><br>
+	</div><br>	
+
+<!-- <textarea id="graphviz_data" wrap=on style="width:100%;" rows=14></textarea> display:none;-->
+<!-- concert.launch -->
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
+PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
+</textarea>
+<!-- solution.services -->
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
+LSByZXNvdXJjZToKICBvdmVycmlkZToKICAgIHByaW9yaXR5OgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgbmFtZToKICAgIGRlc2NyaXB0aW9uOgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgZGVzY3JpcHRpb246Ci0gcmVzb3VyY2U6Cg==
+</textarea>
+<!-- package.xml -->
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
+PHBhY2thZ2U+CiAgPG5hbWU+PC9uYW1lPgogIDx2ZXJzaW9uPjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+PC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iIj48L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+PC9hdXRob3I+CgogIDxidWlsZHRvb2xfZGVwZW5kPmNhdGtpbjwvYnVpbGR0b29sX2RlcGVuZD4KICA8cnVuX2RlcGVuZD48L3J1bl9kZXBlbmQ+CiAKPC9wYWNrYWdlPgoK
+</textarea>
+<!-- CMakeLists.txt -->
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdCgpCgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCiMgQ2F0a2luCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmZpbmRfcGFja2FnZShjYXRraW4gUkVRVUlSRUQpCmNhdGtpbl9wYWNrYWdlKCkK
+</textarea>
+
+<!-- <BUTTON id="sample_0_btn">Sample 0</BUTTON>
+
+<SCRIPT language="javascript" type="text/javascript" src="./js/jquery.min.js"></SCRIPT>
+<SCRIPT language="javascript" type="text/javascript" src="./js/site_solution.js"></SCRIPT> -->
+
+
+<!------------------------------------------------------------------>
+<!------------------------- SAMPLE CODE ---------------------------->
+<!------------------------------------------------------------------>
+<script id="sample1_text" >
+<launch>
+    <include file="$(find concert_master)/launch/concert_master.launch">
+        <arg name="concert_name" value="Concert Tutorial"/>
+        <arg name="services" value="concert_tutorial/tutorial.services"/>
+        <arg name="conductor_auto_invite" value="true" />
+        <arg name="conductor_local_clients_only" value="true" />
+        <arg name="auto_enable_services" value="true" />
+        <arg name="scheduler_type" value="compatibility_tree"/>
+    </include>
+</launch>
+</script>
+<!------------------------------------------------------------------>
+<script id="sample2_text" >
+- resource: rocon_service_turtlesim/turtlesim
+  override:
+    priority: 3
+- resource: rocon_service_admin/admin
+  override:
+    name: awesome admin
+    description: This is cool
+- resource: turtle_concert/turtle_pond
+  override:
+    description: pon-dang pon-dang dol eul duun ji ja
+- resource: chatter_concert/chatter
+</script>
+<!------------------------------------------------------------------>
+<script id="sample3_text" >
+<package>
+  <name>concert_tutorial</name>
+  <version>0.5.6</version>
+  <description>
+    Introductory soft tutorial for the rocon concert.
+  </description>
+  <maintainer email="d.stonier@gmail.com">Daniel Stonier</maintainer>
+  <license>BSD</license>
+  <author>Daniel Stonier</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>concert_master</run_depend>
+  <run_depend>rocon_service_admin</run_depend>
+  <run_depend>rocon_service_turtlesim</run_depend>
+  <run_depend>rocon_app_manager</run_depend>
+  <run_depend>rocon_apps</run_depend>
+  <run_depend>rospy_tutorials</run_depend>
+  <run_depend>zeroconf_avahi</run_depend> 
+</package>
+</script>
+<!------------------------------------------------------------------>
+<script id="sample4_text" >
+############################################################################
+# CMake
+############################################################################
+
+cmake_minimum_required(VERSION 2.8.3)
+project(concert_tutorial)
+
+############################################################################
+# Catkin
+############################################################################
+
+find_package(catkin REQUIRED)
+catkin_package()
+</script>
+
+<!------------------------------------------------------------------>
+</body>
+</html>

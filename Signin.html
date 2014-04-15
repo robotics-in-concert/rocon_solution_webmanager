@@ -128,10 +128,14 @@ function AuthorizationList()
 				//localStorage.removeItem("access_token"); //remove 안해줘도 덮어쓸 듯!
 				localStorage.setItem("access_token", access_token);
 
+				/*--access User Name--*/
+				localStorage.setItem("access_user", userID);
+				top.AccessUserInfo(); //user info display
+
 				/*--페이지 이동--*/
 				top.ChangeSubTitle(); //subTitle 변경
 				top.ChangeSigninTitle("IN");
-				location.href = "gitAPI.html";
+				location.href = "NewSolution.html";
 			}
 			else
 			{
@@ -184,13 +188,33 @@ function AuthorizationCreate()
 	}
 }
 
+function Remember()
+{	//2014-04-11_shkwak
+	var remember = localStorage.getItem("Remember");
+	var userID = document.getElementById("ID").value;
+	alert("remember : " + remember);
 
+	if (remember == "")
+	{
+		localStorage.setItem("Remember", userID);
+	}
+	else
+	{
+		userID = remember;
+		//var checkbox_btn = jQuery('#checkbox_remember');
+		var checkbox_btn = document.getElementById("checkbox_remember");
+		checkbox_btn.setAttribute("checked");
+		//checkbox_btn.setAttribute("checked", "checked");
+		//checkbox_btn.checked = true;
+	}
+	//alert("remember_re : " + remember);
+}
 
 </script>
 
 </head>
 
-<body>
+<body onload="">
   <p></p>
   <div class="container">
     <div class="form-signin">
@@ -198,7 +222,7 @@ function AuthorizationCreate()
       <input type="text" id="ID" class="input-block-level" placeholder="User account">
       <input type="password" id="PW" class="input-block-level" placeholder="Password">
       <label class="checkbox">
-        <input type="checkbox" value="remember-me" onclick="alert('now no service');"> Remember me
+        <input type="checkbox" id="checkbox_remember" value="remember-me" onclick=""> Remember me
       </label>
       <button class="btn btn-large btn-primary" onclick="UserAuthorization();">Sign in</button>		
     </div> <!-- form-signin -->

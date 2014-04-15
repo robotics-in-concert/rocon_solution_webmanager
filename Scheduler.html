@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html" charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+<title>Service Scheduler</title>
+<!-- <link rel="stylesheet" href="./style9.css" type="text/css" /> -->
+
+<script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="javascript">
+var pre_content; //수정 전 content base64 값
+
+function GetFileList()
+{	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data.length); //2!!! Good
+
+			for (var i=0;i<data.length;i++)
+			{
+		        alert(data[i].name);
+			}	s
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetData(fileName)
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + fileName,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			document.getElementById('box1').value = data.content;
+			pre_content = data.content;
+			//document.getElementById('box1').value = data.sha;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+	}
+}
+/*============= Creat new solution ==============*/
+var i = 0;
+
+function SolutionCreate()
+{	//Required : message, content
+	/*--GitHub 사용자 정보--*/
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+
+	if (access_token == null)
+	{
+		alert("로그인을 하여야 솔루션 생성이 가능합니다.");
+	}
+	else
+	{
+
+	/*--생성될 솔루션 파일명(임시)--*///solution은 생성할 솔루션명이랑 같아야 할듯
+	var fileName = ["concert.launch", "solution.services", "package.xml", "CMakeLists.txt"];
+	var solutionName = document.getElementById('solutionName').value;
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+	//alert(box[0]); //for Test
+	
+//	for (var i=0;i<fileName.length;i++)
+//	{
+		var msg = "Create new solution "; 
+		var content = box[i]; 
+		var cmds = {message : msg, content : content};
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[i] + "?access_token=" + access_token,
+		type: "PUT",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			alert(fileName[i] + " FileCreate complete!");			
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+			//alert("동일한 Solution이 존재합니다.");
+		}
+	});
+	
+//	}
+	var timer = setTimeout('SolutionCreate()',200);
+	i++;
+	//alert(i);
+	if (i==4)
+	{	
+		i = 0;
+		var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
+		var box = document.getElementById('box_result');
+		box.value = text;
+		clearTimeout(timer);		
+	}
+
+	}
+}
+
+function base64encode1(data)
+{
+	var output = Base64.encode(data);
+	return output;
+}
+
+function changeList()
+{
+	var listValue = document.getElementById('serviceList').value;
+	
+	if (listValue == "사용자 입력")
+	{
+		//alert("사용자 입력");
+		//document.getElementById('serviceName').style.display='block';
+		//document.getElementById('serviceName').removeAttribute = 'disabled';
+		document.getElementById('serviceName').value = "";
+		document.getElementById('serviceName').placeholder = "서비스명을 입력하세요.";
+	}
+	else
+	{
+		//document.getElementById('serviceName').style.display='none';
+		//document.getElementById('serviceName').disabled = 'true';
+		document.getElementById('serviceName').value = listValue;
+	}
+}
+
+</script>
+<style>
+body
+{
+    font-family: 'Segoe UI' , Verdana, Helvetica, Sans-Serif;
+    font-size: 12pt;    
+    background-color: white;
+    color: #424242;
+	position: relative;
+    margin: 0px auto 0px auto;
+	/*
+	//height: 100%;
+    //min-width: 960px;
+    //max-width: 1080px;
+	*/
+    padding: 0px 20px 0px 20px;
+}
+
+.button
+{
+	font-size: 12px!important;	
+	/*font-family: 'Open Sans',sans-serif!important;*/
+	background-image: none!important;
+	background-color: #99ccff;/*#eaeff2!important;*/
+	color: #fff; /*#4d4e53!important;*/
+	padding: .35em .75em .2em;
+	border: 0;
+	-moz-border-radius: .2em;
+	-webkit-border-radius: .2em;
+	border-radius: 4px!important;
+	-webkit-box-shadow: inset 0 -1px #bbbfc2;
+	-moz-box-shadow: inset 0 -1px #bbbfc2;
+	-ms-box-shadow: inset 0 -1px #bbbfc2;
+	box-shadow: inset 0 -1px #bbbfc2;	
+
+	margin-top:5px;
+	cursor:pointer;
+}
+
+.button2
+{
+	font-size: 12px!important;	
+	/*font-family: 'Open Sans',sans-serif!important;*/
+	background-image: none!important;
+	background-color: #ccc!important;
+	color: #4d4e53!important;
+	padding: .35em .75em .2em;
+	border: 0;
+	-moz-border-radius: .2em;
+	-webkit-border-radius: .2em;
+	border-radius: 4px!important;
+	-webkit-box-shadow: inset 0 -1px #bbbfc2;
+	-moz-box-shadow: inset 0 -1px #bbbfc2;
+	-ms-box-shadow: inset 0 -1px #bbbfc2;
+	box-shadow: inset 0 -1px #bbbfc2;	
+
+	margin-top:5px;
+	cursor:pointer;
+}
+
+.margin_bottom
+{
+	margin-bottom:5px;
+{
+
+</style>
+</head>
+<body onLoad="">
+	<div style="font-size:24px; color:#6699cc;">Service Scheduler</div>
+	<hr><br>	
+	<div>Select a Service <br>
+	&nbsp; &nbsp; &nbsp; <span style="font-size:12px;">스케쥴을 설정하고 싶은 서비스를 선택하세요.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Service List &nbsp;: &nbsp;
+	<select id="serviceList" onchange="changeList()">
+		<option value="dummy_service">dummy_service</option>
+		<option value="service 2">service 2</option>
+		<option value="service 3">service 3</option>
+		<option value="service 4">service 4</option>
+		<option >사용자 입력</option>
+	</select>
+	<input type="text" id="serviceName" style="font-size:11px; width:210px;" placeholder="ex) concert_tutorial">&nbsp;&nbsp;<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 서비스 리스트가 나타납니다.</span>	
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;
+	</div></span><br>
+
+	<div>Configure a Service Schedule<br>
+	<span style="font-size:12px;">
+	&nbsp; &nbsp; &nbsp; &nbsp; 서비스를 실행하고자하는 날짜와 시간을 선택하세요.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; ON Time &nbsp;: &nbsp;&nbsp;
+	<input type="date" style="font-size:11px;" id="serviceOnDate"><input type="time" style="font-size:11px;" id="serviceOnTime"><input type="image" src="./img/icon_plus.png" style="vertical-align:middle;"/> <br>
+	&nbsp; &nbsp; &nbsp; &nbsp; OFF Time &nbsp;: &nbsp;
+	<input type="date" style="font-size:11px;" id="serviceOffDate"><input type="time" style="font-size:11px;" id="serviceOffTime"><input type="image" src="./img/icon_plus.png" style="vertical-align:middle;"/> <br>
+	</span>
+	</div><br>
+	
+	<div>Result Report<br>
+	<span style="font-size:12px;">
+	&nbsp; &nbsp; &nbsp; &nbsp; 서비스 스케쥴 내역을 보여줍니다.
+	&nbsp; &nbsp; &nbsp; &nbsp; <!-- <textarea id="box_result" style="width:90%; margin-top:5px;" rows="5" title="source"></textarea> -->
+	<ul style="">
+	 <li>dummy_service, 2014-04-14 18:00~2014-04-14 19:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-14 16:00~2014-04-14 17:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-13 18:00~2014-04-13 19:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-13 16:00~2014-04-13 17:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-12 16:30~2014-04-12 17:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-12 15:30~2014-04-12 16:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-11 08:00~2014-04-11 09:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+	 <li>dummy_service, 2014-04-11 06:00~2014-04-11 07:00 <input type="image" src="./img/icon_minus.png" style="vertical-align:middle;"/></li>
+    </ul>
+	</span>
+	</div><br>
+	
+	<div>Other Page Link<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; 이동하고자 하는 페이지 버튼을 클릭하면 해당 페이지로 이동합니다..<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; 
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='gitAPI.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Solution Manager', top.document.getElementById('pageTitle').innerHTML='Solution Configuration Manager';" value="Solution Manager" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Webgraphviz.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', top.document.getElementById('pageTitle').innerHTML='Data Visualizer';" value="Data Visualizer" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Scheduler.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', top.document.getElementById('pageTitle').innerHTML='Service Scheduler';" value="Service Scheduler" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='TemplateEdit.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Template Editor', top.document.getElementById('pageTitle').innerHTML='Template Editor';" value="Template Editor" class="button2"/>&nbsp;
+	<br>
+	</div><br>	
+
+<!------------------------------------------------------------------>
+</body>
+</html>

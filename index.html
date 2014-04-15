@@ -52,6 +52,8 @@
   */
 </script> -->
 <script language="javascript">
+var Sign_status = false;
+
 function ChangeSubTitle()
 {	
 	document.getElementById("BreadcrumbTitle").innerHTML = "Solution Manager";
@@ -60,14 +62,70 @@ function ChangeSubTitle()
 
 function ChangeSigninTitle(status)
 {
-	if (status == "IN")
-	{
+	if (status == "IN"){
 		document.getElementById("signin").innerHTML = "Sign out <i aria-hidden='true' class='icon-ok'></i>";		
+		if (!Sign_status){
+			//alert("정상적으로 로그인 되었습니다.");
+			Sign_status = true;
+		}
+	}
+	else{
+		document.getElementById("signin").innerHTML = "Sign in <i aria-hidden='true' class='icon-ok'></i>";
+		localStorage.clear(); //Sign out ; access_token 삭제_2014-04-10_shkwak
+		//localStorage.removeItem("access_token");
+
+		if (Sign_status){
+			document.getElementById('accessUserInfo').value = "";
+			alert("정상적으로 로그아웃 되었습니다.");
+			Sign_status = false;
+		}		
+	}	
+}
+
+function pageClose()
+{	//2014-04-11_shkwak
+	localStorage.clear();
+	//localStorage.setItem("access_token", "page closeed!"); //ok
+}
+
+var win=null;
+function NewWindow(mypage,myname,w,h,scroll,pos)
+{
+        if(pos=="random"){
+                LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
+                TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;}
+        if(pos=="center"){
+                LeftPosition=(screen.width)?(screen.width-w)/2:100;
+                TopPosition=(screen.height)?(screen.height-h)/2:100;}
+        else if((pos!="center" && pos!="random") || pos==null){
+                LeftPosition=20;
+                TopPosition=20}
+
+        settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
+        win=window.open(mypage,myname,settings);
+        if(win.focus){win.focus();}
+}
+
+function ReadValue()
+{	
+	var item = localStorage.getItem("access_token");
+	alert(item);
+}
+
+function AccessUserInfo()
+{
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+	var access_user = localStorage.getItem("access_user");
+	//alert(access_user);
+	
+	if (access_token == null)	
+	{
+		document.getElementById('accessUserInfo').value = "";
 	}
 	else
 	{
-		document.getElementById("signin").innerHTML = "Sign in <i aria-hidden='true' class='icon-ok'></i>";
-		localStorage.clear(); //Sign out ; access_token 삭제_2014-04-10
+		document.getElementById('accessUserInfo').value = "WELCOME, " + access_user;
 	}	
 }
 
@@ -81,7 +139,7 @@ function ChangeSigninTitle(status)
 	<frame name="bottomFrame" scrolling="NO" noresize> 
   </frameset> -->
 
-<body data-slug="FileGuide/FileUpDown" data-docid="5791" contextmenu="edit-history-menu" class="html-ltr document">
+<body data-slug="FileGuide/FileUpDown" data-docid="5791" contextmenu="edit-history-menu" class="html-ltr document" onload="" onunload="pageClose();">
 
 <!------------------------------------------------------------------------------>
 <div id="tabzilla-panel" class="tabzilla-closed" tabindex="-1">  
@@ -97,7 +155,9 @@ function ChangeSigninTitle(status)
 	<div>            
 	  <ul>              
 		<li><a href="https://github.com/robotics-in-concert/rocon_solution_webmanager" target="_blank">rocon solution</a></li>
-	    <li><a href="https://github.com/meddugi723/ROStest1/archive/master.zip">All Files Download</a></li>				
+	    <li><a href="https://github.com/meddugi723/ROStest1/archive/master.zip">All Files Download</a></li>
+		<li><a href="https://github.com/meddugi723/ROStest1" target="_blank">ROStest1</a></li>
+		<li><a href="https://github.com/meddugi723/ROStest44" target="_blank">ROStest44</a></li>
 		<li><a href="https://github.com/" target="_blank">GitHub</a></li>
 		<li><a href="https://developer.github.com/v3/repos/contents/" target="_blank">Contents GitHub API</a></li>
 	  </ul>          
@@ -159,8 +219,8 @@ function ChangeSigninTitle(status)
     "SAMPLES": SAMPLES
   };
 })();
-/*
-  // This represents the site configuration : 상단 메뉴 over 메뉴  
+
+  // This represents the site configuration : 상단 메뉴 mouseeover 메뉴★  
   window.mdn = {
     build: 'af3100b',
     // Properties and settings for CKEditor will go here
@@ -176,7 +236,7 @@ function ChangeSigninTitle(status)
       //autosuggestTitleUrl: '/en-US/docs/get-documents'
     }
   };
-*/
+
 </script>
   
 <!-- <ul id="nav-access">
@@ -211,23 +271,25 @@ function ChangeSigninTitle(status)
     <nav id="main-nav" role="navigation">
 	  <ul>
 	    <li>
-		  <a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager<!-- <i aria-hidden="true" class="icon-caret-down"> --></i></a>
-          <!-- <div class="submenu submenu-single" id="nav-zones-submenu" aria-hidden="true" style="z-index: 99998; display: none;">
+		  <a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager<i aria-hidden="true" class="icon-caret-down"></i></a>
+          <div class="submenu submenu-single" id="nav-zones-submenu" aria-hidden="true" style="z-index: 99998; display: none;">
             <div class="submenu-column">
               <ul>			    
+			    <li><a href="#" onclick="javascript:getElementById('subframe').src='NewSolution.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Create New Solution</a></li>  
+				<li><a href="#" onclick="javascript:getElementById('subframe').src='TemplateEdit.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Template Editor</a></li>  
 				<li><a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">File Git API</a></li>
 				<li><a href="#" onclick="javascript:getElementById('subframe').src='FileAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Local File Edit & Upload</a></li>
 				<li><a href="#" onclick="javascript:getElementById('subframe').src='Default.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">File Upload UI</a></li>
-                <li><a href="#" onclick="javascript:getElementById('subframe').src='fso.html';">Launch File</a></li>
+                <!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='fso.html';">Launch File</a></li>
                 <li><a href="#" onclick="alert('no service now');">Services File</a></li>
                 <li><a href="#" onclick="alert('no service now');">Package File</a></li>
-                <li><a href="#" onclick="alert('no service now');">CMakeLists File</a></li> 
+                <li><a href="#" onclick="alert('no service now');">CMakeLists File</a></li>  -->
               </ul>
             </div>
             <button class="submenu-close transparent">
 			  <span class="offscreen">Close submenu</span><i aria-hidden="true" class="icon-remove-sign"></i>
  		    </button>
-		  </div> -->
+		  </div>
         </li>
 		
 		<!-- <li><a href="#">Data Visualizer</a></li> -->
@@ -287,6 +349,11 @@ function ChangeSigninTitle(status)
     <div class="article-meta">
       <!-- action buttons -->
 	  <ul class="page-buttons">
+		<!-- Access User Info -->
+		<li>
+		  <input type="text" id="accessUserInfo" value="" style="font-size:12px; border:0;" readonly>
+		</li>
+
 	    <!-- <li>
 		  <a href="javascript:;" id="languages-menu" class="button transparent" aria-haspopup="true" aria-owns="languages-menu-submenu" aria-expanded="false"><span>Languages</span><i aria-hidden="true" class="icon-comments"></i></a>
 	      <div class="submenu" id="languages-menu-submenu">
@@ -297,7 +364,11 @@ function ChangeSigninTitle(status)
               </ul>
             </div>
           </div>
-		</li> -->
+		</li> -->	
+
+		<li>
+		  <a href="#" class="button" onclick="NewWindow('NewSolution.html','centerwindow','600','620','no');return false" onfocus="this.blur()">popup<i aria-hidden="true" class="icon-star"></i></a>
+		</li>	
 		
 		<li>
 		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='list2.html', getElementById('BreadcrumbTitle').innerHTML='Solution Folder List', getElementById('pageTitle').innerHTML='Solution Folder List';">List<i aria-hidden="true" class="icon-list"></i></a>
@@ -326,7 +397,7 @@ function ChangeSigninTitle(status)
             <div class="submenu-column">
               <div class="title">Advanced</div>
               <ul>
-                <li><a href="#" onclick="javascript:alert('no service now!')";>Settings</a></li>
+                <li><a href="#" onclick="javascript:ReadValue();AccessUserInfo();">Settings</a></li>
                 <li class="page-print"><a href="#" onclick="return window.print();" title="Print page">Print this page</a></li>
               </ul>
             </div>
@@ -358,7 +429,7 @@ function ChangeSigninTitle(status)
   <div id="wiki-column-container" class="wiki-right-present wiki-left-closed wiki-left-none">
 	
   <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ style="display:none;" -->  
-  <iframe id="subframe" name="subframe" src="list2.html" style="width:100%; height:900px; margin-top:20px;" ></iframe><P></P>
+  <iframe id="subframe" name="subframe" src="NewSolution.html" style="width:100%; height:900px; margin-top:10px;" ></iframe><P></P>
 <!-- <script>
 function resizeHeight() 
 {
@@ -465,6 +536,11 @@ function resizeHeight()
     </div>
   </footer>
 
+<!-- 팝업창 -->
+<!-- <br><center>
+<a href="NewSolution.html" onclick="NewWindow(this.href,'randomwindow','600','600','no','random');return false" onfocus="this.blur()">랜덤 위치에 팝업창 열기</a><br><br>
+<a href="NewSolution.html" onclick="NewWindow(this.href,'centerwindow','600','600','no','center');return false" onfocus="this.blur()">화면 중앙에 팝업창 열기</a><br><br>
+<a href="NewSolution.html" onclick="NewWindow(this.href,'randomwindow','600','600','no');return false" onfocus="this.blur()">디폴트 위치에 팝업창 열기</a></center><br><br> -->
 
 
   <!-- site js -->
