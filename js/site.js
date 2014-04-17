@@ -23,6 +23,8 @@ jQuery(document).ready(function () {
 
 
   var generate_btn = jQuery('#generate_btn');
+	var generate_btn1 = jQuery('#generate_btn1'); //new	
+	var generate_btn2 = jQuery('#generate_btn2'); //new	
   var sample_0_btn = jQuery('#sample_0_btn');
   var sample_1_btn = jQuery('#sample_1_btn');
   var sample_2_btn = jQuery('#sample_2_btn');
@@ -32,6 +34,8 @@ jQuery(document).ready(function () {
 
   var svg_div = jQuery('#graphviz_svg_div');
   var graphviz_data_textarea = jQuery('#graphviz_data');
+	 var graphviz_data_textarea1 = jQuery('#dotgraph_data1'); //new
+	 var graphviz_data_textarea2 = jQuery('#dotgraph_data2'); //new
 
   function InsertGraphvizText(text) {
     graphviz_data_textarea.val(text);
@@ -41,6 +45,14 @@ jQuery(document).ready(function () {
   function UpdateGraphviz() {
 	svg_div.html("");
     var data = graphviz_data_textarea.val();
+    // Generate the Visualization of the Graph into "svg".
+    var svg = Viz(data, "svg");	
+    svg_div.html("<hr>" + svg + "<hr>");
+  }
+
+   function UpdateGraphviz_new(textarea) { //new_2014-04-11
+	svg_div.html("");
+    var data = textarea.val();
     // Generate the Visualization of the Graph into "svg".
     var svg = Viz(data, "svg");	
     svg_div.html("<hr>" + svg + "<hr>");
@@ -63,6 +75,11 @@ jQuery(document).ready(function () {
 
   // Bind actions to form buttons.
   generate_btn.click(UpdateGraphviz);
+
+	generate_btn1.click(function(){ //new
+		UpdateGraphviz_new(graphviz_data_textarea1)});
+	generate_btn2.click(function(){ //new
+		UpdateGraphviz_new(graphviz_data_textarea2)});
 
   sample_0_btn.click(function(){
     InsertGraphvizText(jQuery("#sample0_text").html().trim());

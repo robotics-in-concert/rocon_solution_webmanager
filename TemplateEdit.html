@@ -5,15 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 
 <title>Template Edit</title>
-<!-- <link rel="stylesheet" href="./style9.css" type="text/css" /> -->
-<!-- <link rel="stylesheet" type="text/css" href="./css/mdn-min.css"> -->
 
+<link rel="stylesheet" href="./css/shkwak.css" type="text/css" />
 <script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
 <script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shkwak.js"></script>
 <script language="javascript">
 var pre_content; //수정 전 content base64 값
-var data_type = ["", "", "", "", "", "", "", "", "", "", "", ""]; //data[i].name 의 type_2014-04-14_shkwak
-var data_type_sub = ["", "", "", "", "", "", "", "", "", ""];
 var data_sha = "";
 
 function GetFileList()
@@ -21,12 +19,18 @@ function GetFileList()
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value; 
 	var select = document.getElementById('selectbox');
+	var select_sub = document.getElementById('selectbox_sub');
 
 	/*selectbox option 삭제*/
 	select.options.length = 0; //option 전체삭제
 	var option_line = document.createElement('option');
 	option_line.value = option_line.text = "-----------";
 	select.add(option_line);
+
+	select_sub.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "-----------";
+	select_sub.add(option_line);
 	
 	if (owner == "" || repo == "")
 	{
@@ -42,15 +46,20 @@ function GetFileList()
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			//alert(data.length); //2!!! Good
-			//document.getElementById('box1').value = "";
+			var j = 1;
 			for (var i=0;i<data.length;i++)
 			{
 				//document.getElementById('box1').value += data[i].name + "\n";
 				var option = document.createElement('option');
-		        option.value = option.text = data[i].name;
-		        select.add(option);
-				/*--data_type 저장--*/
-				data_type[i+1] = data[i].type; //★
+				//alert(data[i].type);
+				if (data[i].type == "dir")
+				{	//솔루션만 리스트업_2014-04-16_유진로봇 요청사항
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type[j] = data[i].type; //★
+					j++;
+				}
 			}			
 			
 		},
@@ -88,17 +97,21 @@ function GetFileList_sub()
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			//alert(data.length); //2!!! Good
-			//document.getElementById('box1').value = "";
+			var j = 1;
 			for (var i=0;i<data.length;i++)
 			{
 				//document.getElementById('box1').value += data[i].name + "\n";
 				var option = document.createElement('option');
-		        option.value = option.text = data[i].name;
-		        select.add(option);
-				/*--data_type 저장--*/
-				data_type[i+1] = data[i].type; //★
-			}			
-			
+				//alert(data[i].type);
+		        if (data[i].type == "file")
+				{
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type_sub[j] = data[i].type; //★
+					j++;
+				}
+			}						
 		},
 		error: function (x, y, z) {
 			alert(x + "\n" + y + "\n" + z);
@@ -119,9 +132,9 @@ function GetData(fileName)
 	}
 	else
 	{
-		/*--select box index 넘버 가져오기--*/
+		/*--select box index 넘버 가져오기--*/ 
 		//alert(select.selectedIndex); //GOOD!
-		//alert(data_type[select.selectedIndex]); GOOD - file, dir
+		//alert(data_type[select.selectedIndex]); //GOOD - file, dir		
 
 		if (data_type[select.selectedIndex] == "dir")
 		{
@@ -138,9 +151,8 @@ function GetData(fileName)
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			document.getElementById('box_result').value = Base64.decode(data.content);
-			pre_content = data.content;
-			//document.getElementById('box_sha').value = data.sha;
-			data_sha = data.sha;
+			pre_content = Base64.decode(data.content);
+			data_sha = data.sha; //document.getElementById('box_sha').value = data.sha;
 		},
 		error: function (x, y, z) {
 			alert(x + "\n" + y + "\n" + z);
@@ -185,14 +197,7 @@ function GetData_sub(fileName)
 				
 		/*--select box index 넘버 가져오기--*/
 		//alert(select.selectedIndex); alert(data_type[select.selectedIndex]); GOOD - file, dir
-/*
-		if (data_type[select.selectedIndex] == "dir")
-		{
-			GetFileList_sub(); //solution 폴더의 하위 파일을 다시 읽어오기
-		}
-		else if (data_type[select.selectedIndex] == "file")
-		{
-*/
+
 	jQuery.support.cors = true;
 	$.ajax({
 		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solution + "/" + fileName,
@@ -201,7 +206,7 @@ function GetData_sub(fileName)
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			document.getElementById('box_result').value = Base64.decode(data.content);
-			pre_content = data.content;
+			pre_content = Base64.decode(data.content);
 			//document.getElementById('box_sha').value = data.sha;
 			data_sha = data.sha;
 		},
@@ -209,29 +214,31 @@ function GetData_sub(fileName)
 			alert(x + "\n" + y + "\n" + z);
 		}
 	});
-/*
-		}
-		else
-		{
-			alert('해당 파일은 수정할 수 없습니다.');
-		}
-*/	}
+
+	}
 }
 
-function FileUpdate()
+function FileUpdate_sub()
 {	//Required : message, content(수정 후), sha(수정 전)
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value;
-	var fileName = document.getElementById('selectbox').value;
-	
+	var solution = document.getElementById('selectbox').value;
+	var fileName = document.getElementById('selectbox_sub').value;
+
 	/*--access_token--*/
 	//var access_token = document.getElementById('box_token').value;
 	var access_token = localStorage.getItem("access_token");
 	
+	if (access_token == null)
+	{
+		alert("로그인을 하여야 업데이트가 가능합니다.");		
+	}
+	else
+	{
 	var msg = document.getElementById('updateMsg').value;
-	if (msg == ""){msg = "ROCON update commit";}
-	var content = document.getElementById('box1').value;
-	var sha = document.getElementById('box_sha').value;
+	if (msg == ""){msg = "Template Editor commit";}
+	var content = Base64.encode(document.getElementById('box_result').value);
+	var sha = data_sha; //document.getElementById('box_sha').value;
 	var cmds = {message : msg, content : content, sha : sha}; //var cmds = [ cmd ]; //[ ] 삭제
 	//var data_str = JSON.stringify(cmds);
 	
@@ -250,7 +257,7 @@ function FileUpdate()
 		{
 	jQuery.support.cors = true;
 	$.ajax({
-		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + fileName + "?access_token=" + access_token,
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solution + "/" + fileName + "?access_token=" + access_token,
 		type: "PUT",
 		data: JSON.stringify(cmds),
 		contentType: "application/json;charset=utf-8",
@@ -262,7 +269,7 @@ function FileUpdate()
 		}
 	});
 		}
-	//}
+	}
 }
 
 function base64encode1(data)
@@ -334,16 +341,16 @@ function changeList()
 
 function saveThisValue()
 {
-	/*--access_token--*/
-	var access_token = localStorage.getItem("access_token");
+	//--access_token--//
+/*	var access_token = localStorage.getItem("access_token");
 
 	if (access_token == null)
 	{
 		alert("로그인을 하여야 수정이 가능합니다.");
 	}
 	else
-	{
-		alert("로그인은 하셨는데 기능이 아직 없네요.");
+*/	{
+		alert("입력값이 정상적으로 저장되었습니다.");
 	}
 }
 
@@ -444,76 +451,7 @@ function onloadFunc()
 }
 
 </script>
-<style>
-body
-{
-    font-family: 'Segoe UI' , Verdana, Helvetica, Sans-Serif;
-    font-size: 12pt;    
-    background-color: white;
-    color: #424242;
-	position: relative;
-    margin: 0px auto 0px auto;
-	/*
-	//height: 100%;
-    //min-width: 960px;
-    //max-width: 1080px;
-	*/
-    padding: 0px 20px 0px 20px;
-}
 
-.button
-{
-	font-size: 12px!important;	
-	/*font-family: 'Open Sans',sans-serif!important;*/
-	background-image: none!important;
-	background-color: #99ccff;/*#eaeff2!important;*/
-	color: #fff; /*#4d4e53!important;*/
-	padding: .35em .75em .2em;
-	border: 0;
-	-moz-border-radius: .2em;
-	-webkit-border-radius: .2em;
-	border-radius: 4px!important;
-	-webkit-box-shadow: inset 0 -1px #bbbfc2;
-	-moz-box-shadow: inset 0 -1px #bbbfc2;
-	-ms-box-shadow: inset 0 -1px #bbbfc2;
-	box-shadow: inset 0 -1px #bbbfc2;	
-
-	margin-top:5px;
-	cursor:pointer;
-}
-
-.button2
-{
-	font-size: 12px!important;	
-	/*font-family: 'Open Sans',sans-serif!important;*/
-	background-image: none!important;
-	background-color: #ccc!important;
-	color: #4d4e53!important;
-	padding: .35em .75em .2em;
-	border: 0;
-	-moz-border-radius: .2em;
-	-webkit-border-radius: .2em;
-	border-radius: 4px!important;
-	-webkit-box-shadow: inset 0 -1px #bbbfc2;
-	-moz-box-shadow: inset 0 -1px #bbbfc2;
-	-ms-box-shadow: inset 0 -1px #bbbfc2;
-	box-shadow: inset 0 -1px #bbbfc2;	
-
-	margin-top:5px;
-	cursor:pointer;
-}
-
-.margin_bottom
-{
-	margin-bottom:5px;
-{
-
-.icon-plus
-{
-	background-image:url("../img/icon_plus_1.png");
-}
-
-</style>
 </head>
 <body onLoad="onloadFunc()">
 	<div style="font-size:24px; color:#6699cc;">Solution Template Editor
@@ -524,7 +462,7 @@ body
 	<input type="button" onclick="pageChange('CMakeLists');" value="CMakeLists File" class="button2"/> -->
 	<input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;" />
 	<input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;" />
-	<input type="button" onclick="GetFileList();" value="" style="width:2px; height:15px;" class="button"/>
+	<input type="button" onclick="GetFileList();" value="GetList" style="width:; height:;" class="button"/>
 	<select id="selectbox" onChange="GetData(this.value);">
 	  <option value="">-----------</option>
 	</select> 
@@ -576,30 +514,30 @@ body
 	<div id="servicefile" style="display:none;">solution.services<br>
 	<span style="font-size:12px; color:">
 	&nbsp; &nbsp; &nbsp; &nbsp; resource &nbsp;: &nbsp; 
-	<select id="overrideList" onchange="changeList()">
+	<select id="resource1" onchange="changeList()">
 		<option value="rocon_service_turtlesim">rocon_service_turtlesim</option>
 		<option value="rocon_service_admin">rocon_service_admin</option>
 		<option value="turtle_concert">turtle_concert</option>
 		<option value="chatter_concert">chatter_concert</option>
 		<option >사용자 입력</option>
 	</select>
-	<select id="overrideList" onchange="changeList()">
+	<select id="resource2" onchange="changeList()">
 		<option value="turtlesim">turtlesim</option>
 		<option value="admin">admin</option>
 		<option value="turtle_pond">turtle_pond</option>
 		<option value="chatter">chatter</option>
 		<option >사용자 입력</option>
 	</select>
-	<input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) rocon_service_admin/admin">&nbsp;
+	<!-- <input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) rocon_service_admin/admin">&nbsp; -->
 	<input type="image" src="./img/icon_plus.png" style="vertical-align:middle;"/><br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; override &nbsp;: &nbsp;
-	<select id="overrideList" onchange="changeList()">
+	<select id="override" onchange="changeList()">
 		<option value="name">name</option>
 		<option value="description">description</option>
 		<option value="priority">priority</option>
 		<option >사용자 입력</option>
 	</select>
-	<input type="text" id="includefile" style="font-size:11px; width:150px" placeholder="ex) ">&nbsp;
+	<input type="text" id="override_value" style="font-size:11px; width:150px" placeholder="ex) ">&nbsp;
 	<input type="image" src="./img/icon_plus.png" style="vertical-align:middle;"/><br>
 	</div>
 
@@ -700,10 +638,11 @@ body
 	
 	<div>Result Report<br><span style="font-size:12px;" >
 	&nbsp; &nbsp; &nbsp; &nbsp; 파일 수정 결과를 보여줍니다.<br>
-	&nbsp; &nbsp; &nbsp; &nbsp; <input type="button" onclick="" value="View source" class="button" title="수정된 소스를 보여줍니다."/>&nbsp;<br>
-	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="10" title="source"></textarea></span><br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <input type="button" onclick="ViewSource();" value="View source" class="button" title="수정된 소스를 보여줍니다."/>&nbsp;<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="10" title="source" spellcheck="false"></textarea></span><br>
 	<span style="float:right; margin-right:8%; font-size:12px;">GitHub에 수정된 정보를 업데이트 합니다.&nbsp; &nbsp;
-	<input type="button" onclick="" value="Update" class="button" title="수정된 정보를 업데이트 합니다."/></span><br>
+	<input type="text" id="updateMsg" style="font-size:11px; width:150px;" placeholder="Insert update message here.">&nbsp;&nbsp;
+	<input type="button" onclick="FileUpdate_sub();" value="Update" class="button" title="수정된 정보를 업데이트 합니다."/></span><br>
 	</div><br>	
 	
 <!-- concert.launch -->
