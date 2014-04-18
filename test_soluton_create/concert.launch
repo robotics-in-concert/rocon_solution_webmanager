@@ -1,0 +1,10 @@
+<launch>
+    <include file="$(find concert_master)/">
+        <arg name="concert_name" value=""/>
+        <arg name="services" value=""/>
+        <arg name="conductor_auto_invite" value=""/>
+        <arg name="conductor_local_clients_only" value=""/>
+        <arg name="auto_enable_services" value=""/>
+        <arg name="scheduler_type" value=""/>
+    </include>
+</launch>
