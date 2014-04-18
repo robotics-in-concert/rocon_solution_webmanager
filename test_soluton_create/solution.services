@@ -1,0 +1,11 @@
+- resource:
+  override:
+    priority:
+- resource:
+  override:
+    name:
+    description:
+- resource:
+  override:
+    description:
+- resource:
