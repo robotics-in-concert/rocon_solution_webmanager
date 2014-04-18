@@ -1,0 +1,13 @@
+<package>
+  <name></name>
+  <version></version>
+  <description></description>
+  <maintainer email=""></maintainer>
+  <license>BSD</license>
+  <author></author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend></run_depend>
+ 
+</package>
+
