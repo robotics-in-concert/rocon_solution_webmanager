@@ -5,11 +5,18 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 
 <title>New Solution</title>
-<!-- <link rel="stylesheet" href="./style9.css" type="text/css" /> -->
 
+<link rel="stylesheet" href="./css/shkwak.css" type="text/css" />
 <script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
 <script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shkwak.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shortcut.js"></script>
 <script language="javascript">
+/*-- Sign in Button Shortcut 설정--*/
+shortcut.add("Enter", function() {
+	SolutionCreate(); //2014-04-18_shkwak
+});  
+
 var pre_content; //수정 전 content base64 값
 
 function GetFileList()
@@ -108,24 +115,29 @@ function SolutionCreate()
 		data: JSON.stringify(cmds),
 		contentType: "application/json;charset=utf-8",
 		success: function (data) {
-			alert(fileName[i] + " FileCreate complete!");			
+			//alert(fileName[i] + " FileCreate complete!");	
+			//box.value += fileName[i] + " is created. \n";			
 		},
 		error: function (x, y, z) {
-			alert(x + "\n" + y + "\n" + z);
+			alert(x + " " + y + " : " + z + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
 			//alert("동일한 Solution이 존재합니다.");
 		}
 	});
 	
 //	}
-	var timer = setTimeout('SolutionCreate()',200);
+	
+	var timer = setTimeout('SolutionCreate()',500); //200	
 	i++;
 	//alert(i);
 	if (i==4)
 	{	
 		i = 0;
-		var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
+		//var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
+		var text = "https://github.com/" + owner + "/" + repo + "/tree/master/" + solutionName; //api, repos, contents 항목 삭제!, tree/master/ 추가★
 		var box = document.getElementById('box_result');
-		box.value = text;
+		box.value = text + "\n";
+		//box.value = solutionName + " 솔루션 파일이 생성되었습니다.\n" + text + "\n";
+		//box.innerHTML = "<a href='" + text + "'>" + text; //2014-04-18, result report : text -> link //x
 		clearTimeout(timer);		
 	}
 
@@ -153,72 +165,10 @@ function SigninCheck()
 	}
 }
 
+var ShowHide_status = false; 
+
 </script>
-<style>
-body
-{
-    font-family: 'Segoe UI' , Verdana, Helvetica, Sans-Serif;
-    font-size: 12pt;    
-    background-color: white;
-    color: #424242;
-	position: relative;
-    margin: 0px auto 0px auto;
-	/*
-	//height: 100%;
-    //min-width: 960px;
-    //max-width: 1080px;
-	*/
-    padding: 0px 20px 0px 20px;
-}
 
-.button
-{
-	font-size: 12px!important;	
-	/*font-family: 'Open Sans',sans-serif!important;*/
-	background-image: none!important;
-	background-color: #99ccff;/*#eaeff2!important;*/
-	color: #fff; /*#4d4e53!important;*/
-	padding: .35em .75em .2em;
-	border: 0;
-	-moz-border-radius: .2em;
-	-webkit-border-radius: .2em;
-	border-radius: 4px!important;
-	-webkit-box-shadow: inset 0 -1px #bbbfc2;
-	-moz-box-shadow: inset 0 -1px #bbbfc2;
-	-ms-box-shadow: inset 0 -1px #bbbfc2;
-	box-shadow: inset 0 -1px #bbbfc2;	
-
-	margin-top:5px;
-	cursor:pointer;
-}
-
-.button2
-{
-	font-size: 12px!important;	
-	/*font-family: 'Open Sans',sans-serif!important;*/
-	background-image: none!important;
-	background-color: #ccc!important;
-	color: #4d4e53!important;
-	padding: .35em .75em .2em;
-	border: 0;
-	-moz-border-radius: .2em;
-	-webkit-border-radius: .2em;
-	border-radius: 4px!important;
-	-webkit-box-shadow: inset 0 -1px #bbbfc2;
-	-moz-box-shadow: inset 0 -1px #bbbfc2;
-	-ms-box-shadow: inset 0 -1px #bbbfc2;
-	box-shadow: inset 0 -1px #bbbfc2;	
-
-	margin-top:5px;
-	cursor:pointer;
-}
-
-.margin_bottom
-{
-	margin-bottom:5px;
-{
-
-</style>
 </head>
 <body onLoad="SigninCheck()">
 	<div style="font-size:24px; color:#6699cc;">Create New Solution</div>
@@ -227,11 +177,14 @@ body
 	&nbsp; &nbsp; &nbsp; <span style="font-size:12px; color:">GitHub Repository에 새로운 솔루션을 생성합니다.<br>
 	&nbsp; &nbsp; &nbsp; &nbsp; 생성할 솔루션명을 입력하세요.<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Name &nbsp;: &nbsp;
-	<input type="text" id="solutionName" style="font-size:11px; width:210px" placeholder="ex) my_solution">&nbsp;&nbsp;</span>
-	<input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;">&nbsp;
-	<input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;">&nbsp;
+	<input type="text" id="solutionName" style="font-size:11px; width:210px" placeholder="ex) my_solution" spellcheck="false">&nbsp;
+	<span id="gitUserRepo" style="display:none;">
+	gitUser <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;" spellcheck="false">&nbsp;
+	gitRepo <input type="text" id="gitRepo" value="ROStest1" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
+	</span>
+	<input type="image" src="./img/settings-1.png" onclick="ShowHide();" style="vertical-align:middle;"/>
 	<br>
-	&nbsp; &nbsp; &nbsp; 
+	&nbsp; &nbsp; &nbsp; </span>
 	<input type="button" id="" value="Create new solution" onclick="SolutionCreate();" class="button" title="솔루션 파일을 생성합니다."/>&nbsp; 
 	<span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 솔루션 생성이 가능합니다.</span>	
 	<input type="button" id="signin" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;<br><br>
@@ -246,13 +199,14 @@ body
 	
 	<div>Result Report<br><span style="font-size:12px;" >
 	&nbsp; &nbsp; &nbsp; &nbsp; 솔루션 생성 결과를 보여줍니다.<br>
-	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="5" title="source"></textarea></span><br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="5" title="source" spellcheck="false"></textarea>
+	</span><br>
 	</div><br>
 	
 	<div>Other Page Link<br><span style="font-size:12px;" >
 	&nbsp; &nbsp; &nbsp; &nbsp; 이동하고자 하는 페이지 버튼을 클릭하면 해당 페이지로 이동합니다..<br>
 	&nbsp; &nbsp; &nbsp; &nbsp; 
-	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='gitAPI.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Solution Manager', top.document.getElementById('pageTitle').innerHTML='Solution Configuration Manager';" value="Solution Manager" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='NewSolution.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Solution Manager', top.document.getElementById('pageTitle').innerHTML='Solution Configuration Manager';" value="Solution Manager" class="button2"/>&nbsp;
 	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Webgraphviz.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', top.document.getElementById('pageTitle').innerHTML='Data Visualizer';" value="Data Visualizer" class="button2"/>&nbsp;
 	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Scheduler.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', top.document.getElementById('pageTitle').innerHTML='Service Scheduler';" value="Service Scheduler" class="button2"/>&nbsp;
 	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='TemplateEdit.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Template Editor', top.document.getElementById('pageTitle').innerHTML='Template Editor';" value="Template Editor" class="button2"/>&nbsp;
@@ -262,96 +216,13 @@ body
 
 <!-- <textarea id="graphviz_data" wrap=on style="width:100%;" rows=14></textarea> display:none;-->
 <!-- concert.launch -->
-<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
-PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
-</textarea>
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvIj4KICAgICAgICA8YXJnIG5hbWU9ImNvbmNlcnRfbmFtZSIgdmFsdWU9IiIvPgogICAgICAgIDxhcmcgbmFtZT0ic2VydmljZXMiIHZhbHVlPSIiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9IiIvPgogICAgICAgIDxhcmcgbmFtZT0iY29uZHVjdG9yX2xvY2FsX2NsaWVudHNfb25seSIgdmFsdWU9IiIvPgogICAgICAgIDxhcmcgbmFtZT0iYXV0b19lbmFibGVfc2VydmljZXMiIHZhbHVlPSIiLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=</textarea>
 <!-- solution.services -->
-<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
-LSByZXNvdXJjZToKICBvdmVycmlkZToKICAgIHByaW9yaXR5OgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgbmFtZToKICAgIGRlc2NyaXB0aW9uOgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgZGVzY3JpcHRpb246Ci0gcmVzb3VyY2U6Cg==
-</textarea>
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">LSByZXNvdXJjZToKICBvdmVycmlkZToKICAgIHByaW9yaXR5OgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgbmFtZToKICAgIGRlc2NyaXB0aW9uOgotIHJlc291cmNlOgogIG92ZXJyaWRlOgogICAgZGVzY3JpcHRpb246Ci0gcmVzb3VyY2U6Cg==</textarea>
 <!-- package.xml -->
-<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
-PHBhY2thZ2U+CiAgPG5hbWU+PC9uYW1lPgogIDx2ZXJzaW9uPjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+PC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iIj48L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+PC9hdXRob3I+CgogIDxidWlsZHRvb2xfZGVwZW5kPmNhdGtpbjwvYnVpbGR0b29sX2RlcGVuZD4KICA8cnVuX2RlcGVuZD48L3J1bl9kZXBlbmQ+CiAKPC9wYWNrYWdlPgoK
-</textarea>
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">PHBhY2thZ2U+CiAgPG5hbWU+PC9uYW1lPgogIDx2ZXJzaW9uPjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+PC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iIj48L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+PC9hdXRob3I+CgogIDxidWlsZHRvb2xfZGVwZW5kPmNhdGtpbjwvYnVpbGR0b29sX2RlcGVuZD4KICA8cnVuX2RlcGVuZD48L3J1bl9kZXBlbmQ+CiAKPC9wYWNrYWdlPgoK</textarea>
 <!-- CMakeLists.txt -->
-<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
-IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdCgpCgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCiMgQ2F0a2luCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmZpbmRfcGFja2FnZShjYXRraW4gUkVRVUlSRUQpCmNhdGtpbl9wYWNrYWdlKCkK
-</textarea>
-
-<!-- <BUTTON id="sample_0_btn">Sample 0</BUTTON>
-
-<SCRIPT language="javascript" type="text/javascript" src="./js/jquery.min.js"></SCRIPT>
-<SCRIPT language="javascript" type="text/javascript" src="./js/site_solution.js"></SCRIPT> -->
-
-
-<!------------------------------------------------------------------>
-<!------------------------- SAMPLE CODE ---------------------------->
-<!------------------------------------------------------------------>
-<script id="sample1_text" >
-<launch>
-    <include file="$(find concert_master)/launch/concert_master.launch">
-        <arg name="concert_name" value="Concert Tutorial"/>
-        <arg name="services" value="concert_tutorial/tutorial.services"/>
-        <arg name="conductor_auto_invite" value="true" />
-        <arg name="conductor_local_clients_only" value="true" />
-        <arg name="auto_enable_services" value="true" />
-        <arg name="scheduler_type" value="compatibility_tree"/>
-    </include>
-</launch>
-</script>
-<!------------------------------------------------------------------>
-<script id="sample2_text" >
-- resource: rocon_service_turtlesim/turtlesim
-  override:
-    priority: 3
-- resource: rocon_service_admin/admin
-  override:
-    name: awesome admin
-    description: This is cool
-- resource: turtle_concert/turtle_pond
-  override:
-    description: pon-dang pon-dang dol eul duun ji ja
-- resource: chatter_concert/chatter
-</script>
-<!------------------------------------------------------------------>
-<script id="sample3_text" >
-<package>
-  <name>concert_tutorial</name>
-  <version>0.5.6</version>
-  <description>
-    Introductory soft tutorial for the rocon concert.
-  </description>
-  <maintainer email="d.stonier@gmail.com">Daniel Stonier</maintainer>
-  <license>BSD</license>
-  <author>Daniel Stonier</author>
-
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <run_depend>concert_master</run_depend>
-  <run_depend>rocon_service_admin</run_depend>
-  <run_depend>rocon_service_turtlesim</run_depend>
-  <run_depend>rocon_app_manager</run_depend>
-  <run_depend>rocon_apps</run_depend>
-  <run_depend>rospy_tutorials</run_depend>
-  <run_depend>zeroconf_avahi</run_depend> 
-</package>
-</script>
-<!------------------------------------------------------------------>
-<script id="sample4_text" >
-############################################################################
-# CMake
-############################################################################
-
-cmake_minimum_required(VERSION 2.8.3)
-project(concert_tutorial)
-
-############################################################################
-# Catkin
-############################################################################
-
-find_package(catkin REQUIRED)
-catkin_package()
-</script>
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdCgpCgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCiMgQ2F0a2luCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmZpbmRfcGFja2FnZShjYXRraW4gUkVRVUlSRUQpCmNhdGtpbl9wYWNrYWdlKCkK</textarea>
 
 <!------------------------------------------------------------------>
 </body>
