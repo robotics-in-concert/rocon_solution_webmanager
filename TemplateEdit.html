@@ -313,6 +313,8 @@ function saveThisValue()
 */	{
 		alert("입력값이 정상적으로 저장되었습니다.");
 	}
+
+	//console.log(document.all.li0.value); //0, why?
 }
 
 function SigninCheck()
@@ -375,6 +377,20 @@ function delElement(divName) //x
 
 	var subDiv = document.getElementById('subDiv');		
 	selectDiv.removeChild(subDiv);		
+}
+
+function overrideChange()
+{
+	document.all.override_value.value = "";
+
+	if (document.getElementById('override').value == "없음")
+	{
+		document.all.override_value.style.display = 'none';
+	}
+	else
+	{
+		document.all.override_value.style.display = 'inline';
+	}
 }
 
 function onloadFunc()
@@ -478,14 +494,14 @@ var resource_count = 0;
 	<!-- <input type="image" onclick="addDepend();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/> -->
 	<br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; override &nbsp;: &nbsp;
-	<select id="override" onchange="">
+	<select id="override" onchange="overrideChange()">
 		<option >없음</option>
 		<option value="name">name</option>
 		<option value="description">description</option>
 		<option value="priority">priority</option>
 		<!-- <option >사용자 입력</option> -->
 	</select>
-	<input type="text" id="override_value" style="font-size:11px; width:152px" placeholder="ex) ">&nbsp;
+	<input type="text" id="override_value" style="font-size:11px; width:152px; display:none;" placeholder="ex) ">&nbsp;
 	<input type="image" onclick="addresource();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/><br>
 	  <ul id="result_ul2">
 		

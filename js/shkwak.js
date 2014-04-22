@@ -1,10 +1,10 @@
-var data_type = new Array(); //["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]; //data[i].name 의 type_2014-04-14_shkwak, //솔루션 개수가 많아지면 배열 개수 문제가 발생할 듯 - 개선필요
-var data_type_sub = new Array(); //["", "", "", "", "", "", "", "", "", ""]; 
+var data_type = new Array();
+var data_type_sub = new Array();
 
 var cmake_str = ["############################################################################\n# CMake\n############################################################################\n\ncmake_minimum_required(VERSION 2.8.3)\nproject(", ")\n\n############################################################################\n# Catkin\n############################################################################\n\nfind_package(catkin REQUIRED)\ncatkin_package()"];
 var launch_str = ["<launch>\n    <include file=\"$(find concert_master)/", "\">\n        <arg name=\"concert_name\" value=\"", "\">\n        <arg name=\"services\" value=\"", "\">\n        <arg name=\"conductor_auto_invite\" value=\"", "\">\n        <arg name=\"conductor_local_clients_only\" value=\"", "\">\n        <arg name=\"auto_enable_services\" value=\"", "\">\n        <arg name=\"scheduler_type\" value=\"", "\"/>\n    </include>\n</launch>"];
 var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n",  "  <run_depend>", "</run_depend>\n","</package>"];
-var services_str = ["- resource: ", "\n  override: \n", "", "", "", "", ""];																																		//[7]															     //[8]  		 //[9]			   //[10]                                        
+var services_str = ["- resource: ", "\n  override: \n"];																																							//[7]															     //[8]  		 //[9]			   //[10]                                        
 
 function ViewSource()
 { 
@@ -32,9 +32,38 @@ function Edit_template(file)
 			document.all.box_result.value = str;
 			break;
 		case "services": //value : 4 + a개			
-			var value = [document.getElementById('resource1').value, document.getElementById('resource2').value, document.getElementById('override').value, document.getElementById('override_value').value];
-			var str = services_str[0] + value[0] + "/" + value[1] + services_str[1]  + "    " + value[2] + ": " + value[3]; 
-			document.all.box_result.value = str;
+			//var value = [document.getElementById('resource1').value, document.getElementById('resource2').value, document.getElementById('override').value, document.getElementById('override_value').value];
+			//var str = services_str[0] + value[0] + "/" + value[1] + services_str[1]  + "    " + value[2] + ": " + value[3]; 
+			var str_resouce = "";
+			for (var i=0;i<resource_count;i++)
+			{
+				var li_id = 'li'+i;
+				li = document.getElementById(li_id);
+
+				if (li == null)
+				{
+					continue;
+				}
+				else
+				{
+					var li_innerHTML = document.getElementById(li_id).innerHTML;					
+					var li_value = li_innerHTML.split('&amp;'); //innerHTML 구분자
+		
+					//console.log('li_innerHTML : ' + li_innerHTML);
+					console.log('li_value[2] : ' + li_value[2] + ', li_value[3] : ' + li_value[3]);
+					
+					if (li_value[3] == "")
+					{
+						str_resouce += services_str[0] + ": " + li_value[2] + "\n";
+					}
+					else
+					{
+						str_resouce += services_str[0] + ": " + li_value[2] + services_str[1] + "    " + li_value[3] + "\n";
+					}					
+				}
+				console.log('i : ' + i + ", id : " + li_id);				
+			}						
+			document.all.box_result.value = str_resouce;
 			break;
 		case "package": //value : 6 + a개																																																													  //[6]						
 			var value = [document.getElementById('packagename').value, document.getElementById('version').value, document.getElementById('description').value, document.getElementById('email').value, document.getElementById('maintainer').value, document.getElementById('license').value, document.getElementById('author').value]; //, document.getElementById('run_depend').value];
@@ -428,54 +457,36 @@ function delDepend(id)
 	}
 }
 
+/*--solutiion.resources--*/
 function addresource()
 {	//2014-04-22_shkwak
 	var resource1 = document.getElementById('resource1').value;
 	var resource2 = document.getElementById('resource2').value;
 	var override = document.getElementById('override').value;	
 	var override_value = document.getElementById('override_value').value;
-/*
-		for (var i=0;i<pre_depend_value.length;i++)
-		{
-			if (pre_depend_value[i] == depend_value)
-			{
-				//alert(i + ", " + pre_depend_value[i] + ", " + depend_value);
-				depend_pre_check = true;
-				break;
-			}
-		}		
+				
+	var ul = document.getElementById('result_ul2');
+	var new_li = document.createElement('li');
+	//new_li.id = "li_" + resource_count; //ok
+	new_li.setAttribute('id', 'li' + resource_count); //ok	
+	if (override == "없음")
+	{
+		new_li.innerHTML = "- resource : " + resource1 + "/" + resource2 + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + resource1 + "/" + resource2 + "&&'/>"; //[3]을 ""로 하기우해 && 두개사용!
+	}
+	else
+	{
+		new_li.innerHTML = "- resource : " + resource1 + "/" + resource2 + "<br>&nbsp; &nbsp;override : <br>&nbsp; &nbsp; &nbsp; " + override + " : " + override_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + resource1 + "/" + resource2 + "&" + override + ": " + override_value + "&'/>";
+	}
+	ul.appendChild(new_li);			
 
-		if (depend_pre_check)
-		{
-			alert('이미 등록된 run_depend 입니다!');
-			depend_pre_check = false;
-		}
-		else
-*/					
-			var ul = document.getElementById('result_ul2');
-
-			var new_li = document.createElement('li');
-			//new_li.id = "li_" + resource_count; //ok
-			new_li.setAttribute('id', 'li' + resource_count); //ok	
-			if (override == "없음")
-			{
-				new_li.innerHTML = "- resource: &nbsp;" + resource1 + "/" + resource2 + "&nbsp; <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&_'/>";
-			}
-			else
-			{
-				new_li.innerHTML = "- resource: &nbsp;" + resource1 + "/" + resource2 + "<br>&nbsp; &nbsp; override: <br>&nbsp; &nbsp; &nbsp; &nbsp; " + override + ": " + override_value + "&nbsp; <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&_'/>";
-			}
-			ul.appendChild(new_li);			
-
-			/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
-			//pre_depend_value[resource_count] = depend_value;
-			//depend_pre_check = false;
-			//alert(resource_count + ", " + pre_depend_value[resource_count] + ", " + depend_value);
-			resource_count++;
-			
-			//var ul = document.getElementById('result_ul');
-			//alert(ul);
+	/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
+	//pre_depend_value[resource_count] = depend_value;
+	//depend_pre_check = false;
+	//alert(resource_count + ", " + pre_depend_value[resource_count] + ", " + depend_value);
+	resource_count++;
 		
+	//var ul = document.getElementById('result_ul');
+	//alert(ul);		
 }
 
 function delresource(id)
@@ -484,7 +495,7 @@ function delresource(id)
 	var li_id2 = id.split('&'); //li0 ; ok - 채택!!
 
 	//alert(li_id2[1]);
-	var ul = document.getElementById('result_ul');
+	var ul = document.getElementById('result_ul2');
 	var li = document.getElementById(li_id2[1]);	
 	//alert(li_id2[2]);
 	ul.removeChild(li);

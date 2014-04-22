@@ -4,25 +4,150 @@
 <META content="IE=edge" http-equiv="X-UA-Compatible">
 <TITLE>Webgraphviz</TITLE>
 <META content="text/html; charset=UTF-8" http-equiv=Content-Type>
+<link rel="stylesheet" href="./css/shkwak.css" type="text/css" />
 <script language="JavaScript" type="text/javascript" src="./js/eventemitter2.js"></script>
 <script language="JavaScript" type="text/javascript" src="./js/roslib.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shkwak.js"></script>
 <script language="JavaScript" type="text/javascript">
-  // Connecting to ROS
-  // -----------------
-  var ros = new ROSLIB.Ros();
 
-  // If there is an error on the backend, an 'error' emit will be emitted.
-  ros.on('error', function(error) {
-    console.log(error);
-  });
+var ShowHide_status = false;
+ 
+function dotgraphName(graphName)
+{
+	document.all.dotgraphName.value = graphName;
 
-  // Find out exactly when we made a connection.
-  ros.on('connection', function() {
-    console.log('Connection made!');
-  });
+	/*--ConnectROS--*/
+	//ConnectROS();
+/*
+	if (graphName == "gateway_dotgraph")
+	{
+		graph_timer = setTimeout('Get_gateway_dotgraph()', 5000);
+	}
+	else
+	{
+		graph_timer = setTimeout('Get_conductor_dotgraph()', 5000);
+	}
+*/
+}
+</script>
 
-  // Create a connection to the rosbridge WebSocket server.
-  ros.connect('ws://192.168.0.98:9090');
+<STYLE>
+BUTTON 
+{
+	CURSOR:pointer; 
+	FONT-SIZE:70%; 
+	FONT-FAMILY:arial; 
+	MARGIN:4px 5px 4px 0px;  
+}
+</STYLE>
+
+</HEAD>
+
+<BODY onload="">
+<div style="font-size:24px; color:#6699cc;">dotgraph Data Visualizer &nbsp; &nbsp;
+<span style="font-size:12px;">master_URL</span><span id="gitUserRepo" style="font-size:12px; color:; display:none;">
+<input type="text" id="master_URL" value="ws://192.168.0.98:9090" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
+</span>
+<input type="image" src="./img/settings-1.png" onclick="ShowHide('URL');" style="vertical-align:middle;" title="URL 입력창이 나타납니다."/>	
+<!-- <input type="image" src="./img/circle-left.png" onclick="location.reload();" style="vertical-align:middle;" title="dotgraph 데이터를 다시 불러옵니다."/> -->
+<input type="button" onclick="View_dotgraph('real')" value="Real dotgraph" class="button"/>
+<input type="button" onclick="View_dotgraph('sample')" value="Sample dotgraph" class="button"/>
+</div>
+<hr><br>	
+
+<div id="Sample_dotgraph" style="display:none;">
+<!-- <A href="http://www.graphviz.org/"> -->
+Enter your dotgraph data into the Text Area:<br>
+<BUTTON disabled id="sample_0_btn">Sample 0</BUTTON>
+<BUTTON disabled id="sample_1_btn">Sample 1</BUTTON>
+<BUTTON disabled id="sample_2_btn">Sample 2</BUTTON>
+<BUTTON disabled id="sample_3_btn">Sample 3</BUTTON>
+<BUTTON disabled id="sample_4_btn">Sample 4</BUTTON>
+<BUTTON disabled id="sample_5_btn">Sample 5</BUTTON> <BR>
+<!-- <TEXTAREA id=graphviz_data wrap=on rows=14 cols=100>  -->
+<textarea id="graphviz_data" wrap=on style="width:100%;" rows="10" spellcheck="false">
+digraph graphname {
+	graph [rankdir=LR, rank=same];
+	node [label="\N"];
+	graph [bb="0,0,370,252"];
+	concert_conductor [label=concert_conductor, URL=concert_conductor, shape=ellipse, pos="101,126", width="2.8056", height="0.51389"];
+	dude1 [label=dude1, URL=dude1, shape=ellipse, pos="320,234", width="1.1389", height="0.51389"];
+	dudette [label=dudette, URL=dudette, shape=ellipse, pos="320,180", width="1.3889", height="0.51389"];
+	kobuki [label=kobuki, URL=kobuki, shape=ellipse, pos="320,126", width="1.2222", height="0.51389"];
+	dude [label=dude, URL=dude, shape=ellipse, pos="320,72", width="0.97222", height="0.51389"];
+	guimul [label=guimul, URL=guimul, shape=ellipse, pos="320,18", width="1.2222", height="0.51389"];
+	concert_conductor -> dude1 [label=local, pos="e,292.4,220.39 135.7,143.11 175.98,162.98 242.13,195.6 283.26,215.88", lp="236,208"];
+	concert_conductor -> dudette [label=local, pos="e,278.72,169.82 160.26,140.61 194.25,148.99 236.47,159.4 268.97,167.42", lp="236,171"];
+	concert_conductor -> kobuki [label=local, pos="e,275.87,126 202.17,126 224.11,126 246.51,126 265.8,126", lp="236,135"];
+	concert_conductor -> dude [label=local, pos="e,287.81,79.938 160.26,111.39 197.46,102.22 244.53,90.61 277.91,82.378", lp="236,104"];
+	concert_conductor -> guimul [label=local, pos="e,291.53,31.905 135.09,109.05 158.87,97.231 191.35,81.12 220,67 240.62,56.836 263.66,45.543 282.42,36.361", lp="236,76"];
+}
+</textarea> 
+
+<BUTTON disabled id="generate_btn" style="FONT-SIZE:120%" class="button_large"><B>Loading...</B> </BUTTON>
+</div>
+
+<div id="Real_dotgraph" style="">
+Click the button want to see the dotgraph:&nbsp; 
+<input type="text" id="dotgraphName" value="" readonly style="width:120px; color:#6699cc;" spellcheck="false">&nbsp;<br>
+<span style="display:none;"> 
+gateway_dotgraph<br>
+<textarea id="dotgraph_data1" style="width:100%;" rows="5" spellcheck="false"></textarea>
+conductor_dotgraph<br>
+<textarea id="dotgraph_data2" style="width:100%;" rows="5" spellcheck="false"></textarea>
+</span>
+
+<BUTTON id="generate_btn1" style="FONT-SIZE:120%" class="button_large" onclick="dotgraphName('gateway_dotgraph')">gateway_dotgraph</BUTTON>
+<BUTTON id="generate_btn2" style="FONT-SIZE:120%" class="button_large" onclick="dotgraphName('conductor_dotgraph')">conductor_dotgraph</BUTTON>
+<!-- Target for dynamic svg generation -->
+</div>
+
+<!-- dotgraph display area -->
+<div id="graphviz_svg_div" style="height:40%;"></div>
+
+<p></p>
+<div>Other Page Link<br>
+	<span style="font-size:12px;">
+	&nbsp; &nbsp; &nbsp; &nbsp; 이동하고자 하는 페이지 버튼을 클릭하면 해당 페이지로 이동합니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; 
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='NewSolution.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Solution Manager', top.document.getElementById('pageTitle').innerHTML='Solution Configuration Manager';" value="Solution Manager" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Webgraphviz.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', top.document.getElementById('pageTitle').innerHTML='Data Visualizer';" value="Data Visualizer" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Scheduler.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', top.document.getElementById('pageTitle').innerHTML='Service Scheduler';" value="Service Scheduler" class="button2"/>&nbsp;
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='TemplateEdit.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Template Editor', top.document.getElementById('pageTitle').innerHTML='Template Editor';" value="Template Editor" class="button2"/>&nbsp;
+	<br>
+	</span>
+	</div><br>
+
+<script>
+/*-- ROSBridge --*/
+var ros = "";
+//var graph_timer = "";
+
+//function ConnectROS()
+{
+	var master_URL = document.getElementById('master_URL').value; //'ws://192.168.0.98:9090'; //
+	// Connecting to ROS
+	// -----------------
+	ros = new ROSLIB.Ros();
+
+	// If there is an error on the backend, an 'error' emit will be emitted.
+	ros.on('error', function(error) {
+		console.log(error);
+		alert("WebSocket connection to \'" + master_URL + "\' failed : Connection closed before receiving a handshake response."); //Error Message
+	});
+
+	// Find out exactly when we made a connection.
+	ros.on('connection', function() {
+		console.log('Connection made!');
+	});
+
+	// Create a connection to the rosbridge WebSocket server.
+	// master_URL 
+	ros.connect(master_URL); //'ws://192.168.0.98:9090'); //98
+
+	//Get_gateway_dotgraph();
+	//Get_conductor_dotgraph();
+ }
 
 //  // Publishing a Topic
 //  // ------------------
@@ -54,205 +179,47 @@
 
   //Subscribing to a Topic
   //----------------------
+//function Get_gateway_dotgraph()
+//{
+	var gateway_dotgraph = new ROSLIB.Topic({
+		ros : ros,
+		name : '/concert/gateway/dotgraph',
+		messageType : 'std_msgs/String'
+	});
 
-  // Like when publishing a topic, we first create a Topic object with details of the topic's name 
-  // and message type. Note that we can call publish or subscribe on the same topic object.
-  var service_list = new ROSLIB.Topic({
-    ros : ros,
-    name : '/concert/service/list',
-    messageType : 'concert_msgs/Services'
-  });
+	gateway_dotgraph.subscribe(function(message) {
+		console.log('Received message on ' + gateway_dotgraph.name + ': ' + message.data);
+		document.getElementById("dotgraph_data1").value = message.data;
 
-  // Then we add a callback to be called every time a message is published on this topic.
-//  service_list.subscribe(function(message) {
-//    console.log('Received message on ' + service_list.name + ': ' + message.data);
-//
-//    // If desired, we can unsubscribe from the topic as well.
-//    service_list.unsubscribe();
-//  });
+		gateway_dotgraph.unsubscribe();
+	});
 
-  var gateway_dotgraph = new ROSLIB.Topic({
-    ros : ros,
-    name : '/concert/gateway/dotgraph',
-    messageType : 'std_msgs/String'
-  });
+	//clearTimeout(graph_timer);
+//}
 
-  gateway_dotgraph.subscribe(function(message) {
-    console.log('Received message on ' + gateway_dotgraph.name + ': ' + message.data);
-	/*--textarea dp--*/
-	document.getElementById("dotgraph_data1").value = message.data;
+//function Get_conductor_dotgraph()
+//{
+	var conductor_dotgraph = new ROSLIB.Topic({
+		ros : ros,
+		name : '/concert/conductor/concert_clients_dotgraph',
+		messageType : 'std_msgs/String'
+	});
 
-    gateway_dotgraph.unsubscribe();
-  });
+	conductor_dotgraph.subscribe(function(message) {
+		console.log('Received message on ' + conductor_dotgraph.name + ': ' + message.data);
+		document.getElementById("dotgraph_data2").value = message.data;
 
-  var conductor_dotgraph = new ROSLIB.Topic({
-    ros : ros,
-    name : '/concert/conductor/concert_clients_dotgraph',
-    messageType : 'std_msgs/String'
-  });
+		conductor_dotgraph.unsubscribe();
+	});
 
-  conductor_dotgraph.subscribe(function(message) {
-    console.log('Received message on ' + conductor_dotgraph.name + ': ' + message.data);
-	/*--textarea dp--*/
-	document.getElementById("dotgraph_data2").value = message.data;
-
-    conductor_dotgraph.unsubscribe();
-  });
-
-//  // Calling a service
-//  // -----------------
-//
-//  // First, we create a Service client with details of the service's name and service type.
-//  var serviceEnable = new ROSLIB.Service({
-//    ros : ros,
-//    name : '/concert/service/enable',
-//    serviceType : 'rospy_tutorials/AddTwoInts'
-//  });
-//
-//  // Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
-//  // fields defined in the rospy_tutorials AddTwoInts.srv file.
-//  var request = new ROSLIB.ServiceRequest({
-//    A : 1,
-//    B : 2
-//  });
-//
-//  // Finally, we call the /concert/service/enable service and get back the results in the callback. The result
-//  // is a ROSLIB.ServiceResponse object.
-//  serviceEnable.callService(request, function(result) {
-//    console.log('Result for service call on ' + serviceEnable.name + ': ' + result.sum);
-//  });
-
-//  // Setting a param value
-//  // ---------------------
-//
-//  ros.getParams(function(params) {
-//    console.log(params);
-//  });
-//
-//  // First, we create a Param object with the name of the param.
-//  var maxVelX = new ROSLIB.Param({
-//    ros : ros,
-//    name : 'max_vel_y'
-//  });
-//
-//  //Then we set the value of the param, which is sent to the ROS Parameter Server.
-//  maxVelX.set(0.8);
-//  maxVelX.get(function(value) {
-//    console.log('MAX VAL: ' + value);
-//  });
-//
-//  // Getting a param value
-//  // ---------------------
-//
-//  var favoriteColor = new ROSLIB.Param({
-//    ros : ros,
-//    name : 'favorite_color'
-//  });
-//
-//  favoriteColor.set('red');
-//  favoriteColor.get(function(value) {
-//    console.log('My robot\'s favorite color is ' + value);
-//  });
+	//clearTimeout(graph_timer);
+//}
 </script>
 
-</HEAD>
-
-<BODY>
-<STYLE>
-BUTTON 
-{
-	CURSOR:pointer; 
-	FONT-SIZE:70%; 
-	FONT-FAMILY:arial; 
-	MARGIN:4px 5px 4px 0px;  
-}
-
-body
-{
-    font-family: 'Segoe UI' , Verdana, Helvetica, Sans-Serif;
-    font-size: 12pt;
-    //height: 100%;
-    background-color: white;
-    color: #424242;
-	position: relative;
-    margin: 0px auto 0px auto;
-    //min-width: 960px;
-    //max-width: 1080px;
-    padding: 0px 40px 0px 40px;
-}
-
-.button_large
-{
-	font-size: 20px!important;	
-	/*font-family: 'Open Sans',sans-serif!important;*/
-	background-image: none!important;
-	background-color: #eaeff2!important;
-	color: #4d4e53!important;
-	padding: .35em .75em .2em;
-	border: 0;
-	-moz-border-radius: .2em;
-	-webkit-border-radius: .2em;
-	border-radius: 4px!important;
-	-webkit-box-shadow: inset 0 -1px #bbbfc2;
-	-moz-box-shadow: inset 0 -1px #bbbfc2;
-	-ms-box-shadow: inset 0 -1px #bbbfc2;
-	box-shadow: inset 0 -1px #bbbfc2;
-}
-
-</STYLE>
-
-<!-- <H2>WebGraphviz is --> 
-<!-- <A href="http://www.graphviz.org/"> -->
-<!-- Graphviz</A> in the Browser</H2> -->
-Enter your dotgraph data into the Text Area: 
-<!-- <P style="FONT-SIZE: 75%">(Your Graphviz data is private and never harvested)</P> -->
-<P></P>
-
-<BUTTON disabled id="sample_0_btn">Sample 0</BUTTON>
-<BUTTON disabled id="sample_1_btn">Sample 1</BUTTON>
-<BUTTON disabled id="sample_2_btn">Sample 2</BUTTON>
-<BUTTON disabled id="sample_3_btn">Sample 3</BUTTON>
-<BUTTON disabled id="sample_4_btn">Sample 4</BUTTON>
-<BUTTON disabled id="sample_5_btn">Sample 5</BUTTON> <BR>
-<!-- <TEXTAREA id=graphviz_data wrap=on rows=14 cols=100>  -->
-<textarea id="graphviz_data" wrap=on style="width:100%;" rows="12">
-digraph graphname {
-	graph [rankdir=LR, rank=same];
-	node [label="\N"];
-	graph [bb="0,0,370,252"];
-	concert_conductor [label=concert_conductor, URL=concert_conductor, shape=ellipse, pos="101,126", width="2.8056", height="0.51389"];
-	dude1 [label=dude1, URL=dude1, shape=ellipse, pos="320,234", width="1.1389", height="0.51389"];
-	dudette [label=dudette, URL=dudette, shape=ellipse, pos="320,180", width="1.3889", height="0.51389"];
-	kobuki [label=kobuki, URL=kobuki, shape=ellipse, pos="320,126", width="1.2222", height="0.51389"];
-	dude [label=dude, URL=dude, shape=ellipse, pos="320,72", width="0.97222", height="0.51389"];
-	guimul [label=guimul, URL=guimul, shape=ellipse, pos="320,18", width="1.2222", height="0.51389"];
-	concert_conductor -> dude1 [label=local, pos="e,292.4,220.39 135.7,143.11 175.98,162.98 242.13,195.6 283.26,215.88", lp="236,208"];
-	concert_conductor -> dudette [label=local, pos="e,278.72,169.82 160.26,140.61 194.25,148.99 236.47,159.4 268.97,167.42", lp="236,171"];
-	concert_conductor -> kobuki [label=local, pos="e,275.87,126 202.17,126 224.11,126 246.51,126 265.8,126", lp="236,135"];
-	concert_conductor -> dude [label=local, pos="e,287.81,79.938 160.26,111.39 197.46,102.22 244.53,90.61 277.91,82.378", lp="236,104"];
-	concert_conductor -> guimul [label=local, pos="e,291.53,31.905 135.09,109.05 158.87,97.231 191.35,81.12 220,67 240.62,56.836 263.66,45.543 282.42,36.361", lp="236,76"];
-}
-</textarea> 
-<!-- gateway_dotgraph -->
-<textarea id="dotgraph_data1" style="width:100%; display:none;" rows="5" ></textarea>
-<!-- conductor_dotgraph -->
-<textarea id="dotgraph_data2" style="width:100%; display:none;" rows="5" ></textarea>
-
-<P>
-<BUTTON disabled id="generate_btn" style="FONT-SIZE:120%" class="button_large"><B>Loading...</B> <!-- The "update"  --></BUTTON>
-<BUTTON id="generate_btn1" style="FONT-SIZE:120%" class="button_large">dotgraph 1<!-- The "update"  --></BUTTON>
-<BUTTON id="generate_btn2" style="FONT-SIZE:120%" class="button_large">dotgraph 2<!-- The "update"  --></BUTTON>
-<!-- Target for dynamic svg generation -->
-<div id="graphviz_svg_div"></div>
 <!-- Defer loading of javascript by placing these tags at the tail end of the document -->
-<SCRIPT language="javascript" type="text/javascript" src="./js/jquery.min.js"></SCRIPT>
-<SCRIPT language="javascript" type="text/javascript" src="./js/viz.js"></SCRIPT>
-<SCRIPT language="javascript" type="text/javascript" src="./js/site.js"></SCRIPT>
-
-
-
-
-
+<SCRIPT language="javascript" type="text/javascript" src="./js/jquery.min.js"></SCRIPT>
+<SCRIPT language="javascript" type="text/javascript" src="./js/viz.js"></SCRIPT>
+<SCRIPT language="javascript" type="text/javascript" src="./js/site.js"></SCRIPT>
 
 
 <!------------------------------------------------------------------>
