@@ -1,10 +1,10 @@
-var data_type = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]; //data[i].name 의 type_2014-04-14_shkwak, //솔루션 개수가 많아지면 배열 개수 문제가 발생할 듯 - 개선필요
-var data_type_sub = ["", "", "", "", "", "", "", "", "", ""]; 
+var data_type = new Array(); //["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]; //data[i].name 의 type_2014-04-14_shkwak, //솔루션 개수가 많아지면 배열 개수 문제가 발생할 듯 - 개선필요
+var data_type_sub = new Array(); //["", "", "", "", "", "", "", "", "", ""]; 
 
 var cmake_str = ["############################################################################\n# CMake\n############################################################################\n\ncmake_minimum_required(VERSION 2.8.3)\nproject(", ")\n\n############################################################################\n# Catkin\n############################################################################\n\nfind_package(catkin REQUIRED)\ncatkin_package()"];
 var launch_str = ["<launch>\n    <include file=\"$(find concert_master)/", "\">\n        <arg name=\"concert_name\" value=\"", "\">\n        <arg name=\"services\" value=\"", "\">\n        <arg name=\"conductor_auto_invite\" value=\"", "\">\n        <arg name=\"conductor_local_clients_only\" value=\"", "\">\n        <arg name=\"auto_enable_services\" value=\"", "\">\n        <arg name=\"scheduler_type\" value=\"", "\"/>\n    </include>\n</launch>"];
-var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n  <run_depend>", "</run_depend>\n</package>", "", "", "", "", "", ""];
-var services_str = ["- resource: ", "\n  override: \n", "", "", "", "", ""];
+var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n",  "  <run_depend>", "</run_depend>\n","</package>"];
+var services_str = ["- resource: ", "\n  override: \n", "", "", "", "", ""];																																		//[7]															     //[8]  		 //[9]			   //[10]                                        
 
 function ViewSource()
 { 
@@ -36,10 +36,35 @@ function Edit_template(file)
 			var str = services_str[0] + value[0] + "/" + value[1] + services_str[1]  + "    " + value[2] + ": " + value[3]; 
 			document.all.box_result.value = str;
 			break;
-		case "package": //value : 6 + a개
-			var value = [document.getElementById('packagename').value, document.getElementById('version').value, document.getElementById('description').value, document.getElementById('email').value, document.getElementById('maintainer').value, document.getElementById('license').value, document.getElementById('author').value, document.getElementById('run_depend').value];
-			var str = package_str[0] + value[0] + package_str[1] + value[1] + package_str[2] + value[2] + package_str[3] + value[3] + package_str[4] + value[4] + package_str[5] + value[5] + package_str[6] + value[6] + package_str[7] + value[7] + package_str[8]; 
-			document.all.box_result.value = str;
+		case "package": //value : 6 + a개																																																													  //[6]						
+			var value = [document.getElementById('packagename').value, document.getElementById('version').value, document.getElementById('description').value, document.getElementById('email').value, document.getElementById('maintainer').value, document.getElementById('license').value, document.getElementById('author').value]; //, document.getElementById('run_depend').value];
+			var str = package_str[0] + value[0] + package_str[1] + value[1] + package_str[2] + value[2] + package_str[3] + value[3] + package_str[4] + value[4] + package_str[5] + value[5] + package_str[6] + value[6] + package_str[7];
+			var str_depend = "";
+			for (var i=0;i<depend_count;i++)
+			{
+				var li_id = 'li'+i;
+				li = document.getElementById(li_id);
+
+				if (li == null)
+				{
+					//alert('no exist!');
+					continue;
+				}
+				else
+				{
+					//alert('exist!');
+					var li_innerHTML = document.getElementById(li_id).innerHTML;					
+					var li_value = li_innerHTML.split('&amp;'); //innerHTML 구분자
+		
+					console.log('li_innerHTML : ' + li_innerHTML);
+					console.log('li_value[2] : ' + li_value[2]);
+					
+					str_depend += package_str[8] + li_value[2] + package_str[9];               					
+				}
+				console.log('i : ' + i + ", id : " + li_id);				
+			}			
+			var stt_package_end = package_str[10]; 
+			document.all.box_result.value = str + str_depend + stt_package_end;
 			break;
 		case "CMakeLists": //value : 1개
 			var value = document.getElementById('projectName').value;	
@@ -324,6 +349,7 @@ function changeList2()
 	}
 }
 
+/*--package.xml--*/
 function addDepend()
 {	//2014-04-17_shkwak
 	var depend_value = document.getElementById('run_depend').value;
@@ -362,8 +388,9 @@ function addDepend()
 			var new_li = document.createElement('li');
 			//new_li.id = "li_" + depend_count; //ok
 			new_li.setAttribute('id', 'li' + depend_count); //ok			
+			//new_li.setAttribute('value', depend_value); //2014-04-22_shkwak, value 값은 생성되는데 get이 안됨, why?		
 			//new_li.value = "test li"; //x
-			new_li.innerHTML = "&nbsp; run_depend &nbsp;: &nbsp;" + depend_value + "&nbsp; <input type='image' src='./img/icon_minus_2.png' onclick='delDepend(this.id);' style='vertical-align:middle;' id='input&li" + depend_count + "&" + depend_value + "'/>";
+			new_li.innerHTML = " run_depend : " + depend_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delDepend(this.id);' style='vertical-align:middle;' id='input&li" + depend_count + "&" + depend_value + "&'/>";
 			ul.appendChild(new_li);			
 
 			/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
@@ -399,4 +426,78 @@ function delDepend(id)
 			break;
 		}
 	}
+}
+
+function addresource()
+{	//2014-04-22_shkwak
+	var resource1 = document.getElementById('resource1').value;
+	var resource2 = document.getElementById('resource2').value;
+	var override = document.getElementById('override').value;	
+	var override_value = document.getElementById('override_value').value;
+/*
+		for (var i=0;i<pre_depend_value.length;i++)
+		{
+			if (pre_depend_value[i] == depend_value)
+			{
+				//alert(i + ", " + pre_depend_value[i] + ", " + depend_value);
+				depend_pre_check = true;
+				break;
+			}
+		}		
+
+		if (depend_pre_check)
+		{
+			alert('이미 등록된 run_depend 입니다!');
+			depend_pre_check = false;
+		}
+		else
+*/					
+			var ul = document.getElementById('result_ul2');
+
+			var new_li = document.createElement('li');
+			//new_li.id = "li_" + resource_count; //ok
+			new_li.setAttribute('id', 'li' + resource_count); //ok	
+			if (override == "없음")
+			{
+				new_li.innerHTML = "- resource: &nbsp;" + resource1 + "/" + resource2 + "&nbsp; <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&_'/>";
+			}
+			else
+			{
+				new_li.innerHTML = "- resource: &nbsp;" + resource1 + "/" + resource2 + "<br>&nbsp; &nbsp; override: <br>&nbsp; &nbsp; &nbsp; &nbsp; " + override + ": " + override_value + "&nbsp; <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&_'/>";
+			}
+			ul.appendChild(new_li);			
+
+			/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
+			//pre_depend_value[resource_count] = depend_value;
+			//depend_pre_check = false;
+			//alert(resource_count + ", " + pre_depend_value[resource_count] + ", " + depend_value);
+			resource_count++;
+			
+			//var ul = document.getElementById('result_ul');
+			//alert(ul);
+		
+}
+
+function delresource(id)
+{
+	//var li_id = id.substring(6,10); //li0 ; ok
+	var li_id2 = id.split('&'); //li0 ; ok - 채택!!
+
+	//alert(li_id2[1]);
+	var ul = document.getElementById('result_ul');
+	var li = document.getElementById(li_id2[1]);	
+	//alert(li_id2[2]);
+	ul.removeChild(li);
+
+	/*--delete pre_depend_value--*/
+/*	for (var i=0;i<pre_depend_value.length;i++)
+	{
+		if (pre_depend_value[i] == li_id2[2])
+		{	
+			//alert(i + ", " + pre_depend_value[i] + ", " + li_id2[2]);
+			pre_depend_value[i] = "";
+			break;
+		}
+	}
+*/
 }
