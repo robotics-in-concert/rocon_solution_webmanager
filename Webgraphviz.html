@@ -15,20 +15,28 @@ var ShowHide_status = false;
 function dotgraphName(graphName)
 {
 	document.all.dotgraphName.value = graphName;
+	
+	selectedIndexInit();
 
-	/*--ConnectROS--*/
-	//ConnectROS();
-/*
-	if (graphName == "gateway_dotgraph")
-	{
-		graph_timer = setTimeout('Get_gateway_dotgraph()', 5000);
-	}
-	else
-	{
-		graph_timer = setTimeout('Get_conductor_dotgraph()', 5000);
-	}
-*/
+	document.all.graphviz_svg_div.style.display = 'block';
+	document.all.real_dotgraph_data.style.display = 'none';
 }
+
+function selectedIndexInit()
+{
+	document.getElementById('SvgScale').selectedIndex = 0; //3; //100%	
+}
+
+function GetdotgraphData()
+{
+	/*--Connect--*/
+	ConnectROS();
+
+	/*--Get Data--*/
+	Get_gateway_dotgraph();
+	Get_conductor_dotgraph();
+}
+
 </script>
 
 <STYLE>
@@ -46,18 +54,28 @@ BUTTON
 <BODY onload="">
 <div style="font-size:24px; color:#6699cc;">dotgraph Data Visualizer &nbsp; &nbsp;
 <span style="font-size:12px;">master_URL</span><span id="gitUserRepo" style="font-size:12px; color:; display:none;">
-<input type="text" id="master_URL" value="ws://192.168.0.98:9090" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
+<input type="text" id="master_URL" value="ws://192.168.0.137:9090" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
 </span>
 <input type="image" src="./img/settings-1.png" onclick="ShowHide('URL');" style="vertical-align:middle;" title="URL 입력창이 나타납니다."/>	
-<!-- <input type="image" src="./img/circle-left.png" onclick="location.reload();" style="vertical-align:middle;" title="dotgraph 데이터를 다시 불러옵니다."/> -->
 <input type="button" onclick="View_dotgraph('real')" value="Real dotgraph" class="button"/>
 <input type="button" onclick="View_dotgraph('sample')" value="Sample dotgraph" class="button"/>
+<select id="SvgScale">
+	<!-- <option value="2.0">200%</option>
+	<option value="1.5">150%</option>
+	<option value="1.25">125%</option> -->
+	<option value="1.0" selected>100%</option>		
+	<option value="0.75">75%</option>
+	<option value="0.5">50%</option>
+	<option value="0.25">25%</option>	
+</select>
+<input type="button" onclick="ChangeSvgScale(document.getElementById('SvgScale').value);" value="ChangeScale" style="" class="button" title=""/>&nbsp;
 </div>
 <hr><br>	
 
 <div id="Sample_dotgraph" style="display:none;">
 <!-- <A href="http://www.graphviz.org/"> -->
-Enter your dotgraph data into the Text Area:<br>
+Enter your dotgraph data into the Text Area:&nbsp; 
+<br>
 <BUTTON disabled id="sample_0_btn">Sample 0</BUTTON>
 <BUTTON disabled id="sample_1_btn">Sample 1</BUTTON>
 <BUTTON disabled id="sample_2_btn">Sample 2</BUTTON>
@@ -65,7 +83,7 @@ Enter your dotgraph data into the Text Area:<br>
 <BUTTON disabled id="sample_4_btn">Sample 4</BUTTON>
 <BUTTON disabled id="sample_5_btn">Sample 5</BUTTON> <BR>
 <!-- <TEXTAREA id=graphviz_data wrap=on rows=14 cols=100>  -->
-<textarea id="graphviz_data" wrap=on style="width:100%;" rows="10" spellcheck="false">
+<textarea id="graphviz_data" wrap=on style="width:100%;" rows="6" spellcheck="false">
 digraph graphname {
 	graph [rankdir=LR, rank=same];
 	node [label="\N"];
@@ -84,26 +102,30 @@ digraph graphname {
 }
 </textarea> 
 
-<BUTTON disabled id="generate_btn" style="FONT-SIZE:120%" class="button_large"><B>Loading...</B> </BUTTON>
+<BUTTON disabled id="generate_btn" style="FONT-SIZE:120%" class="button_large" onclick="selectedIndexInit();"><B>Loading...</B> </BUTTON>
 </div>
 
 <div id="Real_dotgraph" style="">
 Click the button want to see the dotgraph:&nbsp; 
-<input type="text" id="dotgraphName" value="" readonly style="width:120px; color:#6699cc;" spellcheck="false">&nbsp;<br>
-<span style="display:none;"> 
-gateway_dotgraph<br>
-<textarea id="dotgraph_data1" style="width:100%;" rows="5" spellcheck="false"></textarea>
-conductor_dotgraph<br>
-<textarea id="dotgraph_data2" style="width:100%;" rows="5" spellcheck="false"></textarea>
-</span>
-
+<input type="button" onclick="GetdotgraphData();" value="GetData" style="" class="button" title="dotgraph Data를 가져옵니다."/>
+<input type="text" id="dotgraphName" value="" readonly style="width:120px; color:#6699cc;" spellcheck="false">&nbsp;
+<br>
 <BUTTON id="generate_btn1" style="FONT-SIZE:120%" class="button_large" onclick="dotgraphName('gateway_dotgraph')">gateway_dotgraph</BUTTON>
 <BUTTON id="generate_btn2" style="FONT-SIZE:120%" class="button_large" onclick="dotgraphName('conductor_dotgraph')">conductor_dotgraph</BUTTON>
-<!-- Target for dynamic svg generation -->
+<BUTTON id="ViewSource_dotgraph" style="FONT-SIZE:120%" class="button_large" onclick="ViewSource('dotgraph');">View source</BUTTON>
+<br>
+<span id="real_dotgraph_data" style="display:none;"> 
+<select id="real_dotgraph_select" onchange="ViewSource('dotgraph');">
+	<option >gateway_dotgraph</option>
+	<option >conductor_dotgraph</option>
+</select>
+<textarea id="dotgraph_data1" style="width:100%;" rows="20" spellcheck="false"></textarea>
+<textarea id="dotgraph_data2" style="width:100%;" rows="20" spellcheck="false"></textarea>
+</span>
 </div>
 
-<!-- dotgraph display area -->
-<div id="graphviz_svg_div" style="height:40%;"></div>
+<!-- Target for dynamic svg generation -->
+<div id="graphviz_svg_div" style=""></div>
 
 <p></p>
 <div>Other Page Link<br>
@@ -123,7 +145,7 @@ conductor_dotgraph<br>
 var ros = "";
 //var graph_timer = "";
 
-//function ConnectROS()
+function ConnectROS()
 {
 	var master_URL = document.getElementById('master_URL').value; //'ws://192.168.0.98:9090'; //
 	// Connecting to ROS
@@ -139,14 +161,12 @@ var ros = "";
 	// Find out exactly when we made a connection.
 	ros.on('connection', function() {
 		console.log('Connection made!');
+		document.all.dotgraphName.value = "Connection made!";
 	});
 
 	// Create a connection to the rosbridge WebSocket server.
 	// master_URL 
 	ros.connect(master_URL); //'ws://192.168.0.98:9090'); //98
-
-	//Get_gateway_dotgraph();
-	//Get_conductor_dotgraph();
  }
 
 //  // Publishing a Topic
@@ -179,8 +199,8 @@ var ros = "";
 
   //Subscribing to a Topic
   //----------------------
-//function Get_gateway_dotgraph()
-//{
+function Get_gateway_dotgraph()
+{
 	var gateway_dotgraph = new ROSLIB.Topic({
 		ros : ros,
 		name : '/concert/gateway/dotgraph',
@@ -193,12 +213,10 @@ var ros = "";
 
 		gateway_dotgraph.unsubscribe();
 	});
+}
 
-	//clearTimeout(graph_timer);
-//}
-
-//function Get_conductor_dotgraph()
-//{
+function Get_conductor_dotgraph()
+{
 	var conductor_dotgraph = new ROSLIB.Topic({
 		ros : ros,
 		name : '/concert/conductor/concert_clients_dotgraph',
@@ -211,9 +229,7 @@ var ros = "";
 
 		conductor_dotgraph.unsubscribe();
 	});
-
-	//clearTimeout(graph_timer);
-//}
+}
 </script>
 
 <!-- Defer loading of javascript by placing these tags at the tail end of the document -->

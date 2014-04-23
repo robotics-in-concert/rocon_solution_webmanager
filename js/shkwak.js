@@ -6,20 +6,44 @@ var launch_str = ["<launch>\n    <include file=\"$(find concert_master)/", "\">\
 var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n",  "  <run_depend>", "</run_depend>\n","</package>"];
 var services_str = ["- resource: ", "  override: \n"];																																							//[7]															     //[8]  		 //[9]			   //[10]                                        
 
-function ViewSource()
+function ViewSource(page)
 { 
-	var fileName = document.getElementById('selectbox_sub').value;
-	var str = ["launch", "services", "package", "CMakeLists"];
+	switch(page)
+	{
+		case "dotgraph":
+			var vs_dotgraphName = document.getElementById('real_dotgraph_select').value; //gateway_dotgraph, conductor_dotgraph
+			document.all.graphviz_svg_div.style.display = 'none';
+			document.all.real_dotgraph_data.style.display = 'block';
+			document.all.dotgraphName.value = "";
+					
+			switch(vs_dotgraphName)
+			{
+				case "gateway_dotgraph":					
+					document.all.dotgraph_data1.style.display = 'block';
+					document.all.dotgraph_data2.style.display = 'none';
+					break;
+				case "conductor_dotgraph":
+					document.all.dotgraph_data1.style.display = 'none';
+					document.all.dotgraph_data2.style.display = 'block';					
+					break;			
+			}
+			break;
 
-	for (var i=0;i<str.length;i++)
-	{	
-		var result = fileName.indexOf(str[i]);
-	
-		if (result > -1)
-		{	
-			Edit_template(str[i]);
-		}	
-	}	
+		default:
+			var fileName = document.getElementById('selectbox_sub').value;
+			var str = ["launch", "services", "package", "CMakeLists"];
+
+			for (var i=0;i<str.length;i++)
+			{	
+				var result = fileName.indexOf(str[i]);
+			
+				if (result > -1)
+				{	
+					Edit_template(str[i]);
+				}	
+			}	
+			break;
+	}
 }
 
 function Edit_template(file)
@@ -173,6 +197,8 @@ function View_dotgraph(page)
 			document.getElementById('Real_dotgraph').style.display = 'none';
 			break;
 	}		
+
+	//selectedIndexInit();
 }
 
 function changeList()
@@ -574,7 +600,7 @@ function ChangeSvgScale(scale)
 	/*--<svg width="1738pt" height="910pt" viewBox="0.00 0.00 1738.00 910.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">--*/
 	//var svg_div = document.getElementById('graphviz_svg_div'); ////svg_div.getElementsByTagName('svg'); //OK - FM
 	var svg_tag = document.getElementsByTagName('svg'); 
-	console.log(svg_tag[0].height); //svg_tag[0] ; <svg></svg> 전부!!
+	//console.log(svg_tag[0].height); //svg_tag[0] ; <svg></svg> 전부!!
 	//var svg_tag_width = svg_tag.getAttribute('width'); //x
 	//console.log(svg_tag.length); //1 - ok
 }
