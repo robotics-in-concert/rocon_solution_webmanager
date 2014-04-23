@@ -4,7 +4,7 @@ var data_type_sub = new Array();
 var cmake_str = ["############################################################################\n# CMake\n############################################################################\n\ncmake_minimum_required(VERSION 2.8.3)\nproject(", ")\n\n############################################################################\n# Catkin\n############################################################################\n\nfind_package(catkin REQUIRED)\ncatkin_package()"];
 var launch_str = ["<launch>\n    <include file=\"$(find concert_master)/", "\">\n        <arg name=\"concert_name\" value=\"", "\">\n        <arg name=\"services\" value=\"", "\">\n        <arg name=\"conductor_auto_invite\" value=\"", "\">\n        <arg name=\"conductor_local_clients_only\" value=\"", "\">\n        <arg name=\"auto_enable_services\" value=\"", "\">\n        <arg name=\"scheduler_type\" value=\"", "\"/>\n    </include>\n</launch>"];
 var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n",  "  <run_depend>", "</run_depend>\n","</package>"];
-var services_str = ["- resource: ", "\n  override: \n"];																																							//[7]															     //[8]  		 //[9]			   //[10]                                        
+var services_str = ["- resource: ", "  override: \n"];																																							//[7]															     //[8]  		 //[9]			   //[10]                                        
 
 function ViewSource()
 { 
@@ -34,7 +34,7 @@ function Edit_template(file)
 		case "services": //value : 4 + a개			
 			//var value = [document.getElementById('resource1').value, document.getElementById('resource2').value, document.getElementById('override').value, document.getElementById('override_value').value];
 			//var str = services_str[0] + value[0] + "/" + value[1] + services_str[1]  + "    " + value[2] + ": " + value[3]; 
-			var str_resouce = "";
+			var str_resource = "";
 			for (var i=0;i<resource_count;i++)
 			{
 				var li_id = 'li'+i;
@@ -52,18 +52,22 @@ function Edit_template(file)
 					//console.log('li_innerHTML : ' + li_innerHTML);
 					console.log('li_value[2] : ' + li_value[2] + ', li_value[3] : ' + li_value[3]);
 					
-					if (li_value[3] == "")
+					if (li_value[3] == "resource")
 					{
-						str_resouce += services_str[0] + ": " + li_value[2] + "\n";
+						str_resource += services_str[0] + li_value[2] + "\n";
 					}
-					else
+					else if (li_value[3] == "override_new")
 					{
-						str_resouce += services_str[0] + ": " + li_value[2] + services_str[1] + "    " + li_value[3] + "\n";
+						str_resource += services_str[1] + "    " + li_value[2] + "\n";
+					}
+					else //li_value[3] == "override_add"
+					{
+						str_resource += "    " + li_value[2] + "\n";
 					}					
 				}
 				console.log('i : ' + i + ", id : " + li_id);				
 			}						
-			document.all.box_result.value = str_resouce;
+			document.all.box_result.value = str_resource;
 			break;
 		case "package": //value : 6 + a개																																																													  //[6]						
 			var value = [document.getElementById('packagename').value, document.getElementById('version').value, document.getElementById('description').value, document.getElementById('email').value, document.getElementById('maintainer').value, document.getElementById('license').value, document.getElementById('author').value]; //, document.getElementById('run_depend').value];
@@ -124,6 +128,19 @@ function ShowHide(option)
 				ShowHide_status = true;
 			}	
 			break;
+		case "callService":
+			var span_callService = document.getElementById('span_callService');	
+			if (ShowHide_status_callService)
+			{
+				span_callService.style.display = 'none';
+				ShowHide_status_callService = false;
+			}	
+			else
+			{
+				span_callService.style.display = 'inline';
+				ShowHide_status_callService = true;
+			}	
+			break;
 		default:
 			var gitInfo = document.getElementById('gitInfo');
 		
@@ -178,6 +195,9 @@ function changeList()
 
 function pageChange(fileTag)
 {
+	/*--update Msg 입력창 초기화--*/
+	document.all.updateMsg.value = "";
+
 	var page1 = document.getElementById('launchfile');
 	var page2 = document.getElementById('servicefile');
 	var page3 = document.getElementById('packagefile');
@@ -419,7 +439,7 @@ function addDepend()
 			new_li.setAttribute('id', 'li' + depend_count); //ok			
 			//new_li.setAttribute('value', depend_value); //2014-04-22_shkwak, value 값은 생성되는데 get이 안됨, why?		
 			//new_li.value = "test li"; //x
-			new_li.innerHTML = " run_depend : " + depend_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delDepend(this.id);' style='vertical-align:middle;' id='input&li" + depend_count + "&" + depend_value + "&'/>";
+			new_li.innerHTML = " run_depend : " + depend_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delDepend(this.id);' style='vertical-align:middle;' id='input&li" + depend_count + "&" + depend_value + "&&'/>";
 			ul.appendChild(new_li);			
 
 			/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
@@ -427,9 +447,6 @@ function addDepend()
 			depend_pre_check = false;
 			//alert(depend_count + ", " + pre_depend_value[depend_count] + ", " + depend_value);
 			depend_count++;
-			
-			//var ul = document.getElementById('result_ul');
-			//alert(ul);
 		}
 	}
 }
@@ -458,6 +475,8 @@ function delDepend(id)
 }
 
 /*--solutiion.resources--*/
+var pre_override_num = 0;
+
 function addresource()
 {	//2014-04-22_shkwak
 	var resource1 = document.getElementById('resource1').value;
@@ -467,9 +486,9 @@ function addresource()
 				
 	var ul = document.getElementById('result_ul2');
 	var new_li = document.createElement('li');
-	//new_li.id = "li_" + resource_count; //ok
-	new_li.setAttribute('id', 'li' + resource_count); //ok	
-	if (override == "없음")
+	new_li.setAttribute('id', 'li' + resource_count); 	
+	new_li.setAttribute('style', 'list-style-type:block'); //앞에 º 넣기 - ok
+/*	if (override == "없음")
 	{
 		new_li.innerHTML = "- resource : " + resource1 + "/" + resource2 + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + resource1 + "/" + resource2 + "&&'/>"; //[3]을 ""로 하기우해 && 두개사용!
 	}
@@ -477,16 +496,42 @@ function addresource()
 	{
 		new_li.innerHTML = "- resource : " + resource1 + "/" + resource2 + "<br>&nbsp; &nbsp;override : <br>&nbsp; &nbsp; &nbsp; " + override + " : " + override_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + resource1 + "/" + resource2 + "&" + override + ": " + override_value + "&'/>";
 	}
+*/	//li_value[3] = resource
+	new_li.innerHTML = "- resource : " + resource1 + "/" + resource2 + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + resource1 + "/" + resource2 + "&resource&'/>";
 	ul.appendChild(new_li);			
 
-	/*--등록 저장--*/ //음. 이건 직전꺼와 같은지 밖에 비교가 안되는군. 개선 필요~!!_2014-04-17
-	//pre_depend_value[resource_count] = depend_value;
-	//depend_pre_check = false;
-	//alert(resource_count + ", " + pre_depend_value[resource_count] + ", " + depend_value);
 	resource_count++;
-		
-	//var ul = document.getElementById('result_ul');
-	//alert(ul);		
+	pre_override_num = 0;
+}
+
+function addoverride()
+{	//2014-04-23_shkwak	
+	var override = document.getElementById('override').value;	
+	var override_value = document.getElementById('override_value').value;
+				
+	var ul = document.getElementById('result_ul2');
+
+	if (override == "없음")
+	{
+		alert('override를 선택해 주세요.');	
+	}
+	else
+	{
+		var new_li = document.createElement('li');
+		new_li.setAttribute('id', 'li' + resource_count); //ok	
+		new_li.setAttribute('style', 'list-style-type:none'); //앞에 º 없애기
+		if (pre_override_num)
+		{	//override_add
+			new_li.innerHTML = "&nbsp; &nbsp; &nbsp; " + override + " : " + override_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + override + ": " + override_value + "&override_add&'/>";
+		}
+		else
+		{	//override_new
+			new_li.innerHTML = "&nbsp; &nbsp;override : <br>&nbsp; &nbsp; &nbsp; " + override + " : " + override_value + " <input type='image' src='./img/icon_minus_2.png' onclick='delresource(this.id);' style='vertical-align:middle;' id='input&li" + resource_count + "&" + override + ": " + override_value + "&override_new&'/>";
+		}
+		ul.appendChild(new_li);
+		pre_override_num = 1;
+		resource_count++;
+	}	
 }
 
 function delresource(id)
@@ -511,4 +556,25 @@ function delresource(id)
 		}
 	}
 */
+}
+
+/*--dotgraph--*/
+function ChangeSvgScale(scale)
+{
+	/*--<g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(4 260)">--*/
+	var svg_graph1 = document.getElementById('graph1');
+	//svg.transform.scale = (0.5 0.5); //x
+	var transform_value = svg_graph1.getAttribute('transform');
+	console.log("getAttribute('transform') : " + transform_value); //scale(1 1) rotate(0) translate(4 260) - OK
+	var translate_value = transform_value.split('translate');
+	console.log("translate_value : " + translate_value[1]); //(4 260)
+	svg_graph1.removeAttribute('transform'); //기존 속성 삭제
+	svg_graph1.setAttribute('transform', 'scale(' + scale + ' ' + scale + ') rotate(0) translate' + translate_value[1]); //OK
+
+	/*--<svg width="1738pt" height="910pt" viewBox="0.00 0.00 1738.00 910.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">--*/
+	//var svg_div = document.getElementById('graphviz_svg_div'); ////svg_div.getElementsByTagName('svg'); //OK - FM
+	var svg_tag = document.getElementsByTagName('svg'); 
+	console.log(svg_tag[0].height); //svg_tag[0] ; <svg></svg> 전부!!
+	//var svg_tag_width = svg_tag.getAttribute('width'); //x
+	//console.log(svg_tag.length); //1 - ok
 }
