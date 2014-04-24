@@ -34,7 +34,7 @@ function GetFileList()
 		dataType: "json",
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
-			//alert(data.length); //2!
+			//alert(data.length); //2!!! Good
 
 			for (var i=0;i<data.length;i++)
 			{
@@ -178,6 +178,7 @@ var ShowHide_status = false;
 	&nbsp; &nbsp; &nbsp; &nbsp; 생성할 솔루션명을 입력하세요.<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Name &nbsp;: &nbsp;
 	<input type="text" id="solutionName" style="font-size:11px; width:210px" placeholder="ex) my_solution" spellcheck="false">&nbsp;
+	<span id="gitInfo" style="font-size:12px; color:;">gitInfo</span>
 	<span id="gitUserRepo" style="display:none;">
 	gitUser <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;" spellcheck="false">&nbsp;
 	gitRepo <input type="text" id="gitRepo" value="ROStest1" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;

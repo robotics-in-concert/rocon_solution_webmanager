@@ -14,12 +14,22 @@ var ShowHide_status = false;
  
 function dotgraphName(graphName)
 {
-	document.all.dotgraphName.value = graphName;
-	
-	selectedIndexInit();
+	var data1 = document.getElementById("dotgraph_data1").value;
+	var data2 = document.getElementById("dotgraph_data1").value;
 
-	document.all.graphviz_svg_div.style.display = 'block';
-	document.all.real_dotgraph_data.style.display = 'none';
+	if (data1 == "" || data2 == "")
+	{
+		alert('GetData 버튼을 먼저 눌러 주세요.');
+	}
+	else
+	{
+		document.all.dotgraphName.value = graphName;
+	
+		selectedIndexInit();
+	
+		document.all.graphviz_svg_div.style.display = 'block';
+		document.all.real_dotgraph_data.style.display = 'none';
+	}
 }
 
 function selectedIndexInit()

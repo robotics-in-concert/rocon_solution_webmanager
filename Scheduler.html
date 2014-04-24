@@ -13,66 +13,7 @@
 <script language="JavaScript" type="text/javascript" src="./js/eventemitter2.js"></script>
 <script language="JavaScript" type="text/javascript" src="./js/roslib.js"></script>
 <script language="javascript">
-var pre_content; //수정 전 content base64 값
 
-function GetFileList()
-{	
-	if (owner == "" || repo == "")
-	{
-		alert("Insert Owner value and Repository value!");		
-	}
-	else
-	{
-	jQuery.support.cors = true;
-	$.ajax({
-		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents",
-		type: "GET",
-		dataType: "json",
-		success: function (data) {
-			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
-			//alert(data.length); //2!!! Good
-
-			for (var i=0;i<data.length;i++)
-			{
-		        alert(data[i].name);
-			}	s
-		},
-		error: function (x, y, z) {
-			alert(x + "\n" + y + "\n" + z);
-		}
-	});	
-	}
-}
-
-function GetData(fileName)
-{
-	var owner = document.getElementById('gitUser').value;
-	var repo = document.getElementById('gitRepo').value;
-	
-	if (owner == "" || repo == "")
-	{
-		alert("Insert Owner value and Repository value!");		
-	}
-	else
-	{
-
-	jQuery.support.cors = true;
-	$.ajax({
-		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + fileName,
-		type: "GET",
-		dataType: "json",
-		success: function (data) {
-			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
-			document.getElementById('box1').value = data.content;
-			pre_content = data.content;
-			//document.getElementById('box1').value = data.sha;
-		},
-		error: function (x, y, z) {
-			alert(x + "\n" + y + "\n" + z);
-		}
-	});
-	}
-}
 /*============= Creat new solution ==============*/
 var i = 0;
 
@@ -135,15 +76,9 @@ function SolutionCreate()
 	}
 }
 
-function base64encode1(data)
-{
-	var output = Base64.encode(data);
-	return output;
-}
-
 
 var ShowHide_status = false;
-
+var ShowHide_status_callService = false;
 
 /*-- ROSBridge --*/
 var ros = "";
@@ -160,6 +95,7 @@ function ConnectROS()
   // If there is an error on the backend, an 'error' emit will be emitted.
   ros.on('error', function(error) {
     console.log(error);
+	//alert(error); //Error Message
 	alert("WebSocket connection to \'" + master_URL + "\' failed : Connection closed before receiving a handshake response."); //Error Message
   });
 
@@ -241,40 +177,8 @@ function GetServiceList()
 	select.add(option);
 
     service_list.unsubscribe();
-  });
-
-  /*--Sevice Enable Status--*/
-  //callService();
+  });  
 }
-/*
-  var gateway_dotgraph = new ROSLIB.Topic({
-    ros : ros,
-    name : '/concert/gateway/dotgraph',
-    messageType : 'std_msgs/String'
-  });
-
-  gateway_dotgraph.subscribe(function(message) {
-    console.log('Received message on ' + gateway_dotgraph.name + ': ' + message.data);
-
-	//document.getElementById("dotgraph_data1").value = message.data;
-
-    gateway_dotgraph.unsubscribe();
-  });
-
-  var conductor_dotgraph = new ROSLIB.Topic({
-    ros : ros,
-    name : '/concert/conductor/concert_clients_dotgraph',
-    messageType : 'std_msgs/String'
-  });
-
-  conductor_dotgraph.subscribe(function(message) {
-    console.log('Received message on ' + conductor_dotgraph.name + ': ' + message.data);
-
-	//document.getElementById("dotgraph_data2").value = message.data;
-
-    conductor_dotgraph.unsubscribe();
-  });
-*/
 
 function callService(setServiceName, bool)
 {
@@ -373,9 +277,23 @@ function callService(setServiceName, bool)
 //    console.log('My robot\'s favorite color is ' + value);
 //  });
 
-var setOnTime;
-var setOffTime;
-var setOnCmdSended = false;
+var pre_serviceName = "";
+var pre_OnTime_date = "";
+var pre_OnTime_time = "";
+var pre_OffTime_date = "";
+var pre_OffTime_time = "";
+
+var li_count = 0;
+
+var timer = new Array();
+var setServiceName = new Array();
+var setOnTime = new Array();
+var setOffTime = new Array();
+var setOnCmdSended = new Array(); //false
+var schedule_id = "";
+var timer_id = "";
+
+var timecheck = new Array(); //override
 
 function leadingZeros(n, digits)
 {
@@ -397,10 +315,7 @@ function nowTime()
 {
 	//formatting yyyy-MM-dd hh:mm:ss
 	var today = new Date();
-	//var h = time.getHours();
-	//time.setHours(h+9);//korea timezone is GMT+09:00
-	//time = time.toISOString().slice(0, 19).replace("T"," ");
-//alert(today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getDay() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()); //"-" + today.getDay() + + ":" + today.getSeconds() + today.getMilliseconds() 
+	//"-" + today.getDay() + + ":" + today.getSeconds() + today.getMilliseconds() 
 	
 	var NowTime_sec = leadingZeros(today.getFullYear(),4) + "-" + leadingZeros(today.getMonth() + 1,2) + "-" + leadingZeros(today.getDate(),2) + " " + leadingZeros(today.getHours(),2) + ":" + leadingZeros(today.getMinutes(),2) + ":" + leadingZeros(today.getSeconds(),2);	
 
@@ -437,13 +352,13 @@ function onLoadFunc()
 <body onLoad="onLoadFunc();">
 	<div style="font-size:24px; color:#6699cc;">Service Scheduler &nbsp; &nbsp;
 	<span style="font-size:12px;">master_URL</span><span id="gitUserRepo" style="font-size:12px; color:; display:none;">
-	<input type="text" id="master_URL" value="ws://192.168.0.98:9090" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;	
+	<input type="text" id="master_URL" value="ws://192.168.0.137:9090" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;	
 	</span>
 	<input type="image" src="./img/settings-1.png" onclick="ShowHide('URL');" style="vertical-align:middle;" title="URL 입력창이 나타납니다."/>	
 	</div>
 	<hr><br>	
 	<div>Select a Service <br>
-	&nbsp; &nbsp; &nbsp; <span style="font-size:12px;">스케쥴을 설정하고 싶은 서비스를 선택하세요.<br>
+	&nbsp; &nbsp; &nbsp; <span style="font-size:12px;">스케줄을 설정하고 싶은 서비스를 선택하세요.<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Service List &nbsp;: &nbsp;
 	<select id="serviceList" onchange="changeList()">
 		<option value="">-----------</option>
@@ -456,12 +371,15 @@ function onLoadFunc()
 	<input type="text" id="serviceName" style="font-size:11px; width:210px; display:none;" placeholder="서비스명을 입력하세요.">&nbsp;&nbsp;
 	<!-- <input type="button" onclick="ConnectROS();" value="ConnectROS" style="width:; height:;" class="button"/> -->
 	<input type="button" onclick="GetServiceList();" value="GetList" style="" class="button" title="서비스 리스트를 가져옵니다."/>
+	<span id="span_callService" style="display:none;">
 	<select id="serviceEnabled">
 		<option value="false">false</option>
 		<option value="true">true</option>		
 	</select>
-	<input type="button" onclick="callService();" value="callService" style="" class="button" title=""/>
+	<input type="button" onclick="callService();" value="callService" style="" class="button" title=""/>&nbsp; 
 	<!-- <input type="button" onclick="nowTime();" value="nowTime" style="" class="button"/> -->
+	</span>
+	<input type="image" src="./img/settings-1.png" onclick="ShowHide('callService');" style="vertical-align:middle;" title=""/>	
 	<br>
 	&nbsp; &nbsp; &nbsp; &nbsp; <span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 서비스 스케줄링이 가능합니다.</span>	
 	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;
@@ -483,7 +401,7 @@ function onLoadFunc()
 	
 	<div>Result Report<br>
 	<span style="font-size:12px;">
-	&nbsp; &nbsp; &nbsp; &nbsp; 서비스 스케쥴 내역을 보여줍니다.
+	&nbsp; &nbsp; &nbsp; &nbsp; 서비스 스케줄 내역을 보여줍니다.
 	&nbsp; &nbsp; &nbsp; &nbsp; <!-- <textarea id="box_result" style="width:90%; margin-top:5px;" rows="5" title="source"></textarea> -->
 	<ul id="result_ul" style="">
 	 <!-- <li>dummy_service, 2014-04-14 18:00~2014-04-14 19:00 &nbsp;<input type="image" src="./img/icon_minus_2.png" style="vertical-align:middle;"/></li>

@@ -186,6 +186,8 @@ function ShowHide(option)
 
 function View_dotgraph(page)
 {	//2014-04-17_shkwak
+	document.all.graphviz_svg_div.innerHTML = ""; //2014-04-24
+
 	switch(page)
 	{
 		case "real":
@@ -261,17 +263,7 @@ function pageChange(fileTag)
 	}
 }
 
-var pre_serviceName = "";
-var pre_OnTime_date = "";
-var pre_OnTime_time = "";
-var pre_OffTime_date = "";
-var pre_OffTime_time = "";
-
-var li_count = 0;
-
-var timer = new Array();
-var setServiceName = new Array();
-
+/*--Service Scheduler--*/
 function addSchdule()
 {	//2014-04-17_shkwak, 2014-04-21_re_timer setting
 	var serviceName = document.getElementById('serviceList').value;
@@ -337,13 +329,15 @@ function addSchdule()
 					pre_OffTime_date = OffTime_date;
 					pre_OffTime_time = OffTime_time;
 	
-					/*--Timer create--*/
-					setOnTime = OnTime;
-					setOffTime = OffTime;			
+					/*--Timer create--*/								
 					schedule_id = 'li' + li_count;
+					setOnTime[schedule_id] = OnTime;
+					setOffTime[schedule_id] = OffTime;
 					setServiceName[schedule_id] = serviceName;
-					//var timecheck = new nowTimeCheck(schedule_id);
-					timer[schedule_id] = setTimeout('nowTimeCheck(schedule_id)',1000); //10초에 한번
+					setOnCmdSended[schedule_id] = false;
+					//timecheck = nowTimeCheck(timer_id);	
+					//timer[schedule_id] = setTimeout('nowTimeCheck(schedule_id)',1000);
+					timer[schedule_id] = setInterval("nowTimeCheck('"+schedule_id+"')",5000);
 					console.log("timer[" + schedule_id + "] is created."); //timer['li' + li_count] == 1?? why?
 			
 					/*--증감자 처리--*/
@@ -356,35 +350,37 @@ function addSchdule()
 
 function nowTimeCheck(id)
 {
+	timer_id = id; //issue point
 	//formatting yyyy-MM-dd hh:mm:ss
 	var today = new Date();	
 	
 	var NowTime = leadingZeros(today.getFullYear(),4) + "-" + leadingZeros(today.getMonth() + 1,2) + "-" + leadingZeros(today.getDate(),2) + " " + leadingZeros(today.getHours(),2) + ":" + leadingZeros(today.getMinutes(),2);	
 	var NowTime_sec = leadingZeros(today.getFullYear(),4) + "-" + leadingZeros(today.getMonth() + 1,2) + "-" + leadingZeros(today.getDate(),2) + " " + leadingZeros(today.getHours(),2) + ":" + leadingZeros(today.getMinutes(),2) + ":" + leadingZeros(today.getSeconds(),2);	
 
-	console.log("NowTime : " + NowTime_sec + ", setOnTime : " + setOnTime + ", setOffTime : " + setOffTime + ", id : " + id + ", serviceName : " + setServiceName[id]); 
-	//console.log("id : " + id + ", setServiceName : " + setServiceName[id]); 
+	console.log("NowTime : " + NowTime_sec + ", setOnTime : " + setOnTime[timer_id] + ", setOffTime : " + setOffTime[timer_id] + ", id : " + timer_id + ", serviceName : " + setServiceName[timer_id]);
+	//console.log("id : " + timer_id + ", setServiceName : " + setServiceName[timer_id]); 
+	//console.log("Timer : " + timer[li0] + ", " + timer[li1] + ", " + timer[li2]);
 
-	if (setOnCmdSended == false)
+	if (setOnCmdSended[timer_id] == false)
 	{
-		if (NowTime == setOnTime)
+		if (NowTime == setOnTime[timer_id])
 		{
-			callService(setServiceName[id], 'true');
+			callService(setServiceName[timer_id], 'true');
 			console.log("ServiceCall - enable");		
-			setOnCmdSended = true;
+			setOnCmdSended[timer_id] = true;
 		}
-	}
-	
-	schedule_id = id;
-	timer[id] = setTimeout('nowTimeCheck(schedule_id)',5000); //10초에 한번
+	}		
 
-	if (NowTime == setOffTime)
+	if (NowTime == setOffTime[timer_id])
 	{
-		callService(setServiceName[id], 'false');
+		callService(setServiceName[timer_id], 'false');
 		console.log("ServiceCall - disable");
-		clearTimeout(timer[id]);
-		console.log("timer[" + id + "] is deleted.");
+		//clearTimeout(timer[timer_id]);
+		clearInterval(timer[timer_id]);
+		console.log("timer[" + timer_id + "] is deleted.");
 	}	
+
+	//timer[timer_id] = setTimeout('nowTimeCheck(timer_id)',10000);
 }
 
 function deleteService(id)
@@ -399,9 +395,10 @@ function deleteService(id)
 	console.log(li_id2[1] + " is deleted.");
 
 	/*--Timer del--*/
-	schedule_id = li_id2[1];
-	clearTimeout(timer[schedule_id]);
-	console.log("timer[" + schedule_id + "] is deleted.");
+	var schedule_id2 = li_id2[1];
+	//clearTimeout(timer[schedule_id2]);
+	clearInterval(timer[timer_id]);
+	console.log("timer[" + schedule_id2 + "] is deleted.");
 }
 
 

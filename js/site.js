@@ -46,7 +46,7 @@ jQuery(document).ready(function () {
 	svg_div.html("");
     var data = graphviz_data_textarea.val();
     // Generate the Visualization of the Graph into "svg".
-    var svg = Viz(data, "svg");	
+    var svg = Viz(data, "svg");		
     svg_div.html("<hr>" + svg + "<hr>");
   }
 
@@ -55,6 +55,7 @@ jQuery(document).ready(function () {
     var data = textarea.val();
     // Generate the Visualization of the Graph into "svg".
     var svg = Viz(data, "svg");	
+	//alert(svg);
     svg_div.html("<hr>" + svg + "<hr>");
   }
 
