@@ -39,8 +39,6 @@ function SolutionCreate()
 	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
 	//alert(box[0]); //for Test
 	
-//	for (var i=0;i<fileName.length;i++)
-//	{
 		var msg = "Create new solution "; 
 		var content = box[i]; 
 		var cmds = {message : msg, content : content};
@@ -59,11 +57,10 @@ function SolutionCreate()
 			//alert("동일한 Solution이 존재합니다.");
 		}
 	});
-	
-//	}
+
 	var timer = setTimeout('SolutionCreate()',200);
 	i++;
-	//alert(i);
+
 	if (i==4)
 	{	
 		i = 0;

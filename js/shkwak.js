@@ -4,7 +4,7 @@ var data_type_sub = new Array();
 var cmake_str = ["############################################################################\n# CMake\n############################################################################\n\ncmake_minimum_required(VERSION 2.8.3)\nproject(", ")\n\n############################################################################\n# Catkin\n############################################################################\n\nfind_package(catkin REQUIRED)\ncatkin_package()"];
 var launch_str = ["<launch>\n    <include file=\"$(find concert_master)/", "\">\n        <arg name=\"concert_name\" value=\"", "\">\n        <arg name=\"services\" value=\"", "\">\n        <arg name=\"conductor_auto_invite\" value=\"", "\">\n        <arg name=\"conductor_local_clients_only\" value=\"", "\">\n        <arg name=\"auto_enable_services\" value=\"", "\">\n        <arg name=\"scheduler_type\" value=\"", "\"/>\n    </include>\n</launch>"];
 var package_str = ["<package>\n  <name>", "</name>\n  <version>", "</version>\n  <description>\n    ", "\n  </description>\n  <maintainer email=\"", "\">", "</maintainer>\n  <license>", "</license>\n  <author>", "</author>\n\n  <buildtool_depend>catkin</buildtool_depend>\n\n",  "  <run_depend>", "</run_depend>\n","</package>"];
-var services_str = ["- resource: ", "  override: \n"];																																							//[7]															     //[8]  		 //[9]			   //[10]                                        
+var services_str = ["- resource: ", "  override: \n"];
 
 function ViewSource(page)
 { 
