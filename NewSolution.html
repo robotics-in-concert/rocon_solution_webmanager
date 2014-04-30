@@ -35,6 +35,7 @@ function GetFileList()
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			//alert(data.length); //2!!! Good
+
 			for (var i=0;i<data.length;i++)
 			{
 		        alert(data[i].name);
@@ -78,12 +79,15 @@ function GetData(fileName)
 }
 /*============= Creat new solution ==============*/
 var i = 0;
+var timer;
 
 function SolutionCreate()
 {	//Required : message, content
 	/*--GitHub 사용자 정보--*/
 	var owner = document.getElementById('gitUser').value;
 	var repo = document.getElementById('gitRepo').value;
+	var box_result = document.getElementById('box_result');
+	if (i==0) {box_result.value = "";}
 	
 	/*--access_token--*/
 	var access_token = localStorage.getItem("access_token");
@@ -114,31 +118,47 @@ function SolutionCreate()
 		data: JSON.stringify(cmds),
 		contentType: "application/json;charset=utf-8",
 		success: function (data) {
-			//alert(fileName[i] + " FileCreate complete!");	
-			//box.value += fileName[i] + " is created. \n";			
+			console.log("fileName : " + fileName[i] + ", i : " + i);
+			box_result.value += fileName[i] + " is created.\n";
+			i++;
+			
+			if (i==4)
+			{	
+				i = 0;
+				//var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
+				var text = "https://github.com/" + owner + "/" + repo + "/tree/master/" + solutionName; //api, repos, contents 항목 삭제!, tree/master/ 추가★
+				box_result.value += text + "\n";
+				//box.value = solutionName + " 솔루션 파일이 생성되었습니다.\n" + text + "\n";
+				//box.innerHTML = "<a href='" + text + "'>" + text; //2014-04-18, result report : text -> link //x
+				clearTimeout(timer);		
+			}
+			else
+			{
+				timer = setTimeout('SolutionCreate()',500);
+			}			
+
+			console.log(timer);
 		},
 		error: function (x, y, z) {
-			alert(x + " " + y + " : " + z + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
-			//alert("동일한 Solution이 존재합니다.");
+			//alert(x + " " + y + " : " + z + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");			
+			console.log(x + " " + y + " : " + z + ", i : " + i + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
+			if (z == "Unprocessable Entity")
+			{
+				console.log("이미 동일한 솔루션이 존재합니다.");
+				box_result.value = "이미 동일한 솔루션이 존재합니다. \n";
+			}
+			else if (z == "Not Found")
+			{
+				console.log("gitInfo(gitUser, gitRepo) 값이 올바르지 않습니다. 다시 확인해 주세요.");
+				box_result.value = "gitInfo(gitUser, gitRepo) 값이 올바르지 않습니다. 다시 확인해 주세요. \n";
+			}
+			
+			i = 0;
+			clearTimeout(timer);
 		}
 	});
 	
-//	}
-	
-	var timer = setTimeout('SolutionCreate()',500); //200	
-	i++;
-	//alert(i);
-	if (i==4)
-	{	
-		i = 0;
-		//var text = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName;
-		var text = "https://github.com/" + owner + "/" + repo + "/tree/master/" + solutionName; //api, repos, contents 항목 삭제!, tree/master/ 추가★
-		var box = document.getElementById('box_result');
-		box.value = text + "\n";
-		//box.value = solutionName + " 솔루션 파일이 생성되었습니다.\n" + text + "\n";
-		//box.innerHTML = "<a href='" + text + "'>" + text; //2014-04-18, result report : text -> link //x
-		clearTimeout(timer);		
-	}
+//	}		
 
 	}
 }
@@ -153,14 +173,17 @@ function SigninCheck()
 {
 	/*--access_token--*/
 	var access_token = localStorage.getItem("access_token");
+	var signin_msg = document.getElementById('signin_msg');
 	
 	if (access_token == null)	
 	{
 		document.getElementById('signin').value = "Sign in";
+		signin_msg.innerHTML = "* 로그인을 하여야 솔루션 생성이 가능합니다.";
 	}
 	else
 	{
 		document.getElementById('signin').value = "Sign out";
+		signin_msg.innerHTML = "* ";
 	}
 }
 
@@ -186,7 +209,7 @@ var ShowHide_status = false;
 	<br>
 	&nbsp; &nbsp; &nbsp; </span>
 	<input type="button" id="" value="Create new solution" onclick="SolutionCreate();" class="button" title="솔루션 파일을 생성합니다."/>&nbsp; 
-	<span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 솔루션 생성이 가능합니다.</span>	
+	<span id="signin_msg" style="font-size:11px; color:#cc3366;">* 로그인을 하여야 솔루션 생성이 가능합니다.</span>	
 	<input type="button" id="signin" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;<br><br>
 
 	<div>Created Solution Files Description<br><span style="font-size:12px;" >

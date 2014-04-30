@@ -39,6 +39,8 @@ function SolutionCreate()
 	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
 	//alert(box[0]); //for Test
 	
+//	for (var i=0;i<fileName.length;i++)
+//	{
 		var msg = "Create new solution "; 
 		var content = box[i]; 
 		var cmds = {message : msg, content : content};
@@ -57,10 +59,11 @@ function SolutionCreate()
 			//alert("동일한 Solution이 존재합니다.");
 		}
 	});
-
+	
+//	}
 	var timer = setTimeout('SolutionCreate()',200);
 	i++;
-
+	//alert(i);
 	if (i==4)
 	{	
 		i = 0;
@@ -378,8 +381,8 @@ function onLoadFunc()
 	</span>
 	<input type="image" src="./img/settings-1.png" onclick="ShowHide('callService');" style="vertical-align:middle;" title=""/>	
 	<br>
-	&nbsp; &nbsp; &nbsp; &nbsp; <span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 서비스 스케줄링이 가능합니다.</span>	
-	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;
+	<!-- &nbsp; &nbsp; &nbsp; &nbsp; <span style="font-size:11px; color:#cc3366;">* 로그인을 하여야 서비스 스케줄링이 가능합니다.</span>	
+	<input type="button" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp; -->
 	</div></span><br>
 
 	<div>Configure a Service Schedule<br>

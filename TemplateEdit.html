@@ -278,6 +278,9 @@ function base64encode(data)
 	return output;
 }
 
+//	var owner = document.getElementById('gitUser').value;
+//	var repo = document.getElementById('gitRepo').value; 
+
 function changeList()
 {
 	var listValue = document.getElementById('serviceList').value;
@@ -404,6 +407,24 @@ var depend_pre_check = false;
 
 var resource_count = 0;
 
+/*--공통 변수 처리--*/ //2014-04-29_shkwak
+//CMakeLists.txt : project, package.xml : package name에 적용
+function common_value_mapping(page)
+{
+	var package_xml_packagename = document.getElementById('packagename');
+	var CMakeLists_txt_projectName = document.getElementById('projectName');
+
+	switch (page)
+	{
+		case "xml": //package.xml
+			CMakeLists_txt_projectName.value = package_xml_packagename.value;
+			break;
+		case "txt": //CMakeLists.txt
+			package_xml_packagename.value = CMakeLists_txt_projectName.value;
+			break;		
+	}
+}
+
 </script>
 
 </head>
@@ -416,7 +437,7 @@ var resource_count = 0;
 	<span id="gitInfo" style="font-size:12px; color:;">gitInfo</span>
 	<span id="gitUserRepo" style="font-size:12px; color:; display:none;">
 	gitUser <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;" spellcheck="false">&nbsp;
-	gitRepo <input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;" spellcheck="false">&nbsp;
+	gitRepo <input type="text" id="gitRepo" value="ROStest1" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
 	<input type="button" onclick="GetFileList();" value="GetList" style="width:; height:;" class="button"/>
 	</span>
 	<input type="image" src="./img/settings-1.png" onclick="ShowHide();" style="vertical-align:middle;"/>	
@@ -488,7 +509,8 @@ var resource_count = 0;
 		<!-- <option >사용자 입력</option> -->
 	</select>
 	<!-- <input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) rocon_service_admin/admin">&nbsp; -->
-	<input type="image" onclick="addresource();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>
+	<input type="image" onclick="addresource();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>&nbsp; &nbsp; 
+	<span style="font-size:11px; color:#336699;">* resource를 먼저 추가(+)해 주세요.</span>
 	<br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; override &nbsp;: &nbsp;
 	<select id="override" onchange="overrideChange()">
@@ -499,7 +521,9 @@ var resource_count = 0;
 		<!-- <option >사용자 입력</option> -->
 	</select>
 	<input type="text" id="override_value" style="font-size:11px; width:152px; display:none;" placeholder="ex) ">&nbsp;
-	<input type="image" onclick="addoverride();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/><br>
+	<input type="image" onclick="addoverride();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>&nbsp; &nbsp; 
+	<span style="font-size:11px; color:#336699;">* 추가(+)를 눌러야 수정 결과에 반영됩니다.</span>
+	<br>
 	  <ul id="result_ul2">
 		
       </ul>
@@ -510,7 +534,7 @@ var resource_count = 0;
 	<div id="packagefile" style="display:none;">package.xml<br>
 	<span style="font-size:12px; color:">
 	&nbsp; &nbsp; &nbsp; &nbsp; package name &nbsp;: &nbsp;
-	<input type="text" id="packagename" style="font-size:11px; width:190px" placeholder="ex) concert_tutorial">&nbsp;&nbsp;		
+	<input type="text" id="packagename" style="font-size:11px; width:190px" placeholder="ex) concert_tutorial" onchange="javascript:console.log('packagename : ' + document.all.packagename.value), common_value_mapping('xml');">&nbsp;&nbsp;		
 	<br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; version &nbsp;: &nbsp;
 	<input type="text" id="version" value="0.5.6" style="font-size:11px; width:200px;" placeholder="ex) 0.5.6">&nbsp;&nbsp;
@@ -567,7 +591,7 @@ var resource_count = 0;
 	<input type="text" id="" value="VERSION 2.8.3" readonly style="font-size:11px; width:175px; border:0;" placeholder="ex) VERSION 2.8.3">&nbsp;&nbsp;
 	<br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; project &nbsp;: &nbsp; 
-	<input type="text" id="projectName" style="font-size:11px; width:280px;" placeholder="ex) concert_tutorial">&nbsp;&nbsp;
+	<input type="text" id="projectName" style="font-size:11px; width:280px;" placeholder="ex) concert_tutorial" onchange="javascript:console.log('projectName : ' + document.all.projectName.value), common_value_mapping('txt');">&nbsp;&nbsp;
 	<br>	
 	&nbsp; &nbsp; &nbsp; &nbsp; Catkin 
 	<!-- <select id="conductor_auto_invite" >
@@ -591,8 +615,8 @@ var resource_count = 0;
 
 
 	&nbsp; &nbsp; &nbsp; 
-	<input type="button" id="" value="Save this values" onclick="saveThisValue();" class="button" title="설정값을 저장합니다."/>&nbsp; 
-	<span style="font-size:10px; color:#cc3366;">* 로그인을 하여야 수정이 가능합니다.</span>	
+	<!-- <input type="button" id="" value="Save this values" onclick="saveThisValue();" class="button" title="설정값을 저장합니다."/>&nbsp;  -->
+	<span id="signin_msg" style="font-size:11px; color:#cc3366;">* 로그인을 하여야 수정이 가능합니다.</span>	
 	<input type="button" id="signin" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;<br><br>
 
 	<!-- <div>Created Solution Files Description<br><span style="font-size:12px;" >
