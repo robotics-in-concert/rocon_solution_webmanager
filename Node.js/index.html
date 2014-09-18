@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta content="text/html" charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <title>web led switch</title>
+    </head>
+	
+
+    <body>
+        <div>
+            <p>
+                <button id="switchButton">turn on</button>
+            </p>
+        </div>    
+        <div>
+            <ul id="messages">
+            </ul>
+        </div>
+        <script src="socket.io/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+ 
+        <script>
+            $(function(){
+                var socket = io.connect('http://localhost:8080');
+ 
+                socket.on('connect', function() {
+                    $('#messages').append('<li>Connected to the server.</li>');            
+                });
+ 
+                socket.on('message', function(message) {    
+                    $('#messages').append('<li>' + message + '</li>');
+                });
+ 
+                socket.on('disconnect', function() {
+                    $('#messages').append('<li>Disconnected from the server.</li>');            
+                });
+ 
+                $('#switchButton').bind('click', function() {
+                    var message = $('#switchButton').text();
+                    socket.send(message); //message send
+                    $('#messages').append('<li>me: ' + message + '</li>');
+ 
+                    if (message == 'turn on')
+                        $('#switchButton').text('turn off');
+                    else 
+                        $('#switchButton').text('turn on');
+                });    
+            });
+        </script>
+    </body>
+</html>
