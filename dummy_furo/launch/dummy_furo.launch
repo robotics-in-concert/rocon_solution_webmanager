@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="dummy_furo" name="dummy" type="concert.py" output="screen">
+    <param name="example_services" value="$(find dummy_furo)/data/example_services.yaml"/>
+    <param name="conductor_graph" value="$(find dummy_furo)/data/conductor_graph.dot"/>
+    <param name="gateway_graph" value="$(find dummy_furo)/data/gateway_graph.dot"/>
+  </node>
+</launch>
