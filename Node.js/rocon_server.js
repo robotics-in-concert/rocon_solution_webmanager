@@ -48,7 +48,7 @@ function handler (req, res) {
 		} 
 		res.writeHead(200);
 		res.end(data);
-	});
+	}); 
 }
  
 // this handles socket.io comm from html files
@@ -118,6 +118,7 @@ io.sockets.on('connection', function(socket) {
 				console.log('Delete File');
 				break;		
 		}
+
 
 
 /*-- Node.js : fs --
