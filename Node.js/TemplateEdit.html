@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html" charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+<title>Template Edit</title>
+
+<link rel="stylesheet" href="./css/shkwak.css" type="text/css" />
+<script language="JavaScript" type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+<script language="JavaScript" type="text/javascript" src="./js/shkwak.js"></script>
+<!-- SyntaxHighliter 적용, 2014-09-22(Mon)_shkwak -->
+<script type="text/javascript" src="./syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushXml.js"></script>
+<script type="text/javascript" src="./syntaxhighlighter/scripts/shBrushPlain.js"></script>
+<link type="text/css" rel="stylesheet" href="./syntaxhighlighter/styles/shCoreDefault.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+<!-- Node.js socket.is add -->
+<script src="socket.io/socket.io.js"></script>
+
+<script language="javascript">
+
+var socket = io.connect('http://localhost:8080'); //socket connet!
+
+function ReadFile()
+{
+	var cmd = "ReadFile";
+	var solutionName = document.getElementById('selectbox').value;
+	var fileName = document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		socket.send(message); //message send		
+
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		}); //message
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+	//document.getElementById('box_result').innerHTML = Base64.decode(data.content);	
+}
+
+function DeleteFile()
+{
+	var cmd = "DeleteFile";
+	var solutionName = document.getElementById('selectbox').value;
+	var fileName = document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		socket.send(message); //message send		
+
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		}); //message
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+}
+
+
+
+var pre_content; //수정 전 content base64 값
+var data_sha = "";
+
+function GetFileList()
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value; 
+	var select = document.getElementById('selectbox');
+	var select_sub = document.getElementById('selectbox_sub');
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "-----------";
+	select.add(option_line);
+
+	select_sub.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "-----------";
+	select_sub.add(option_line);
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data.length); //2!!! Good
+			var j = 1;
+			for (var i=0;i<data.length;i++)
+			{
+				//document.getElementById('box1').value += data[i].name + "\n";
+				var option = document.createElement('option');
+				//alert(data[i].type);
+				if (data[i].type == "dir")
+				{	//솔루션만 리스트업_2014-04-16_유진로봇 요청사항
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type[j] = data[i].type; //★
+					j++;
+				}
+			}			
+			
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetFileList_sub()
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value; 
+	var select = document.getElementById('selectbox_sub');
+	var solution = document.getElementById('selectbox').value;
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "-----------";
+	select.add(option_line);
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solution,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//alert(data.length); //2!!! Good
+			var j = 1;
+			for (var i=0;i<data.length;i++)
+			{
+				//document.getElementById('box1').value += data[i].name + "\n";
+				var option = document.createElement('option');
+				//alert(data[i].type);
+		        if (data[i].type == "file")
+				{
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type_sub[j] = data[i].type; //★
+					j++;
+				}
+			}						
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetData(fileName)
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	var select = document.getElementById('selectbox');
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+		/*--select box index 넘버 가져오기--*/ 
+		//alert(select.selectedIndex); //GOOD!
+		//alert(data_type[select.selectedIndex]); //GOOD - file, dir		
+
+		if (data_type[select.selectedIndex] == "dir")
+		{
+			GetFileList_sub(); //solution 폴더의 하위 파일을 다시 읽어오기
+		}
+		else if (data_type[select.selectedIndex] == "file")
+		{
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + fileName,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			//document.getElementById('box_result').value = Base64.decode(data.content);
+			document.getElementById('box_result').innerHTML = Base64.decode(data.content);
+			pre_content = Base64.decode(data.content);
+			data_sha = data.sha; //document.getElementById('box_sha').value = data.sha;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+
+		}
+		else
+		{
+			alert('해당 파일은 수정할 수 없습니다.');
+		}
+	}
+}
+
+function GetData_sub(fileName)
+{
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	//var select = document.getElementById('selectbox');
+	var solution = document.getElementById('selectbox').value;
+	var fileName = document.getElementById('selectbox_sub').value;
+	var str = ["launch", "service", "package", "CMakeLists"];
+
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+		/*--js str 문자열 찾기--*/
+		//var str1 = "CMakeLists.txt"; var srt2 = "CMakeLists"; alert(str1.indexOf(srt2)); //0 -ok		
+		for (var i=0;i<4;i++)
+		{	/*--Template Page 전환--*/		
+			var result = fileName.indexOf(str[i]);
+		
+			if (result > -1)
+			{	//솔루션 폴더 내의 파일선택에 따라 페이지 전환
+				pageChange(str[i]);
+			}	
+		}
+				
+		/*--select box index 넘버 가져오기--*/
+		//alert(select.selectedIndex); alert(data_type[select.selectedIndex]); //GOOD - file, dir
+
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solution + "/" + fileName,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			document.getElementById('box_result').innerHTML = Base64.decode(data.content);
+			pre_content = Base64.decode(data.content);
+			//document.getElementById('box_sha').value = data.sha;
+			data_sha = data.sha;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+
+	}
+}
+
+function FileUpdate_sub()
+{	//Required : message, content(수정 후), sha(수정 전)
+	var owner = document.getElementById('gitUser').value;
+	var repo = document.getElementById('gitRepo').value;
+	var solution = document.getElementById('selectbox').value;
+	var fileName = document.getElementById('selectbox_sub').value;
+
+	/*--access_token--*/
+	//var access_token = document.getElementById('box_token').value;
+	var access_token = localStorage.getItem("access_token");
+	
+	if (access_token == null)
+	{
+		alert("로그인을 하여야 업데이트가 가능합니다.");		
+	}
+	else
+	{
+	var msg = document.getElementById('updateMsg').value;
+	if (msg == ""){msg = "Template Editor commit";}
+	var content = Base64.encode(document.getElementById('box_result').innerHTML);
+	var sha = data_sha; //document.getElementById('box_sha').value;
+	var cmds = {message : msg, content : content, sha : sha}; //var cmds = [ cmd ]; //[ ] 삭제
+	//var data_str = JSON.stringify(cmds);
+	
+	/*
+	if (fileName == "-----------" || content == "")
+	{
+		alert("Insert filename and content value!");
+	}
+	else
+	{*/
+		if (content == pre_content)
+		{
+			alert("Content가 이전 Content와 같습니다.");
+		}
+		else
+		{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solution + "/" + fileName + "?access_token=" + access_token,
+		type: "PUT",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			alert("Update complete!");
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+		}
+	}
+}
+
+function base64encode(data)
+{
+	var output = Base64.encode(data);
+	return output;
+}
+
+//	var owner = document.getElementById('gitUser').value;
+//	var repo = document.getElementById('gitRepo').value; 
+
+function changeList()
+{
+	var listValue = document.getElementById('serviceList').value;
+	
+	if (listValue == "사용자 입력")
+	{
+		//document.getElementById('serviceName').style.display='block';
+		//document.getElementById('serviceName').removeAttribute = 'disabled';
+		document.getElementById('serviceName').value = "";
+		document.getElementById('serviceName').placeholder = "서비스명을 입력하세요.";
+	}
+	else
+	{
+		//document.getElementById('serviceName').style.display='none';
+		//document.getElementById('serviceName').disabled = 'true';
+		document.getElementById('serviceName').value = listValue;
+	}
+}
+
+function saveThisValue()
+{
+	//--access_token--//
+/*	var access_token = localStorage.getItem("access_token");
+
+	if (access_token == null)
+	{
+		alert("로그인을 하여야 수정이 가능합니다.");
+	}
+	else
+*/	{
+		alert("입력값이 정상적으로 저장되었습니다.");
+	}
+
+	//console.log(document.all.li0.value); //0, why?
+}
+
+
+function SigninCheck()
+{
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+	var signin_msg = document.getElementById('signin_msg');
+	
+	if (access_token == null)	
+	{
+		document.getElementById('signin').value = "Sign in";
+		signin_msg.innerHTML = "* 로그인을 하여야 솔루션 생성이 가능합니다.";
+	}
+	else
+	{
+		document.getElementById('signin').value = "Sign out";
+		signin_msg.innerHTML = "* "; //gitInfo를 확인해 주세요.";
+	}
+
+	var access_user = localStorage.getItem("access_user");
+
+	if (access_user != null)
+	{
+		document.getElementById('gitUser').value = access_user;
+		//document.getElementById('gitRepo').value = "";
+	}
+}
+
+
+//var div_num = 1;
+
+function addElement(divName) //x
+{	/*--createElement, 새로운 요소 생성하기.--*/
+/*	var select = document.getElementById('selectbox');
+	var option = document.createElement('option');
+	option.value = option.text = data[i].name;
+	select.add(option);	
+*/	
+	var selectDiv = document.getElementById(divName);
+	
+	var select = document.createElement('select');
+	var input = document.createElement('input');
+
+	var optionValue = ["concert_master", "rocon_service_admin", "rocon_service_turtlesim", "rocon_app_manager", "rocon_apps", "rospy_tutorials", "zeroconf_avahi"];
+
+	selectDiv.appendChild(select);
+	select.id = 'subDiv';
+
+	for (var i=0;i<optionValue.length;i++)
+	{
+		var option = document.createElement('option');
+		option.value = option.text = optionValue[i];
+		select.add(option);	
+	}
+	
+	var br = document.createElement('br');
+	selectDiv.appendChild(br);
+	br.id = "subBr";
+}
+
+function delElement(divName) //x
+{
+/*	<div id="div1">
+	<p id="p1">This is a paragraph.</p>
+	<p id="p2">This is another paragraph.</p>
+	</div>
+	var parent = document.getElementById("div1");
+	var child=document.getElementById("p1");
+	parent.removeChild(child);
+*/
+	var selectDiv = document.getElementById(divName);	
+
+	var subDiv = document.getElementById('subDiv');		
+	selectDiv.removeChild(subDiv);		
+}
+
+function overrideChange()
+{
+	document.all.override_value.value = "";
+
+	if (document.getElementById('override').value == "없음")
+	{
+		document.all.override_value.style.display = 'none';
+	}
+	else
+	{
+		document.all.override_value.style.display = 'inline';
+	}
+}
+
+function onloadFunc()
+{
+	SigninCheck();
+	GetFileList();
+}
+
+var ShowHide_status = false;
+
+var pre_depend_value = new Array();
+var depend_count = 0;
+var depend_pre_check = false;
+
+var resource_count = 0;
+
+/*--공통 변수 처리--*/ //2014-04-29_shkwak
+//CMakeLists.txt : project, package.xml : package name에 적용
+function common_value_mapping(page)
+{
+	var package_xml_packagename = document.getElementById('packagename');
+	var CMakeLists_txt_projectName = document.getElementById('projectName');
+
+	switch (page)
+	{
+		case "xml": //package.xml
+			CMakeLists_txt_projectName.value = package_xml_packagename.value;
+			break;
+		case "txt": //CMakeLists.txt
+			package_xml_packagename.value = CMakeLists_txt_projectName.value;
+			break;		
+	}
+}
+
+</script>
+
+</head>
+<body onLoad="onloadFunc()">
+	<div style="font-size:24px; color:#6699cc;">Solution Template Editor &nbsp; &nbsp;
+	<!-- <input type="button" onclick="pageChange('launch');" value="launch File" class="button2"/>
+	<input type="button" onclick="pageChange('service');" value="service File" class="button2"/>
+	<input type="button" onclick="pageChange('package');" value="package File" class="button2"/>
+	<input type="button" onclick="pageChange('CMakeLists');" value="CMakeLists File" class="button2"/> -->
+	<span id="gitInfo" style="font-size:12px; color:;">gitInfo</span>
+	<span id="gitUserRepo" style="font-size:12px; color:; display:none;">
+	gitUser <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;" spellcheck="false">&nbsp;
+	gitRepo <input type="text" id="gitRepo" value="ROStest1" style="width:150px; font-size:12px;" spellcheck="false">&nbsp;
+	<input type="button" onclick="GetFileList();" value="GetList" style="width:; height:;" class="button"/>
+	</span>
+	<input type="image" src="./img/settings-1.png" onclick="ShowHide();" style="vertical-align:middle;"/>	
+	<span class="styled-select">
+	<select id="selectbox" onChange="GetData(this.value);" >
+	  <option value="">-----------</option>
+	</select> 
+	<select id="selectbox_sub" onChange="GetData_sub(this.value);" >
+	  <option value="">-----------</option>
+	</select> 
+	</span>
+	<!-- Buttons for Node.js test -->
+	<input type="button" onclick="ReadFile();" value="ReadFile" class="button"/>
+	<input type="button" onclick="DeleteFile();" value="DeleteFile" class="button"/>
+
+	</div>
+	<hr><br>	
+
+	<!--■■■■ concert.launch ■■■■-->
+	<div id="launchfile">concert.launch<br>
+	<span style="font-size:12px; color:">
+	&nbsp; &nbsp; &nbsp; &nbsp; include file &nbsp;: &nbsp;
+	<input type="text" id="includefile" style="font-size:11px; width:210px;" placeholder="ex) concert_master.launch">&nbsp;&nbsp;	
+	<!-- <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;">&nbsp;
+	<input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;">&nbsp; -->
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; concert_name &nbsp;: &nbsp;
+	<input type="text" id="concert_name" style="font-size:11px; width:210px;" placeholder="ex) Concert Tutorial">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; services &nbsp;: &nbsp;
+	<input type="text" id="services" style="font-size:11px; width:210px;" placeholder="ex) tutorial.services">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; conductor_auto_invite &nbsp;: &nbsp; 
+	<select id="conductor_auto_invite" >
+		<option value="true">true</option>
+		<option value="false">false</option>
+	</select>
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; conductor_local_clients_only &nbsp;: &nbsp;
+	<select id="conductor_local_clients_only" >
+		<option value="true">true</option>
+		<option value="false">false</option>
+	</select>
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; auto_enable_services &nbsp;: &nbsp; 
+	<select id="auto_enable_services" >
+		<option value="true">true</option>
+		<option value="false">false</option>
+	</select>
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; scheduler_type &nbsp;: &nbsp;
+	<input type="text" id="scheduler_type" style="font-size:11px; width:210px" placeholder="ex) compatibility_tree">&nbsp;&nbsp;
+	</span><br>
+	</div>
+	
+
+	<!--■■■■ solution.services ■■■■-->
+	<div id="servicefile" style="display:none;">solution.services<br>
+	<span style="font-size:12px; color:">
+	&nbsp; &nbsp; &nbsp; &nbsp; resource &nbsp;: &nbsp; 
+	<select id="resource1" onchange="">
+		<option value="rocon_service_turtlesim">rocon_service_turtlesim</option>
+		<option value="rocon_service_admin">rocon_service_admin</option>
+		<option value="turtle_concert">turtle_concert</option>
+		<option value="chatter_concert">chatter_concert</option>
+		<!-- <option >사용자 입력</option> -->
+	</select>
+	<select id="resource2" onchange="">
+		<option value="turtlesim">turtlesim</option>
+		<option value="admin">admin</option>
+		<option value="turtle_pond">turtle_pond</option>
+		<option value="chatter">chatter</option>
+		<!-- <option >사용자 입력</option> -->
+	</select>
+	<!-- <input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) rocon_service_admin/admin">&nbsp; -->
+	<input type="image" onclick="addresource();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>&nbsp; &nbsp; 
+	<span style="font-size:11px; color:#336699;">* resource를 먼저 추가(+)해 주세요.</span>
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; override &nbsp;: &nbsp;
+	<select id="override" onchange="overrideChange()">
+		<option >없음</option>
+		<option value="name">name</option>
+		<option value="description">description</option>
+		<option value="priority">priority</option>
+		<!-- <option >사용자 입력</option> -->
+	</select>
+	<input type="text" id="override_value" style="font-size:11px; width:152px; display:none;" placeholder="ex) ">&nbsp;
+	<input type="image" onclick="addoverride();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>&nbsp; &nbsp; 
+	<span style="font-size:11px; color:#336699;">* 추가(+)를 눌러야 수정 결과에 반영됩니다.</span>
+	<br>
+	  <ul id="result_ul2">
+		
+      </ul>
+	</div>
+
+
+	<!--■■■■ package.xml ■■■■-->
+	<div id="packagefile" style="display:none;">package.xml<br>
+	<span style="font-size:12px; color:">
+	&nbsp; &nbsp; &nbsp; &nbsp; package name &nbsp;: &nbsp;
+	<input type="text" id="packagename" style="font-size:11px; width:190px" placeholder="ex) concert_tutorial" onchange="javascript:console.log('packagename : ' + document.all.packagename.value), common_value_mapping('xml');">&nbsp;&nbsp;		
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; version &nbsp;: &nbsp;
+	<input type="text" id="version" value="0.5.6" style="font-size:11px; width:200px;" placeholder="ex) 0.5.6">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; description &nbsp;: &nbsp; 
+	<input type="text" id="description" style="font-size:11px; width:400px" placeholder="ex) Introductory soft tutorial for the rocon concert.">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; maintainer &nbsp;: &nbsp; 
+	email&nbsp;<input type="text" id="email" value="" style="width:180px; font-size:11px;" placeholder="ex) admin@gmail.com">&nbsp; 
+	name&nbsp;<input type="text" id="maintainer" value="" style="width:147px; font-size:11px;" placeholder="ex) administrator">&nbsp; 	
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; license &nbsp;: &nbsp;
+	<input type="text" id="license" value="BSD" style="width:200px; font-size:11px;" placeholder="ex) BSD">&nbsp; 
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; author &nbsp;: &nbsp; 
+	<input type="text" id="author" value="" style="width:200px; font-size:11px;" placeholder="ex) Daniel Stonier">&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; buildtool_depend &nbsp;: &nbsp;
+	<input type="text" id="buildtool_depend" value="catkin" readonly style="width:140px; font-size:11px; border:0;" placeholder="ex) catkin">&nbsp;&nbsp;
+	<br>
+	<div id="run_depend_div">
+	&nbsp; &nbsp; &nbsp; &nbsp; run_depend &nbsp;: &nbsp;
+	<select id="run_depend" onchange="changeList2()">
+		<option value="concert_master">concert_master</option>
+		<option value="rocon_service_admin">rocon_service_admin</option>
+		<option value="rocon_service_turtlesim">rocon_service_turtlesim</option>
+		<option value="rocon_app_manager">rocon_app_manager</option>
+		<option value="rocon_apps">rocon_apps</option>
+		<option value="rospy_tutorials">rospy_tutorials</option>		
+		<option value="zeroconf_avahi">zeroconf_avahi</option>
+		<option >사용자 입력</option>
+	</select>
+	<input type="text" id="user_depend" value="" style="width:210px font-size:11px; display:none;" placeholder="ex) concert_master">
+	<input type="image" onclick="addDepend();" src="./img/icon_plus_2.png" style="vertical-align:middle;"/>
+	<!-- <input type="image" onclick="delDepend('run_depend_div');" src="./img/icon_minus_2.png" style="vertical-align:middle;"/> -->
+	<br>
+	  <ul id="result_ul">
+		
+      </ul>
+	</div>
+	</span>
+	</div>
+
+
+	<!--■■■■ CMakeLists.txt ■■■■-->
+	<div id="CMakeListsfile" style="display:none;">CMakeLists.txt<br>
+	<span style="font-size:12px; color:">
+	&nbsp; &nbsp; &nbsp; &nbsp; CMake <!-- &nbsp;: &nbsp; &nbsp; &nbsp; &nbsp;
+	<input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) concert_master.launch">&nbsp;&nbsp; -->
+	<!-- <input type="text" id="gitUser" value="meddugi723" style="width:100px; font-size:12px;">&nbsp;
+	<input type="text" id="gitRepo" value="ROStest1" style="width:100px; font-size:12px;">&nbsp; -->
+	<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cmake_minimum_required &nbsp;: &nbsp;
+	<input type="text" id="" value="VERSION 2.8.3" readonly style="font-size:11px; width:175px; border:0;" placeholder="ex) VERSION 2.8.3">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; project &nbsp;: &nbsp; 
+	<input type="text" id="projectName" style="font-size:11px; width:280px;" placeholder="ex) concert_tutorial" onchange="javascript:console.log('projectName : ' + document.all.projectName.value), common_value_mapping('txt');">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; Catkin 
+	<!-- <select id="conductor_auto_invite" >
+		<option value="true">true</option>
+		<option value="false">false</option>
+	</select>
+	<input type="text" id="includefile" style="font-size:11px; width:210px" placeholder="ex) true">&nbsp;&nbsp; -->
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; find_package &nbsp;: &nbsp;
+	<!-- <select id="conductor_local_clients_only" >
+		<option value="true">true</option>
+		<option value="false">false</option>
+	</select> -->
+	<input type="text" id="" value="catkin REQUIRED" readonly style="font-size:11px; width:245px; border:0;" placeholder="ex) catkin REQUIRED">&nbsp;&nbsp;
+	<br>	
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; catkin_package() <!--&nbsp;: &nbsp; 	
+	<!-- <input type="text" id="" value="null" style="font-size:11px; width:235px;" placeholder="ex) null">&nbsp;&nbsp; -->
+	</span><br>
+	</div>
+
+
+
+	&nbsp; &nbsp; &nbsp; 
+	<!-- <input type="button" id="" value="Save this values" onclick="saveThisValue();" class="button" title="설정값을 저장합니다."/>&nbsp;  -->
+	<span id="signin_msg" style="font-size:11px; color:#cc3366;">* 로그인을 하여야 수정이 가능합니다.</span>	
+	<input type="button" id="signin" onclick="javascript:top.document.getElementById('subframe').src='Signin.html', top.document.getElementById('BreadcrumbTitle').innerHTML='Sign in', top.document.getElementById('pageTitle').innerHTML='';top.ChangeSigninTitle('OUT');" value="Sign in" class="button2"/>&nbsp;<br><br>
+
+	<!-- <div>Created Solution Files Description<br><span style="font-size:12px;" >
+	&nbsp; &nbsp; &nbsp; &nbsp; 새로운 솔루션을 생성하면 기본 구성파일로 아래와 같이 4개의 파일 생성됩니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>concert.launch</strong> : 솔루션 실행 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>solution.services</strong> : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>package.xml</strong> : 솔루션에 대한 메타 정보 및 의존성 설정 파일<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; - <strong>CMakeLists.txt</strong> : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span>
+	</div><br -->
+	
+	<div>Result Report<br><span style="font-size:12px;" >
+	&nbsp; &nbsp; &nbsp; &nbsp; 파일 수정 결과를 보여줍니다.<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <input type="button" onclick="ViewSource();" value="View source" class="button" title="수정된 소스를 보여줍니다."/>&nbsp;<br>
+	&nbsp; &nbsp; &nbsp; &nbsp; <textarea id="box_result" style="width:90%; margin-top:5px;" rows="10" title="source" spellcheck="false"></textarea></span><br>
+	<span style="float:right; margin-right:8%; font-size:12px;">GitHub에 수정된 정보를 업데이트 합니다.&nbsp; &nbsp;
+	<input type="text" id="updateMsg" style="font-size:11px; width:150px;" placeholder="Insert update message here." spellcheck="false">&nbsp;&nbsp;
+	<input type="button" onclick="FileUpdate_sub();" value="Update" class="button" title="수정된 정보를 업데이트 합니다."/></span><br>
+	</div><br>	
+
+
+<!-- font-family: Helvetica -->
+
+
+	&nbsp; &nbsp; &nbsp; <textarea id="box_result1" style="width:90%; margin-top:5px;" rows="10" title="source" spellcheck="false"></textarea>
+<h1>Hello SyntaxHighlighter</h1>
+
+
+<pre id="box_result1" class="brush: js;">
+
+function helloSyntaxHighlighter()
+{
+	return "hi!";
+}
+</pre>
+
+	
+<!-- concert.launch -->
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
+PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
+</textarea>
+<!-- solution.services -->
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
+LSByZXNvdXJjZTogcm9jb25fc2VydmljZV90dXJ0bGVzaW0vdHVydGxlc2ltCiAgb3ZlcnJpZGU6CiAgICBwcmlvcml0eTogMwotIHJlc291cmNlOiByb2Nvbl9zZXJ2aWNlX2FkbWluL2FkbWluCiAgb3ZlcnJpZGU6CiAgICBuYW1lOiBhd2Vzb21lIGFkbWluCiAgICBkZXNjcmlwdGlvbjogVGhpcyBpcyBjb29sCi0gcmVzb3VyY2U6IHR1cnRsZV9jb25jZXJ0L3R1cnRsZV9wb25kCiAgb3ZlcnJpZGU6CiAgICBkZXNjcmlwdGlvbjogcG9uLWRhbmcgcG9uLWRhbmcgZG9sIGV1bCBkdXVuIGppIGphCi0gcmVzb3VyY2U6IGNoYXR0ZXJfY29uY2VydC9jaGF0dGVyCg==
+</textarea>
+<!-- package.xml -->
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
+PHBhY2thZ2U+CiAgPG5hbWU+Y29uY2VydF90dXRvcmlhbDwvbmFtZT4KICA8dmVyc2lvbj4wLjUuNjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+CiAgICBJbnRyb2R1Y3Rvcnkgc29mdCB0dXRvcmlhbCBmb3IgdGhlIHJvY29uIGNvbmNlcnQuCiAgPC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iZC5zdG9uaWVyQGdtYWlsLmNvbSI+RGFuaWVsIFN0b25pZXI8L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+RGFuaWVsIFN0b25pZXI8L2F1dGhvcj4KCiAgPGJ1aWxkdG9vbF9kZXBlbmQ+Y2F0a2luPC9idWlsZHRvb2xfZGVwZW5kPgoKICA8cnVuX2RlcGVuZD5jb25jZXJ0X21hc3RlcjwvcnVuX2RlcGVuZD4KICA8cnVuX2RlcGVuZD5yb2Nvbl9zZXJ2aWNlX2FkbWluPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX3NlcnZpY2VfdHVydGxlc2ltPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcF9tYW5hZ2VyPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcHM8L3J1bl9kZXBlbmQ+CiAgPHJ1bl9kZXBlbmQ+cm9zcHlfdHV0b3JpYWxzPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnplcm9jb25mX2F2YWhpPC9ydW5fZGVwZW5kPiAKPC9wYWNrYWdlPgoK
+</textarea>
+<!-- CMakeLists.txt -->
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdChjb25jZXJ0X3R1dG9yaWFsKQoKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENhdGtpbgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCgpmaW5kX3BhY2thZ2UoY2F0a2luIFJFUVVJUkVEKQpjYXRraW5fcGFja2FnZSgpCg==
+</textarea>
+
+<!------------------------------------------------------------------>
+</body>
+</html>
