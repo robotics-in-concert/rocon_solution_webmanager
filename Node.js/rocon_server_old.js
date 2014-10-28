@@ -3,7 +3,6 @@ var app = require('http').createServer(handler),
     fs = require('fs'),
 	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),
     ros = new ROSLIB.Ros();
-	//process = require('process');
  
 app.listen(8080);
 console.log("Listening on http://localhost:8080...");
@@ -37,7 +36,8 @@ driveWheel.callService(driveWheelRequest, function(result) {
 console.log('Result for service call on ' + driveWheel.name + ': ' + result.error_message);
 });
 
-// directs page requests to html files 
+// directs page requests to html files
+ 
 function handler (req, res) {
 	if (req.url == '/') req.url = '/index.html';
 	fs.readFile(__dirname + req.url,	
@@ -48,41 +48,18 @@ function handler (req, res) {
 		} 
 		res.writeHead(200);
 		res.end(data);
-	});
+	}); 
 }
  
-
-// save the main path
-var mainPath = process.cwd();
-console.log("Main Path : " + mainPath);
-
-
-// this handles socket.io comm from html files 
+// this handles socket.io comm from html files
+ 
 io.sockets.on('connection', function(socket) {
     socket.send('connected...');
 	//
     socket.on('message', function(data) {
 		//date - {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
 		switch(data.cmd){
-			case 'CreateSolution':		
-				process.chdir(mainPath); //main path로 chdir
-				//Solutions Dir 체크 및 생성
-/*				fs.exists("Solutions", function (exists) {
-					//util.debug(exists ? "it's there" : "no passwd!");
-					if (!exists)
-					{
-						fs.mkdir("Solutions", '0777', function(err){
-							if(err) throw err;
-							console.log('Dir created : Solutions');
-							process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
-						});
-					}
-					else
-					{
-						process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
-					}
-				});
-*/				
+			case 'CreateSolution':				
 				fs.exists(data.solution, function (exists) {
 					//util.debug(exists ? "it's there" : "no passwd!");
 					if (!exists)
@@ -97,38 +74,26 @@ io.sockets.on('connection', function(socket) {
 							encoding='utf-8',function(err){
 							if(err) throw err;
 							console.log('File writed : ' + data.file);
-
-							var result = data.file + " is created!";
-							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
-							//console.log(message);
-							socket.send(message);
 						});
 					}
 					else
 					{
 						fs.writeFile(data.solution + '/' + data.file,
-							data.content, //base64 decode 필요! 현재 base64 encoding 상태로 저장!
+							data.content, //base64 decode 필요!
 							encoding='utf-8',function(err){
 							if(err) throw err;
 							console.log('File writed : ' + data.file);
-							
-							var result = data.file + " is created!";							
-							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
-							//console.log(message);
-							socket.send(message);
 						});
 					}
-				});					
+				});	
 				break;
 			case 'GetSolutionList':				
-				console.log('Get SolutionList : yet'); //ReadFileList와 중복
+				console.log('Get SolutionList : yet');
 				break;
 			case 'GetFileList':
-				console.log('Get FileList : yet'); //ReadFileList와 중복
+				console.log('Get FileList : yet');
 				break;
 			case 'ReadFile':
-				process.chdir(mainPath);
-				//process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
 				fs.readFile(data.solution + '/' + data.file, 'utf8', function(err, readData) {
 					if(err) throw err;
 					var cmd = "ReadFile";
@@ -136,8 +101,8 @@ io.sockets.on('connection', function(socket) {
 					var fileName = data.file;
 					var content = readData; //★
 					var message = {cmd : cmd, solution : solutionName, file : fileName, content : content};
-					console.log(message);
-					socket.send(message); //return result
+					//console.log(message);
+					socket.send(message);
 				});
 				console.log('Read File');				
 				//socket.broadcast.send("let there be light!");				
@@ -145,40 +110,16 @@ io.sockets.on('connection', function(socket) {
 			case 'ModifyFile':
 				console.log('Modify File : yet');
 				break;
-			case 'DeleteFile':				
-				process.chdir(mainPath); //main path로 chdir
-				//process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
-				console.log(process.cwd());
+			case 'DeleteFile':
 				fs.unlink(data.solution + '/' + data.file, function (err) {
 					if (err) throw err;
 					console.log('successfully deleted : ' + data.solution + '/' + data.file);
 				});
 				console.log('Delete File');
-				break;
-			case 'ReadFileList':
-				console.log('ReadFileList');
-				console.log(data.solution);
-				//var process = require('process');
-				process.chdir(mainPath + '\\' + data.solution); //process.chdir('c:\\windows'); 
-				//process.chdir(mainPath  + '\\Solutions\\test1'); //Solutions로 chdir
-				console.log(process.cwd()); //chdir 안하면 : current dir! - ex) c:/***/***/ROCON
-				 
-				//var fs = require('fs');
-				var results = [];
-				fs.readdir('.',function(err,list){
-					if(err) throw err;
-					console.log('dir length : '+list.length);
-					list.forEach(function(file){
-						fs.stat(file,function(err, stat){ //file 정보
-							if(err) throw err;
-							console.log('file : '+file);
-							console.log('isFile : '+stat.isFile()+' , isDir : '+stat.isDirectory());
-						});
-					});
-				});
-				break;
+				break;		
 		}
 
+  
 
 /*-- Node.js : fs --
 	//1. 파일 확인
