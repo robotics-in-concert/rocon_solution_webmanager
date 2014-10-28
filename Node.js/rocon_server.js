@@ -42,7 +42,7 @@ function handler (req, res) {
 	if (req.url == '/') req.url = '/index.html';
 	fs.readFile(__dirname + req.url,	
 	function (err, data) {
-		if (err) {
+		if (err) { 
 			res.writeHead(500);
 			return res.end('Error loading index.html');
 		} 
