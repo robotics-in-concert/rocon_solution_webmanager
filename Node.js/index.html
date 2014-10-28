@@ -1,52 +1,981 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-    <head>
-		<meta content="text/html" charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <title>web led switch</title>
-    </head>
+ <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <!--favicon-->
+  <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./img/favicon.ico" type="image/x-icon">
+  
+  <title>ROCON - Authoring Environment Tools Ver2.0.0</title>
+  
+  <!-- 상단 Hidden 메뉴 Style -->
+  <!-- <link rel="stylesheet" href="./css/tabzilla-min.css"> -->
+  <!-- 상단 메뉴 Style -->
+  <!-- <link rel="stylesheet" media="all" href="./css/mdn-min.css"> -->
+  <!-- 상단 Style -->
+  <!-- <link rel="stylesheet" media="all" href="./css/wiki-min.css"> -->  
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <!-- Latest compiiled and minified JQuery --> 
+  <script type="text/javascript" src="./jquery/jquery-1.11.1.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script type="text/javascript" src="./bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+  <!-- Node.js socket.is add -->
+  <script src="socket.io/socket.io.js"></script>
+
+
+  <!-- <!--[if IE]> -->
+  <!-- <meta http-equiv="imagetoolbar" content="no"> -->
+  <!-- <script src="./media/js/libs/html5.js"></script> -->
+  <!-- <![endif]--> 
+  
+  <!-- <script type="text/javascript" src="./js/scripts.js">
+  // http://cfsimplicity.com/61/removing-analytics-clutter-from-campaign-urls
+  /*
+  var removeUtms = function(){
+      var location = window.location;
+      if (location.hash.indexOf('utm') != -1) {
+          var anchor = location.hash.match(/#(?!utm)[^&]+/);
+          anchor  =   anchor ? anchor[0] : '';
+          if(!anchor && window.history.replaceState){
+              history.replaceState({}, '', location.pathname + location.search);
+          } else {
+              location.hash = anchor;
+          }
+      }
+  };
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36116321-5'],
+            ['_setAllowAnchor', true],
+            ['_trackPageview']);
+  _gaq.push(removeUtms);
+
+  (function(a, d) {
+    var ga = d.createElement(a); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == d.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = d.getElementsByTagName(a)[0]; s.parentNode.insertBefore(ga, s);
+  })('script', document);
+  */
+</script> -->
+<script language="javascript">
+var Sign_status = false;
+
+function ChangeSubTitle()
+{	
+	document.getElementById("BreadcrumbTitle").innerHTML = "Solution Manager";
+	document.getElementById("pageTitle").innerHTML = "Solution Configuration Manager";
+}
+
+function ChangeSigninTitle(status)
+{
+	if (status == "IN"){
+		document.getElementById("signin").innerHTML = "Sign out <i aria-hidden='true' class='icon-ok'></i>";		
+		if (!Sign_status){
+			//alert("정상적으로 로그인 되었습니다.");
+			Sign_status = true;
+		}
+	}
+	else{
+		document.getElementById("signin").innerHTML = "Sign in <i aria-hidden='true' class='icon-ok'></i>";
+		localStorage.clear(); //Sign out ; access_token 삭제_2014-04-10_shkwak
+		//localStorage.removeItem("access_token");
+
+		if (Sign_status){
+			document.getElementById('accessUserInfo').value = "";
+			alert("정상적으로 로그아웃 되었습니다.");
+			Sign_status = false;
+		}		
+	}	
+}
+
+function pageClose()
+{	//2014-04-11_shkwak
+	localStorage.clear();
+	//localStorage.setItem("access_token", "page closeed!"); //ok
+}
+
+var win=null;
+function NewWindow(mypage,myname,w,h,scroll,pos)
+{
+        if(pos=="random"){
+                LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
+                TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;}
+        if(pos=="center"){
+                LeftPosition=(screen.width)?(screen.width-w)/2:100;
+                TopPosition=(screen.height)?(screen.height-h)/2:100;}
+        else if((pos!="center" && pos!="random") || pos==null){
+                LeftPosition=20;
+                TopPosition=20}
+
+        settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
+        win=window.open(mypage,myname,settings);
+        if(win.focus){win.focus();}
+}
+
+function ReadValue()
+{	
+	var item = localStorage.getItem("access_token");
+	alert(item);
+}
+
+function AccessUserInfo()
+{
+	/*--access_token--*/
+	var access_token = localStorage.getItem("access_token");
+	var access_user = localStorage.getItem("access_user");
+	//alert(access_user);
+	
+	if (access_token == null)	
+	{
+		document.getElementById('accessUserInfo').value = "";
+	}
+	else
+	{
+		document.getElementById('accessUserInfo').value = "WELCOME, " + access_user;
+	}	
+}
+
+function getInfo()
+{	//imsi for test, 2014-10-20	
+	var imsiValue = ($(window).height() - 74) / 2;
+	alert($(window).width() + ", " + imsiValue + ", " + screen.width + ", " + screen.height);
+}
+
+function setDivHeight()
+{
+	var imsiHeight = ($(window).height() - 80) / 2; //
+	console.log('Window Height : ' + imsiHeight);
+	//document.getElementById("div_no1").height = imsiHeight; //x
+	$("#div_no1").height(imsiHeight);
+	$("#div_no2").height(imsiHeight);
+
+	var titleTop = imsiHeight / 2.5;
+	var titleTop_sub = titleTop + 20;
+	console.log('titleTop : ' + titleTop + ", titleTop_sub : " + titleTop_sub);
+	$("#Title_N1").css('top', titleTop); //$("#Title_N1").css('vertical-align', 'middle'); //x
+	$("#Title_N1_1").css('top', titleTop_sub);
+	$("#Title_N2").css('top', titleTop);
+}
+
+/*
+$( window ).bind("resize", function(){
+    // Change the width of the div
+    var imsiHeight = ($(window).height() - 80) / 2; //74
+	console.log(imsiHeight);
+	$("#div_no1").height(imsiHeight);
+	$("#div_no2").height(imsiHeight);
+});
+*/
+var isResized = false;
+var nowPage = 'Page1';
+function resizeHeight(Title)
+{
+	var imsiHeight1 = ($(window).height() - 80) / 1.5;
+	var imsiHeight2 = ($(window).height() - 80) / 6;
+	var titleTop = 74 / 70;
+	console.log(Title);
+
+	document.all.btn_back.style.display = 'block';
+	isResized = true;
+	document.all.Title_N0_1.style.display='none';
+	document.all.Title_N0_2.style.display='none';
+
+	if (Title == 'Page1')
+	{			
+		//document.getElementById('div_no1').style = 'block';
+		$("#div_no1").height('74');
+		//$("#div_no2").height('0');
+		document.getElementById('div_no2').style.display = 'none';
+		document.getElementById('div_content1').style.display = 'block';
+		//$("#div_content1").height(imsiHeight1);
+		document.getElementById('div_content2').style.display = 'none';
+		document.getElementById('Title_N1_1').style.display = 'none';		
+		
+		$("#Title_N1").css('top', titleTop);
+		$("#iframe_N1").height(imsiHeight1*0.9);		
+		$("#Title_N1").css('cursor', 'default'); //document.all.Title_N1.cursor = 'default';
+
+		nowPage = 'Page1';
+	}
+	else
+	{		
+		$("#div_no2").height('74');
+		//$("#div_no1").height('0');
+		document.getElementById('div_no1').style.display = 'none';
+		document.getElementById('div_content2').style.display = 'block';
+		//$("#div_content2").height(imsiHeight1);
+		document.getElementById('div_content1').style.display = 'none';
+
+		$("#Title_N2").css('top', titleTop);
+		$("#iframe_N1").height(imsiHeight1*0.7);
+		$("#Title_N2").css('cursor', 'default');
+
+		nowPage = 'Page2';
+	}
+}
+
+function onMouseEvent(status)
+{
+	if (isResized == false)
+	{
+		switch (status)
+		{
+			case 'Over1':
+				document.all.Title_N0_1.innerHTML = "ROCON 솔루션을 생성하고 구성파일을 편집할 수 있습니다.";
+				document.all.Title_N0_1.style.display='block';
+				break;
+			case 'Over2':
+				document.all.Title_N0_2.style.display='block';
+				break;
+			case 'Over1_sub1':
+				document.all.Title_N0_1.innerHTML = "ROCON Template 에디터 도구가 포함되어 있습니다.";
+				document.all.Title_N0_1.style.display='block';					
+				break;
+			case 'Over1_sub2':
+				document.all.Title_N0_1.innerHTML = "ROCON Service 스케줄링 도구가 포함되어 있습니다.";
+				document.all.Title_N0_1.style.display='block';					
+				break;
+			default :
+				document.all.Title_N0_1.style.display='none';
+				document.all.Title_N0_2.style.display='none';
+				break;
+		}
+	}
+	else
+	{	//Title이 접혀진 상태
+		if (status == 'Over_back')
+		{
+			console.log('nowPage : ' + nowPage);
+			if (nowPage == 'Page2')	$("#group_back").css('color', '#4D4E53');
+			else $("#group_back").css('color', '#FFFFFF');
+
+			document.all.group_back.style.display = 'block';
+		}
+		else
+		{
+			document.all.group_back.style.display = 'none';
+		}
+	}
+}
+
+var socket = io.connect('http://localhost:8080'); //socket connet!
+var i_new = 0;
+var timer_new;
+
+function SolutionCreate_new()
+{	//★	
+	var box_result = document.getElementById('box_result');
+	//if (i_new==0) {box_result.value = "";}
+	
+	/*--access_token--*/
+	//var access_token = localStorage.getItem("access_token");
+
+//	if (access_token == null)
+//	{
+//		alert("로그인을 하여야 솔루션 생성이 가능합니다.");
+//	}
+//	else
+//	{	/*--생성될 솔루션 파일명--*/
+		var solutionName = document.getElementById('solutionName_new').value;
+		var fileName = ["solution.launch", "solution.service", "package.xml", "CMakeLists.txt"];		
+		var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+
+		var cmd = "CreateSolution"; 
+		var content = box[i_new]; 
+		var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
+		
+		if (solutionName != "")
+		{
+			socket.send(message); //message send
+			i_new++;
+
+			if (i_new==4)
+			{	
+				i_new = 0;
+				clearTimeout(timer_new);
+			}
+			else
+			{				
+				timer_new = setTimeout('SolutionCreate_new()',1000);
+			}
+
+			//message receive
+			socket.on('message', function(data) {
+				console.log(data.result);
+				//document.getElementById('box_result').innerHTML = data.result; //Base64.decode(data.content);
+				//box_result.value += data.result + "\n";
+				return;
+			});
+		}
+		else
+		{
+			alert("Insert Solution Name!");
+		}
+		
+//	}
+}
+
+
+function ReadFileList()
+{	//2014-10-14(Tue)_shkwak
+	var solutionName = document.getElementById('solutionName_new').value;
+	var fileName = ["concert.launch", "solution.services", "package.xml", "CMakeLists.txt"];		
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+
+	var cmd = "ReadFileList"; //ReadFileList
+	var content = box[i_new]; 
+	//var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
+	var message = {cmd : cmd, solution : solutionName};
+		
+	socket.send(message); //message send
+}
+
+
+function ReadFile()
+{
+	var cmd = "ReadFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+	//document.getElementById('box_result').innerHTML = Base64.decode(data.content);	
+}
+
+function DeleteFile()
+{
+	var cmd = "DeleteFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 
+		
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+}
+
+function carouselChange(page)
+{
+	console.log(page);
+	switch (page)
+	{
+		case 'p':			
+			document.all.myCarousel_p.style.display = 'block';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'none';
+			break;
+		case 'c':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'block';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'none';
+			break;
+		case 's':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'block';
+			document.all.myCarousel_l.style.display = 'none';
+			break;
+		case 'l':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'block';
+			break;
+	}
+}
+
+
+</script>
+
+<!-- <link type="text/css" rel="stylesheet" href="./css/syntax-prism-min.css"> -->
+
+<style>
+.Title_N_common{
+	text-align:center;
+	/*vertical-align:middle;*/
+}
+
+.logo
+{	
+	width:400px;; /*350px;*/
+	height:60px;
+	/*
+	//margin-top:7px;	 
+	//background-image:url("https://developer.cdn.mozilla.net/media/redesign/img/logo_sprite.svg?2014-01");
+	//background-position:0 0;
+	//background-repeat:no-repeat;
+	//background-size:100% auto;
+	display:block;
+	//text-indent:-9999px;	
+	border: 10px solid #00a3ef;
+	line-height:480px;
+	*/	
+	font-size:3.8em;
+	font-weight:bold;	
+	color:#00a3ef; /*#00a3ef;*/	
+	overflow:hidden;
+	padding:12px;
+}
+@media all and (max-width:1024px){}
+@media all and (max-width:970px){}
+@media screen and (max-width: 460px){
+/*    body {
+        background-color:lightblue;
+    }
+*/
+	.logo{
+		width:400px;; /*350px;*/
+		height:60px;
+		font-size:3.2em;
+		font-weight:bold;	
+		color:#00a3ef;
+		overflow:hidden;
+		padding:12px;
+	}
+	
+}
+
+.width-100 {width:100%}
+.width-40 {width:40%}
+.width-30 {width:30%}
+.width-10 {width:10%}
+
+.h2-option{
+    margin: 0;     
+    color: #666;
+    padding-top: 50px;
+    font-size: 44px;
+    font-family: "trebuchet ms", sans-serif;    
+}
+.item{
+    background: #348FC0;/*#333;*/
+    text-align: center;
+    height: 300px !important;
+}
+.carousel-{
+    margin-top: 20px;
+}
+
+</style>
+
+</head>
+
+  <!-- <frameset rows="*,0" frameborder="NO" border="0" framespacing="0">
+	<frame src="Default.html" name="mainFrame">
+	<frame name="bottomFrame" scrolling="NO" noresize> 
+  </frameset> -->
+
+<body onload="" onunload="pageClose();">
+
+<!-- Main Logo -->
+<div style="background-color:#EAEFF2; height:74px; padding-left:24px;">
+  <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b></span>
+</div>
+
+
+<!------------------------------------------------------------------------------>
+
+<!-- Content will go here -->
+<main id="content" role="main">
+<img src="./image/mb_back.png" id="btn_back" style="position:absolute; width:74px; float:left; padding:10px; cursor:pointer; z-index=-3; display:none;" onclick="location.reload();" onMouseOver="onMouseEvent('Over_back');" onMouseOut="onMouseEvent('Out_back');"/>
+<span id="group_back" style="position:absolute; font-size:2.5em; float:left; margin-left:70px; padding:10px; text-align:center; font-family:'Times New Roman', Times, serif; font-weight: normal; color:#EAEFF2; display:none;" >Go to the previous page.</span>
+
+<div id="Title_N0_1" style="position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">ROCON 솔루션을 생성하고 구성파일을 편집할 수 있습니다.</div>
+
+<div id="div_no1" style="clear:both; background-color:#348FD4;" class="Title_N_common">  
+  <span id="Title_N1" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer; color:#FFFFFF;" onclick="resizeHeight('Page1');" onMouseOver="onMouseEvent('Over1');" onMouseOut="onMouseEvent('Out1');">Solution Manager</span><p>
+  <span id="Title_N1_1" style="position:relative; font-size:1.5em; font-family: 'trebuchet ms', sans-serif; color:#FFFFFF; float:right; padding-right:30px; cursor:default;"><span onMouseOver="onMouseEvent('Over1_sub1');" onMouseOut="onMouseEvent('Out1_sub');">Template Editor</span> + <span onMouseOver="onMouseEvent('Over1_sub2');" onMouseOut="onMouseEvent('Out1_sub');">Service Scheduler</span></span>
+</div>
+<div id="div_content1" style="display:none; padding:20px;" class="">
+	<!-- Modal -->
+	<div id="myModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Confirmation</h4>
+				</div>
+				<div class="modal-body">
+					<p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tab Menu -->
+	<div class="container width-100">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="active"><a data-toggle="tab" href="#sectionA">New Solution</a></li>
+			<li><a data-toggle="tab" href="#sectionB">Template Editor</a></li>
+			<li><a data-toggle="tab" href="#sectionC">Service Scheduler</a></li>
+			<!-- <li class="dropdown">
+				<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a data-toggle="tab" href="#dropdown1">Dropdown1</a></li>
+					<li><a data-toggle="tab" href="#dropdown2">Dropdown2</a></li>
+				</ul>
+			</li> -->
+		</ul>
+		<div class="tab-content">
+			<!--■■■■■ sectionA : New Solution ■■■■-->
+			<div id="sectionA" class="tab-pane fade in active">
+				<h3>Solution Creation</h3>
+				<div class="container width-100" style="">
+				  <div class="jumbotron">
+					<h2>Create the new solution!</h2>      
+					<p>새로운 솔루션 폴더를 생성하고, 그 폴더 내에 4개의 구성파일이 생성합니다.</p>   
+					<div class="form-group width-40">
+					  <label for="solutionName_new">Solution Name</label>
+					  <input class="form-control" id="solutionName_new" type="text" placeholder="Please enter the solution name.">
+					</div>
+					<a href="#" class="btn btn-success" onclick="SolutionCreate_new();"><span class="glyphicon glyphicon-plus"></span>&nbsp; CREATE</a>
+					<!-- <a href="#myModal" class="btn btn-lg btn-primary" data-toggle="modal">Launch Demo Modal</a> -->        
+				  </div>
+				</div>
+
+				<h3>Created Solution Files Description</h3>							
+				<p>새로운 솔루션을 생성하면 기본 구성파일로 아래와 같이 4개의 파일 생성됩니다.</p>
+  <pre class="brush:plain;" style="margin-right: 15px; margin-left: 15px;">
+  <span class="token ">- package.xml : 솔루션에 대한 메타 정보 및 의존성 설정 파일</span>
+  <span class="token ">- CMakeLists.txt : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span>
+  <span class="token ">- solution.service : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일</span>
+  <span class="token ">- solution.launch : 솔루션 실행 설정 파일</span></pre>
+  
+				<!-- <h3>Result Report</h3>
+				<p>솔루션 생성 결과를 보여줍니다.</p>
+				&nbsp; &nbsp; <textarea id="box_result" style="width:98%; margin-top:5px;" rows="4" title="source" spellcheck="false"></textarea> -->		
+			</div>
+
+			<!--■■■■■ sectionB : Template Editor ■■■■-->
+			<div id="sectionB" class="tab-pane fade">
+			  <h3>Step 1</h3>
+			  <div class="container width-30" style="margin-left:0px;">
+				<p>아래에서 편집하고자 하는 솔루션을 선택하세요.</p>
+				<select class="form-control" id="select_solution">
+                    <option>solution1</option>
+					<option>solution2</option>
+					<option>solution3</option>
+					<option>solution4</option>
+                </select>
+			  </div>
+
+			  <h3>Step 2</h3>
+			  <div class="container width-100">
+				<p>선택한 솔루션에서 편집하고자 하는 구성파일을 선택하세요.</p>
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn btn-default" onclick="carouselChange('p');"><input type="radio" name="options" id="option1"> package.xml</label>
+					<label class="btn btn-default" onclick="carouselChange('c');"><input type="radio" name="options" id="option2""> CMakeLists.txt</label>
+					<label class="btn btn-default active" onclick="carouselChange('s');"><input type="radio" name="options" id="option3"> solution.service</label>
+					<label class="btn btn-default" onclick="carouselChange('l');"><input type="radio" name="options" id="option4"> solution.launch</label>
+				</div>				
+			  </div>
+				
+			  <h3>Step 3</h3>
+			  <div class="container width-100">
+				<p>아래 항목을 차례차례 입력하고 Modify 버튼을 누르세요.</p>
+				<div id="myCarousel_s" class="carousel slide" data-interval="0" data-ride="carousel">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_s" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_s" data-slide-to="1"></li>
+						<li data-target="#myCarousel_s" data-slide-to="2"></li>
+						<li data-target="#myCarousel_s" data-slide-to="3"></li>
+						<li data-target="#myCarousel_s" data-slide-to="4"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 서비스명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name."><br>
+							  <h4 style="float:left;">2. 서비스에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceDescription" type="text" placeholder="Please enter the service description.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 저작자(Author)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceAuthor" type="text" placeholder="Please enter the service author."><br>
+							  <h4 style="float:left;">4. 우선순위(Priority)를 입력하세요.</h4>
+							  <input class="form-control" id="servicePriority" type="number" placeholder="Please enter the service priority.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 런처 타입(Launcher Type)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name." value="roslaunch"><br>
+							  <h4 style="float:left;">6. 런처(Launcher)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceDescription" type="text" placeholder="Please enter the service launcher. ex) urtle_concert/turtle_pond">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 아이콘(Icon)을 선책하세요.</h4>
+							  <input class="form-control" id="serviceIcon" type="file" accept=".png,.jpg,.jpeg,.gif" value=""><br>
+							  <h4 style="float:left;">8. 상호작용(Interactions)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceInteractions" type="text" placeholder="Please enter the service interactions.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceParmeters" type="text" placeholder="Please enter service parmeters. ex) turtle_concert/turtle_pond"><br>
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>
+							</div>
+						</div>
+					</div>
+				<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_s" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_s" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				
+
+				<div id="myCarousel_p" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_p" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_p" data-slide-to="1"></li>
+						<li data-target="#myCarousel_p" data-slide-to="2"></li>					
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" id="carousel_package" style="border-radius:6px;">
+						<div class="active item">
+							<h2 class="h2-option">Package 1</h2>
+							<div class="carousel-caption">
+							  <h3>First slide label</h3>
+							  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>							 
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">Package 2</h2>
+							<div class="carousel-caption">
+							  <h3>Second slide label</h3>
+							  <p>Aliquam sit amet gravida nibh, facilisis gravida odio.</p>
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">Package 3</h2>
+							<div class="carousel-caption">
+							  <h3>Third slide label</h3>
+							  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_p" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_p" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				
+
+				<div id="myCarousel_c" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_c" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_c" data-slide-to="1"></li>
+						<li data-target="#myCarousel_c" data-slide-to="2"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" id="carousel_cmakelists" style="border-radius:6px;">
+						<div class="active item">
+							<h2 class="h2-option">CMake 1</h2>
+							<div class="carousel-caption">
+							  <h3>First slide label</h3>
+							  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>							 
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">CMake 2</h2>
+							<div class="carousel-caption">
+							  <h3>Second slide label</h3>
+							  <p>Aliquam sit amet gravida nibh, facilisis gravida odio.</p>
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">CMake 3</h2>
+							<div class="carousel-caption">
+							  <h3>Third slide label</h3>
+							  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_c" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_c" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+
+
+				<div id="myCarousel_l" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_l" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_l" data-slide-to="1"></li>
+						<li data-target="#myCarousel_l" data-slide-to="2"></li>				
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" id="carousel_launch" style="border-radius:6px;">
+						<div class="active item">
+							<h2 class="h2-option">Launch 1</h2>
+							<div class="carousel-caption">
+							  <h3>First slide label</h3>
+							  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>							 
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">Launch 2</h2>
+							<div class="carousel-caption">
+							  <h3>Second slide label</h3>
+							  <p>Aliquam sit amet gravida nibh, facilisis gravida odio.</p>
+							</div>
+						</div>
+						<div class="item">
+							<h2 class="h2-option">Launch 3</h2>
+							<div class="carousel-caption">
+							  <h3>Third slide label</h3>
+							  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_l" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_l" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+					
+				<!-- <div class="jumbotron">
+					<h2>!</h2>      
+					<p>니다.</p>   
+					<div class="form-group width-40">
+					  <label for="Name_new">Name</label>
+					  <input class="form-control" id="Name_new" type="text" placeholder="Please enter the name.">
+					</div>
+					<a href="#" class="btn btn-success" onclick=""><span class="glyphicon glyphicon-pencil"></span>&nbsp; MODIFY</a>
+				 </div> -->
+			  </div>
+
+	<!-- bootstrap Samples -->
+	<!-- <input type="button" class="btn btn-default" value="Default">
+		<input type="button" class="btn btn-primary" value="Primary">
+		<input type="button" class="btn btn-info" value="Info">
+		<input type="button" class="btn btn-success" value="Success">
+		<input type="button" class="btn btn-warning" value="Warning">
+		<input type="button" class="btn btn-danger" value="Danger">
+		<input type="button" class="btn btn-link" value="Link"> -->
+
+	<!-- <div class="alert alert-danger alert-error">
+	       <a href="#" class="close" data-dismiss="alert">&times;</a>
+	       <strong>Error!</strong> A problem has been occurred while submitting your data.
+		</div> -->
+
+	<!-- <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">301 Moved Permanently</h3>
+        </div>
+        <div class="panel-body">The requested page has been permanently moved to a new location.</div>
+    </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">200 OK</h3>
+        </div>
+        <div class="panel-body">The server successfully processed the request.</div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">100 Continue</h3>
+        </div>
+        <div class="panel-body">The client should continue with its request.</div>
+    </div>
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <h3 class="panel-title">400 Bad Request</h3>
+        </div>
+        <div class="panel-body">The request cannot be fulfilled due to bad syntax.</div>
+    </div>
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h3 class="panel-title">503 Service Unavailable</h3>
+        </div>
+        <div class="panel-body">The server is temporarily unable to handle the request.</div>
+    </div> -->
+
+			  
+
+			  <br><br>
+			  <!-- <iframe id="iframe_N1" src="TemplateEdit.html" width=100%; style="border:0px;"> </iframe> -->
+			</div>
+
+			<!--■■■■■ sectionC : Service Scheduler ■■■■-->
+			<div id="sectionC" class="tab-pane fade">
+				<h3>Section C</h3>
+				<p>Vestibulum nec erat eu nulla rhoncus fringilla ut non neque. Vivamus nibh urna, ornare id gravida ut, mollis a magna. Aliquam porttitor condimentum nisi, eu viverra ipsum porta ut. Nam hendrerit bibendum turpis, sed molestie mi fermentum id. Aenean volutpat velit sem. Sed consequat ante in rutrum convallis. Nunc facilisis leo at faucibus adipiscing.</p>
+				<iframe id="iframe_N1" src="Scheduler.html" width=100%; style="border:0px;"> </iframe>
+			</div>
+			<div id="dropdown1" class="tab-pane fade">
+				<h3>Dropdown 1</h3>
+				<p>WInteger convallis, nulla in sollicitudin placerat, ligula enim auctor lectus, in mollis diam dolor at lorem. Sed bibendum nibh sit amet dictum feugiat. Vivamus arcu sem, cursus a feugiat ut, iaculis at erat. Donec vehicula at ligula vitae venenatis. Sed nunc nulla, vehicula non porttitor in, pharetra et dolor. Fusce nec velit velit. Pellentesque consectetur eros.</p>
+			</div>
+			<div id="dropdown2" class="tab-pane fade">
+				<h3>Dropdown 2</h3>
+				<p>Donec vel placerat quam, ut euismod risus. Sed a mi suscipit, elementum sem a, hendrerit velit. Donec at erat magna. Sed dignissim orci nec eleifend egestas. Donec eget mi consequat massa vestibulum laoreet. Mauris et ultrices nulla, malesuada volutpat ante. Fusce ut orci lorem. Donec molestie libero in tempus imperdiet. Cum sociis natoque penatibus et magnis dis parturient.</p>
+			</div>
+		</div>	
+	</div>
+
+
 	
 
-    <body>
-        <div>
-            <p>
-                <button id="switchButton">turn on</button>
-            </p>
-        </div>    
-        <div>
-            <ul id="messages">
-            </ul>
+	<!-- Creating Dynamic Tabs via JavaScript -->
+	<!-- <script type="text/javascript">
+	$(document).ready(function(){ 
+		$("#myTab a").click(function(e){
+			e.preventDefault();
+			$(this).tab('show');
+		});
+	});
+	</script> -->
+<!-- <iframe id="iframe_N1" src="Solution.html" width=100%; style="border:0px;"> </iframe> -->
+</div>
+
+<div id="Title_N0_2" style="clear:both; position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">dotgraph 데이터와 운영정보 Log를 시각화하는 도구입니다.</div>
+<div id="div_no2" style="clear:both; background-color:#FFF8C9;" class="Title_N_common">  
+  <span id="Title_N2" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="resizeHeight('Page2');" onMouseOver="onMouseEvent('Over2');" onMouseOut="onMouseEvent('Out2');">Data Visualizer</span>      
+</div>
+<div id="div_content2" style="display:none; padding:20px;" class="">
+  <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
+<p>Some web sites allow one to upload a file. This is done by using an HTML &lt;input&gt; element using the <code>file</code> type from within a form. When the user selects a file, it can be uploaded to a server. This operation can also be performed via a script using the XMLHttpRequest object. This is a common technique for uploading files as it is compatible with existing servers and <a href="#" title="/en-US/docs/DOM/XMLHttpRequest/FormData">FormData</a> interface makes that task fairly simple.</p>
+<pre class="brush:js;  language-js" data-number=""><code class=" language-js"><span class="token keyword">function</span> <span class="token function">upload<span class="token punctuation">(</span></span>postUrl<span class="token punctuation">,</span> fieldName<span class="token punctuation">,</span> filePath<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">var</span> formData <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FormData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  formData<span class="token punctuation">.</span><span class="token function">append<span class="token punctuation">(</span></span>fieldName<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">File</span><span class="token punctuation">(</span>filePath<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> req <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span><span class="token string">"POST"</span><span class="token punctuation">,</span> postUrl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span>onload <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span><span class="token function">send<span class="token punctuation">(</span></span>formData<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre>     
+</div>
+
+
+<!-- <div class="contributor-sub"> <i aria-hidden="true" class="icon-group"></i><strong>Contributors to this page:</strong> <a href="#">shkwak</a>, <a href="#">jyj</a></div>                              
+<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">2014-10-20</time></div> -->
+
+ <!-- Footer -->
+  <!-- <footer>
+    <div class="center">
+      <div class="column-container">
+        <div class="column-main">         
+		  <p>© 2009-2014 FUTUREROBOT Co.,Ltd. 		  
+		  </p> 
         </div>
-        <script src="socket.io/socket.io.js"></script>
-        <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
- 
-        <script>
-            $(function(){
-                var socket = io.connect('http://localhost:8080');
- 
-                socket.on('connect', function() {
-                    $('#messages').append('<li>Connected to the server.</li>');            
-                });
- 
-                socket.on('message', function(message) {    
-                    $('#messages').append('<li>' + message + '</li>');
-                });
- 
-                socket.on('disconnect', function() {
-                    $('#messages').append('<li>Disconnected from the server.</li>');            
-                });
- 
-                $('#switchButton').bind('click', function() {
-                    var message = $('#switchButton').text();
-                    socket.send(message); //message send
-                    $('#messages').append('<li>me: ' + message + '</li>');
- 
-                    if (message == 'turn on')
-                        $('#switchButton').text('turn off');
-                    else 
-                        $('#switchButton').text('turn on');
-                });    
-            });
-        </script>
-    </body>
+        <div class="column-strip">
+        </div>
+      </div>
+    </div>
+  </footer> -->
+</main>
+<!------------------------------------------------------------------------------>
+
+  <!-- <script src="./js/jquery.min.js"></script> --><!-- <script src="./js/jquery1-min.js"></script> -->
+  <!-- <script src="./js/redesign-main-min.js"></script> -->
+  <!-- <div id="feature-test-element"></div> -->
+  <!-- <script>
+	  //mdn.analytics.initOutboundLinks($('body'));
+  </script> -->
+  <!-- 상단 히든 메뉴 -->
+  <!-- <script src="./js/tabzilla.js" async=""></script> -->  
+  <!-- <script src="./js/wiki-min.js"></script> -->
+  <!-- <script data-manual="" async="" src="./js/syntax-prism-min.js"></script> -->
+  <!-- <script src="./js/prism-line-highlight.js"></script> -->
+
+
+
+
+<!-- concert.launch -->
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
+PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
+</textarea>
+<!-- solution.services -->
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
+LSByZXNvdXJjZTogcm9jb25fc2VydmljZV90dXJ0bGVzaW0vdHVydGxlc2ltCiAgb3ZlcnJpZGU6CiAgICBwcmlvcml0eTogMwotIHJlc291cmNlOiByb2Nvbl9zZXJ2aWNlX2FkbWluL2FkbWluCiAgb3ZlcnJpZGU6CiAgICBuYW1lOiBhd2Vzb21lIGFkbWluCiAgICBkZXNjcmlwdGlvbjogVGhpcyBpcyBjb29sCi0gcmVzb3VyY2U6IHR1cnRsZV9jb25jZXJ0L3R1cnRsZV9wb25kCiAgb3ZlcnJpZGU6CiAgICBkZXNjcmlwdGlvbjogcG9uLWRhbmcgcG9uLWRhbmcgZG9sIGV1bCBkdXVuIGppIGphCi0gcmVzb3VyY2U6IGNoYXR0ZXJfY29uY2VydC9jaGF0dGVyCg==
+</textarea>
+<!-- package.xml -->
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
+PHBhY2thZ2U+CiAgPG5hbWU+Y29uY2VydF90dXRvcmlhbDwvbmFtZT4KICA8dmVyc2lvbj4wLjUuNjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+CiAgICBJbnRyb2R1Y3Rvcnkgc29mdCB0dXRvcmlhbCBmb3IgdGhlIHJvY29uIGNvbmNlcnQuCiAgPC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iZC5zdG9uaWVyQGdtYWlsLmNvbSI+RGFuaWVsIFN0b25pZXI8L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+RGFuaWVsIFN0b25pZXI8L2F1dGhvcj4KCiAgPGJ1aWxkdG9vbF9kZXBlbmQ+Y2F0a2luPC9idWlsZHRvb2xfZGVwZW5kPgoKICA8cnVuX2RlcGVuZD5jb25jZXJ0X21hc3RlcjwvcnVuX2RlcGVuZD4KICA8cnVuX2RlcGVuZD5yb2Nvbl9zZXJ2aWNlX2FkbWluPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX3NlcnZpY2VfdHVydGxlc2ltPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcF9tYW5hZ2VyPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcHM8L3J1bl9kZXBlbmQ+CiAgPHJ1bl9kZXBlbmQ+cm9zcHlfdHV0b3JpYWxzPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnplcm9jb25mX2F2YWhpPC9ydW5fZGVwZW5kPiAKPC9wYWNrYWdlPgoK
+</textarea>
+<!-- CMakeLists.txt -->
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdChjb25jZXJ0X3R1dG9yaWFsKQoKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENhdGtpbgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCgpmaW5kX3BhY2thZ2UoY2F0a2luIFJFUVVJUkVEKQpjYXRraW5fcGFja2FnZSgpCg==
+</textarea>
+
+<script>
+setDivHeight();
+</script>
+
+ </body>
 </html>
