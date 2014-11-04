@@ -3,6 +3,7 @@ var app = require('http').createServer(handler),
     fs = require('fs'),
 	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),
     ros = new ROSLIB.Ros();
+	//base64 = require('./js/base64.js');
 	//process = require('process');
  
 app.listen(8080);
@@ -42,7 +43,7 @@ function handler (req, res) {
 	if (req.url == '/') req.url = '/index.html';
 	fs.readFile(__dirname + req.url,	
 	function (err, data) {
-		if (err) { 
+		if (err) {
 			res.writeHead(500);
 			return res.end('Error loading index.html');
 		} 
@@ -67,7 +68,7 @@ io.sockets.on('connection', function(socket) {
 			case 'CreateSolution':		
 				process.chdir(mainPath); //main path로 chdir
 				//Solutions Dir 체크 및 생성
-/*				fs.exists("Solutions", function (exists) {
+				fs.exists("Solutions", function (exists) {
 					//util.debug(exists ? "it's there" : "no passwd!");
 					if (!exists)
 					{
@@ -75,50 +76,99 @@ io.sockets.on('connection', function(socket) {
 							if(err) throw err;
 							console.log('Dir created : Solutions');
 							process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
+
+							fs.exists(data.solution, function (exists) {
+								//util.debug(exists ? "it's there" : "no passwd!");
+								if (!exists)
+								{
+									fs.mkdir(data.solution, '0777', function(err){
+										if(err) throw err;
+										console.log('Dir created : ' + data.solution);
+									});
+									//<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+									fs.writeFile(data.solution + '/' + data.file,
+										Base64.decode(data.content), //base64 decode 필요!
+										encoding='utf-8',function(err){
+										if(err) throw err;
+										console.log('File writed : ' + data.file);
+
+										if (data.count == 3)
+										{
+											var result = data.solution;
+											var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+											//console.log(message);
+											socket.send(message);
+										}							
+									});
+								}
+								else
+								{
+									fs.writeFile(data.solution + '/' + data.file,
+										Base64.decode(data.content), //base64 decode 필요! 현재 base64 encoding 상태로 저장!
+										encoding='utf-8',function(err){
+										if(err) throw err;
+										console.log('File writed : ' + data.file);
+										
+										if (data.count == 3)
+										{
+											var result = data.solution;
+											var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+											//console.log(message);
+											socket.send(message);
+										}
+									});
+								}
+							});
 						});
 					}
 					else
 					{
 						process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
-					}
-				});
-*/				
-				fs.exists(data.solution, function (exists) {
-					//util.debug(exists ? "it's there" : "no passwd!");
-					if (!exists)
-					{
-						fs.mkdir(data.solution, '0777', function(err){
-							if(err) throw err;
-							console.log('Dir created : ' + data.solution);
-						});
-						//<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
-						fs.writeFile(data.solution + '/' + data.file,
-							data.content, //base64 decode 필요!
-							encoding='utf-8',function(err){
-							if(err) throw err;
-							console.log('File writed : ' + data.file);
 
-							var result = data.file + " is created!";
-							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
-							//console.log(message);
-							socket.send(message);
+						fs.exists(data.solution, function (exists) {
+							//util.debug(exists ? "it's there" : "no passwd!");
+							if (!exists)
+							{
+								fs.mkdir(data.solution, '0777', function(err){
+									if(err) throw err;
+									console.log('Dir created : ' + data.solution);
+								});
+								//<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+								fs.writeFile(data.solution + '/' + data.file,
+									Base64.decode(data.content), //base64 decode 필요!
+									encoding='utf-8',function(err){
+									if(err) throw err;
+									console.log('File writed : ' + data.file);
+
+									if (data.count == 3)
+									{
+										var result = data.solution;
+										var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+										//console.log(message);
+										socket.send(message);
+									}							
+								});
+							}
+							else
+							{
+								fs.writeFile(data.solution + '/' + data.file,
+									Base64.decode(data.content), //base64 decode 필요! 현재 base64 encoding 상태로 저장!
+									encoding='utf-8',function(err){
+									if(err) throw err;
+									console.log('File writed : ' + data.file);
+									
+									if (data.count == 3)
+									{
+										var result = data.solution;
+										var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+										//console.log(message);
+										socket.send(message);
+									}
+								});
+							}
 						});
-					}
-					else
-					{
-						fs.writeFile(data.solution + '/' + data.file,
-							data.content, //base64 decode 필요! 현재 base64 encoding 상태로 저장!
-							encoding='utf-8',function(err){
-							if(err) throw err;
-							console.log('File writed : ' + data.file);
-							
-							var result = data.file + " is created!";							
-							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
-							//console.log(message);
-							socket.send(message);
-						});
-					}
-				});					
+					}						
+				});								
 				break;
 			case 'GetSolutionList':				
 				console.log('Get SolutionList : yet'); //ReadFileList와 중복
@@ -127,7 +177,7 @@ io.sockets.on('connection', function(socket) {
 				console.log('Get FileList : yet'); //ReadFileList와 중복
 				break;
 			case 'ReadFile':
-				process.chdir(mainPath);
+				process.chdir(mainPath  + '\\Solutions');
 				//process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
 				fs.readFile(data.solution + '/' + data.file, 'utf8', function(err, readData) {
 					if(err) throw err;
@@ -143,7 +193,44 @@ io.sockets.on('connection', function(socket) {
 				//socket.broadcast.send("let there be light!");				
 				break;
 			case 'ModifyFile':
-				console.log('Modify File : yet');
+				process.chdir(mainPath + '\\Solutions'); //main path로 chdir				
+				fs.exists(data.solution, function (exists) {
+					//util.debug(exists ? "it's there" : "no passwd!");
+					if (!exists)
+					{
+						fs.mkdir(data.solution, '0777', function(err){
+							if(err) throw err;
+							console.log('Dir created : ' + data.solution);
+						});
+						//<script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+						fs.writeFile(data.solution + '/' + data.file,
+							Base64.decode(data.content), //base64 decode 필요!
+							encoding='utf-8',function(err){
+							if(err) throw err;
+							console.log('File writed : ' + data.file);
+
+							var result = data.file + " is modified!";
+							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+							//console.log(message);
+							socket.send(message);
+						});
+					}
+					else
+					{
+						fs.writeFile(data.solution + '/' + data.file,
+							Base64.decode(data.content), //base64 decode 필요! 현재 base64 encoding 상태로 저장!
+							encoding='utf-8',function(err){
+							if(err) throw err;
+							console.log('File writed : ' + data.file);
+							
+							var result = data.file + " is modified!";							
+							var message = {result : result}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+							//console.log(message);
+							socket.send(message);
+						});
+					}
+				});	
+				console.log('Modify File : ' + data.file);
 				break;
 			case 'DeleteFile':				
 				process.chdir(mainPath); //main path로 chdir
@@ -159,7 +246,7 @@ io.sockets.on('connection', function(socket) {
 				console.log('ReadFileList');
 				console.log(data.solution);
 				//var process = require('process');
-				process.chdir(mainPath + '\\' + data.solution); //process.chdir('c:\\windows'); 
+				process.chdir(mainPath  + '\\Solutions\\' + data.solution); //process.chdir('c:\\windows'); 
 				//process.chdir(mainPath  + '\\Solutions\\test1'); //Solutions로 chdir
 				console.log(process.cwd()); //chdir 안하면 : current dir! - ex) c:/***/***/ROCON
 				 
@@ -320,3 +407,126 @@ io.sockets.on('connection', function(socket) {
         socket.send('disconnected...');
     });
 });
+
+
+
+//Base64 API
+var Base64 = { 
+	// private property
+	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+ 
+	// public method for encoding
+	encode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+ 
+		input = Base64._utf8_encode(input);
+ 
+		while (i < input.length) {
+ 
+			chr1 = input.charCodeAt(i++);
+			chr2 = input.charCodeAt(i++);
+			chr3 = input.charCodeAt(i++);
+ 
+			enc1 = chr1 >> 2;
+			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc4 = chr3 & 63;
+ 
+			if (isNaN(chr2)) {
+				enc3 = enc4 = 64;
+			} else if (isNaN(chr3)) {
+				enc4 = 64;
+			}
+			
+			output = output +
+			this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+			this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4); 
+		} 
+		return output;
+	},
+ 
+	// public method for decoding
+	decode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3;
+		var enc1, enc2, enc3, enc4;
+		var i = 0;
+ 
+		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+ 
+		while (i < input.length) { 
+			enc1 = this._keyStr.indexOf(input.charAt(i++));
+			enc2 = this._keyStr.indexOf(input.charAt(i++));
+			enc3 = this._keyStr.indexOf(input.charAt(i++));
+			enc4 = this._keyStr.indexOf(input.charAt(i++));
+ 
+			chr1 = (enc1 << 2) | (enc2 >> 4);
+			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+			chr3 = ((enc3 & 3) << 6) | enc4;
+ 
+			output = output + String.fromCharCode(chr1);
+ 
+			if (enc3 != 64) {
+				output = output + String.fromCharCode(chr2);
+			}
+			if (enc4 != 64) {
+				output = output + String.fromCharCode(chr3);
+			} 
+		} 
+		output = Base64._utf8_decode(output);
+ 
+		return output; 
+	},
+ 
+	// private method for UTF-8 encoding
+	_utf8_encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+ 
+		for (var n = 0; n < string.length; n++) {
+ 
+			var c = string.charCodeAt(n);
+ 
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			} else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			} else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			} 
+		} 
+		return utftext;
+	},
+ 
+	// private method for UTF-8 decoding
+	_utf8_decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+ 
+		while ( i < utftext.length ) {
+ 
+			c = utftext.charCodeAt(i);
+ 
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			} else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			} else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			} 
+		} 
+		return string;
+	}
+}
