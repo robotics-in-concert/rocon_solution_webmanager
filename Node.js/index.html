@@ -78,19 +78,21 @@ function pageClose()
 var win=null;
 function NewWindow(mypage,myname,w,h,scroll,pos)
 {
-        if(pos=="random"){
-                LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
-                TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;}
-        if(pos=="center"){
-                LeftPosition=(screen.width)?(screen.width-w)/2:100;
-                TopPosition=(screen.height)?(screen.height-h)/2:100;}
-        else if((pos!="center" && pos!="random") || pos==null){
-                LeftPosition=20;
-                TopPosition=20}
+	if(pos=="random"){
+		LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
+		TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;
+	}
+    if(pos=="center"){
+        LeftPosition=(screen.width)?(screen.width-w)/2:100;
+        TopPosition=(screen.height)?(screen.height-h)/2:100;
+	}else if((pos!="center" && pos!="random") || pos==null){
+        LeftPosition=20;
+        TopPosition=20
+	}
 
-        settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
-        win=window.open(mypage,myname,settings);
-        if(win.focus){win.focus();}
+    settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
+    win=window.open(mypage,myname,settings);
+    if(win.focus){win.focus();}
 }
 
 function ReadValue()
@@ -242,54 +244,42 @@ var timer_new;
 function SolutionCreate_new()
 {	//★	
 	var box_result = document.getElementById('box_result');
-	//if (i_new==0) {box_result.value = "";}
+	/*--생성될 솔루션 파일명--*/
+	var solutionName = document.getElementById('solutionName_new').value;
+	var fileName = ["solution.launch", "solution.service", "package.xml", "CMakeLists.txt"];		
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+
+	var cmd = "CreateSolution"; 
+	var content = box[i_new]; 
+	var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content, count : i_new};
 	
-	/*--access_token--*/
-	//var access_token = localStorage.getItem("access_token");
+	if (solutionName != "")
+	{
+		socket.send(message); //message send
+		i_new++;
 
-//	if (access_token == null)
-//	{
-//		alert("로그인을 하여야 솔루션 생성이 가능합니다.");
-//	}
-//	else
-//	{	/*--생성될 솔루션 파일명--*/
-		var solutionName = document.getElementById('solutionName_new').value;
-		var fileName = ["solution.launch", "solution.service", "package.xml", "CMakeLists.txt"];		
-		var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
-
-		var cmd = "CreateSolution"; 
-		var content = box[i_new]; 
-		var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content, count : i_new};
-		
-		if (solutionName != "")
-		{
-			socket.send(message); //message send
-			i_new++;
-
-			if (i_new==4)
-			{	
-				i_new = 0;
-				clearTimeout(timer_new);
-			}
-			else
-			{				
-				timer_new = setTimeout('SolutionCreate_new()',1000);
-			}
-
-			//message receive
-			socket.on('message', function(data) {
-				//console.log(data.result); //중복문제
-				document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";
-				//box_result.value += data.result + "\n";
-				return;
-			});
+		if (i_new==4)
+		{	
+			i_new = 0;
+			clearTimeout(timer_new);
 		}
 		else
-		{
-			alert("Insert Solution Name!");
+		{				
+			timer_new = setTimeout('SolutionCreate_new()',1000);
 		}
-		
-//	}
+
+		//message receive
+		socket.on('message', function(data) {
+			//console.log(data.result); //중복문제
+			document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";
+			//box_result.value += data.result + "\n";
+			return;
+		});
+	}
+	else
+	{
+		alert("Insert Solution Name!");
+	}
 }
 
 
@@ -371,24 +361,28 @@ function carouselChange(page)
 			document.all.myCarousel_c.style.display = 'none';
 			document.all.myCarousel_s.style.display = 'none';
 			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '1';
 			break;
 		case 'c':			
 			document.all.myCarousel_p.style.display = 'none';
 			document.all.myCarousel_c.style.display = 'block';
 			document.all.myCarousel_s.style.display = 'none';
 			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '2';
 			break;
 		case 's':			
 			document.all.myCarousel_p.style.display = 'none';
 			document.all.myCarousel_c.style.display = 'none';
 			document.all.myCarousel_s.style.display = 'block';
 			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '3';
 			break;
 		case 'l':			
 			document.all.myCarousel_p.style.display = 'none';
 			document.all.myCarousel_c.style.display = 'none';
 			document.all.myCarousel_s.style.display = 'none';
 			document.all.myCarousel_l.style.display = 'block';
+			document.all.PageNum.value = '4';
 			break;
 	}
 }
@@ -434,28 +428,61 @@ function sweetalert()
 }
 
 var fileModify = function(fileID){
-	var serviceContent = ""; //Init!
-	serviceContent += "name: " + document.getElementById('serviceName').value + "\n";
-	serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
-	serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
-	serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
-	serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
-	serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
-	serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
-	serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
-	serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
-
-	console.log(serviceContent); //ok
-
+	var serviceContent = ""; //Init!	
 	var solutionName = document.getElementById('select_solution').value;
 	var fileName = "";
 	switch (fileID)
 	{		
-		case '1': fileName = "package.xml"; break;
-		case '2': fileName = "CMakeLists.txt"; break;
-		case '3': fileName = "solution.service"; break;
-		case '4': fileName = "solution.launch"; break;
+		case '1': 
+			fileName = "package.xml"; 
+			serviceContent += "<package>\n";
+			serviceContent += "  <name>" + document.getElementById('packageName').value + "</name>\n";
+			serviceContent += "  <version>" + document.getElementById('packageVersion').value + "</version>\n";
+			serviceContent += "  <description>" + document.getElementById('packageDescription').value + "</description>\n";
+			serviceContent += "  <maintainer email=\"" + document.getElementById('packageMaintainerEmail').value + "\">" + document.getElementById('packageMaintainer').value + "</maintainer>\n";
+			serviceContent += "  <license>" + document.getElementById('packageLicense').value + "</license>\n";
+			serviceContent += "  <url type=\"" + document.getElementById('packageURLType').value + "\">" + document.getElementById('packageURL').value + "</url>\n";	
+			serviceContent += "  <author>" + document.getElementById('packageAuthor').value + "</author>\n";
+			serviceContent += "  <buildtool_depend>: " + document.getElementById('packageBuildtoolDepend').value + "</buildtool_depend>\n";
+			serviceContent += "  <run_depend>" + document.getElementById('packageRunDepend').value + "</run_depend>\n";
+			serviceContent += "  <export>\n";
+			serviceContent += "    <concert_service>" + document.getElementById('packageExport').value + "</concert_service>\n";
+			serviceContent += "  </export>\n";
+			serviceContent += "</package>\n";
+			break;
+		case '2': 
+			fileName = "CMakeLists.txt"; 
+			serviceContent += "cmake_minimum_required(" + document.getElementById('cmakeVersion').value + ")\n";
+			serviceContent += "project(" + document.getElementById('cmakeProject').value + ")\n";
+			serviceContent += "find_package(" + document.getElementById('cmakeFindPkg').value + ")\n";
+			serviceContent += document.getElementById('cmakeCatkinPkg').value + "\n";
+			break;
+		case '3': 			
+			fileName = "solution.service"; 
+			serviceContent += "name: " + document.getElementById('serviceName').value + "\n";
+			serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
+			serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
+			serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
+			serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
+			serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
+			serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
+			serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
+			serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
+			break;
+		case '4': 
+			fileName = "solution.launch"; 
+			serviceContent += "<launch>\n";
+			serviceContent += "  <node name=\"" + document.getElementById('launchNodeName').value + "\" pkg=\"" + document.getElementById('launchNodePkg').value + "\" type=\"" + document.getElementById("launchNodeType").value + "\">\n";
+			serviceContent += "    <param name=\"" + document.getElementById('launchParamName').value + "\" value=\"" + document.getElementById('launchParamValue').value + "\"/>\n";
+			serviceContent += "  </node>\n";
+			serviceContent += "  <include file=\"" + document.getElementById('launchIncludeFile').value + "\">\n";
+			serviceContent += "    <arg name=\"" + document.getElementById('launchArgName').value + "\" value=\"" + document.getElementById('launchArgValue').value + "\"/>\n";
+			serviceContent += "  </include>\n";
+			serviceContent += "</launch>\n";
+			break;
 	};	
+
+	console.log(serviceContent); //ok
 
 	var cmd = "ModifyFile"; 
 	var content = Base64.encode(serviceContent); 
@@ -487,17 +514,6 @@ var fileModify = function(fileID){
 {	
 	width:400px;; /*350px;*/
 	height:60px;
-	/*
-	//margin-top:7px;	 
-	//background-image:url("https://developer.cdn.mozilla.net/media/redesign/img/logo_sprite.svg?2014-01");
-	//background-position:0 0;
-	//background-repeat:no-repeat;
-	//background-size:100% auto;
-	display:block;
-	//text-indent:-9999px;	
-	border: 10px solid #00a3ef;
-	line-height:480px;
-	*/	
 	font-size:3.8em;
 	font-weight:bold;	
 	color:#00a3ef; /*#00a3ef;*/	
@@ -511,16 +527,7 @@ var fileModify = function(fileID){
         background-color:lightblue;
     }
 */
-	.logo{
-		width:400px;; /*350px;*/
-		height:60px;
-		font-size:3.2em;
-		font-weight:bold;	
-		color:#00a3ef;
-		overflow:hidden;
-		padding:12px;
-	}
-	
+	.logo{width:400px; /*350px;*/ height:60px; font-size:3.2em; font-weight:bold; color:#00a3ef; overflow:hidden; padding:12px;}	
 }
 
 .width-100 {width:100%}
@@ -540,10 +547,14 @@ var fileModify = function(fileID){
     text-align: center;
     height: 300px !important;
 }
+.item_p{background: #5DAA5F;/*#333;*/}
+.item_c1{background: #5A6776;/*#333;*/}
+.item_s1{background: #3F86C3;/*#333;*/}
+.item_l1{background: #3F86C3;/*#333;*/}
+
 .carousel-{
     margin-top: 20px;
 }
-
 
 .calender-body {
 	margin: 40px 10px;
@@ -573,7 +584,6 @@ var fileModify = function(fileID){
   <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b></span>
 </div>
 
-
 <!------------------------------------------------------------------------------>
 
 <!-- Content will go here -->
@@ -602,7 +612,7 @@ var fileModify = function(fileID){
 				</div>							   
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify('3');">OK</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify(document.getElementById('PageNum').value);">OK</button>
 				</div>
 			</div>
 		</div>
@@ -673,9 +683,9 @@ var fileModify = function(fileID){
 			  <div class="container width-100">
 				<p>선택한 솔루션에서 편집하고자 하는 구성파일을 선택하세요.</p>
 				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-default" onclick="carouselChange('p');"><input type="radio" name="options" id="option1"> package.xml</label>
+					<label class="btn btn-default active" onclick="carouselChange('p');"><input type="radio" name="options" id="option1"> package.xml</label>
 					<label class="btn btn-default" onclick="carouselChange('c');"><input type="radio" name="options" id="option2""> CMakeLists.txt</label>
-					<label class="btn btn-default active" onclick="carouselChange('s');"><input type="radio" name="options" id="option3"> solution.service</label>
+					<label class="btn btn-default" onclick="carouselChange('s');"><input type="radio" name="options" id="option3"> solution.service</label>
 					<label class="btn btn-default" onclick="carouselChange('l');"><input type="radio" name="options" id="option4"> solution.launch</label>
 				</div>				
 			  </div>
@@ -683,7 +693,138 @@ var fileModify = function(fileID){
 			  <h3>Step 3</h3>
 			  <div class="container width-100">
 				<p>아래 항목을 차례차례 입력하고 Modify 버튼을 누르세요.</p>
-				<div id="myCarousel_s" class="carousel slide" data-interval="0" data-ride="carousel">
+				
+				<!--■■ package.xml File ■■-->
+				<div id="myCarousel_p" class="carousel slide" data-interval="0" data-ride="carousel">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_p" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_p" data-slide-to="1"></li>
+						<li data-target="#myCarousel_p" data-slide-to="2"></li>		
+						<li data-target="#myCarousel_p" data-slide-to="3"></li>
+						<li data-target="#myCarousel_p" data-slide-to="4"></li>
+						<li data-target="#myCarousel_p" data-slide-to="5"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_p">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 패키지명을 입력하세요.</h4>
+							  <input class="form-control" id="packageName" type="text" placeholder="Please enter the package name."><br>
+							  <h4 style="float:left;">2. 패키지 버전을 입력하세요.</h4>
+							  <input class="form-control" id="packageVersion" type="text" placeholder="Please enter the package version. ex) 0.1.1">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">							  
+							  <h4 style="float:left;">3. 패키지에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="packageDescription" type="text" placeholder="Please enter the package description."><br>
+							  <h4 style="float:left;">4. Maintainer 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageMaintainerEmail" type="text" placeholder="Please enter the maintainer email.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageMaintainer" type="text" placeholder="Please enter the maintainer.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 라이센스(License)를 입력하세요.</h4>
+							  <input class="form-control" id="packageLicense" type="text" placeholder="Please enter the license." value="BSD"><br>
+							  <h4 style="float:left;">6. URL 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageURLType" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageURL" type="text" placeholder="Please enter the url address.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 저작자(Author)를 입력하세요</h4>
+							  <input class="form-control" id="packageAuthor" type="text" placeholder="Please enter the package author." ><br>
+							  <h4 style="float:left;">8. Buildtool Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageBuildtoolDepend" type="text" placeholder="Please enter the package buildtool depend." value="catkin">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageRunDepend" type="text" placeholder="Please enter package run depend."><br>
+							  <h4 style="float:left;">10. Export(concert_service)를 선택하세요.</h4><br><br>
+							  <input class="form-control" id="packageExport" type="file" accept=".service" onchange="this.value = this.files[0].name;">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageParmeters" type="text" placeholder="Please enter package run depend."><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <a href="#myModal" class="btn btn-success" style="float:left;">Modify</a>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_p" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_p" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				
+				<!--■■ CMakeLists.txt File ■■-->
+				<div id="myCarousel_c" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_c" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_c" data-slide-to="1"></li>
+						<li data-target="#myCarousel_c" data-slide-to="2"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_c">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. cmake_minimum_required 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeVersion" type="text" placeholder="Please enter the cmake name." value="VERSION 2.8.3"><br>
+							  <h4 style="float:left;">2. 프로젝트(project)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeProject" type="text" placeholder="Please enter the cmake project.">
+							</div>
+						</div>
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. find_package 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeFindPkg" type="text" placeholder="Please enter the cmake find_package." value="catkin REQUIRED"><br>
+							  <h4 style="float:left;">4. catkin_package 를 확인하세요.</h4>
+							  <input class="form-control" id="cmakeCatkinPkg" type="text" placeholder="Please enter the cmake catkin_package." value="catkin_package()";>
+							</div>
+						</div>						
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeParmeters" type="text" placeholder="Please enter cmake parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-default" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_c" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_c" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+
+				<!--■■ solution.service File ■■-->
+				<div id="myCarousel_s" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
 					<!-- Carousel indicators -->
 					<ol class="carousel-indicators">
 						<li data-target="#myCarousel_s" data-slide-to="0" class="active"></li>
@@ -750,145 +891,64 @@ var fileModify = function(fileID){
 						<span class="glyphicon glyphicon-chevron-right"></span>
 					</a>
 				</div>
-				
 
-				<div id="myCarousel_p" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
-					<!-- Carousel indicators -->
-					<ol class="carousel-indicators">
-						<li data-target="#myCarousel_p" data-slide-to="0" class="active"></li>
-						<li data-target="#myCarousel_p" data-slide-to="1"></li>
-						<li data-target="#myCarousel_p" data-slide-to="2"></li>					
-					</ol>   
-					<!-- Carousel items -->
-					<div class="carousel-inner" style="border-radius:6px;">
-						<div class="active item">
-							<!-- <h2 class="h2-option">Slide 1</h2> -->
-							<div class="carousel-caption" style="top:20px;">
-							  <h4 style="float:left;">1. 서비스명을 입력하세요.</h4>
-							  <input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name."><br>
-							  <h4 style="float:left;">2. 서비스에 대한 설명을 입력하세요.</h4>
-							  <input class="form-control" id="serviceDescription" type="text" placeholder="Please enter the service description.">
-							</div>
-						</div>
-						<div class="item">
-							<!-- <h2 class="h2-option">항목 2</h2> -->
-							<div class="carousel-caption" style="top:20px;">
-							  <h4 style="float:left;">3. 저작자(Author)를 입력하세요.</h4>
-							  <input class="form-control" id="serviceAuthor" type="text" placeholder="Please enter the service author."><br>
-							  <h4 style="float:left;">4. 우선순위(Priority)를 입력하세요.</h4>
-							  <input class="form-control" id="servicePriority" type="number" placeholder="Please enter the service priority.">
-							</div>
-						</div>
-						<div class="item">
-							<!-- <h2 class="h2-option">항목 3</h2> -->
-							<div class="carousel-caption" style="top:20px;">
-							  <h4 style="float:left;">5. 런처 타입(Launcher Type)을 입력하세요.</h4>
-							  <input class="form-control" id="serviceLauncherType" type="text" placeholder="Please enter the service name." value="roslaunch"><br>
-							  <h4 style="float:left;">6. 런처(Launcher)를 입력하세요.</h4>
-							  <input class="form-control" id="serviceLauncher" type="text" placeholder="Please enter the service launcher. ex) turtle_concert/turtle_pond">
-							</div>
-						</div>
-						<div class="item">
-							<!-- <h2 class="h2-option">항목 3</h2> -->
-							<div class="carousel-caption" style="top:20px;">
-							  <h4 style="float:left;">7. 아이콘(Icon)을 선책하세요.</h4>
-							  <input class="form-control" id="serviceIcon" type="file" accept=".png,.jpg,.jpeg,.gif" value=""><br>
-							  <h4 style="float:left;">8. 상호작용(Interactions)을 입력하세요.</h4>
-							  <input class="form-control" id="serviceInteractions" type="text" placeholder="Please enter the service interactions.">
-							</div>
-						</div>
-						<div class="item">
-							<!-- <h2 class="h2-option">항목 3</h2> -->
-							<div class="carousel-caption" style="top:20px;">
-							  <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
-							  <input class="form-control" id="serviceParmeters" type="text" placeholder="Please enter service parmeters. ex) turtle_concert/turtle_pond"><br>
-							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
-							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
-							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>
-							</div>
-						</div>
-					</div>
-					<!-- Carousel nav ; left, right css gradient exist -->
-					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
-					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_p" data-slide="prev">
-						<span class="glyphicon glyphicon-chevron-left"></span>
-					</a>
-					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_p" data-slide="next">
-						<span class="glyphicon glyphicon-chevron-right"></span>
-					</a>
-				</div>
-				
-
-				<div id="myCarousel_c" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
-					<!-- Carousel indicators -->
-					<ol class="carousel-indicators">
-						<li data-target="#myCarousel_c" data-slide-to="0" class="active"></li>
-						<li data-target="#myCarousel_c" data-slide-to="1"></li>
-						<li data-target="#myCarousel_c" data-slide-to="2"></li>
-					</ol>   
-					<!-- Carousel items -->
-					<div class="carousel-inner" id="carousel_cmakelists" style="border-radius:6px;">
-						<div class="active item">
-							<h2 class="h2-option">CMake 1</h2>
-							<div class="carousel-caption">
-							  <h3>First slide label</h3>
-							  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>							 
-							</div>
-						</div>
-						<div class="item">
-							<h2 class="h2-option">CMake 2</h2>
-							<div class="carousel-caption">
-							  <h3>Second slide label</h3>
-							  <p>Aliquam sit amet gravida nibh, facilisis gravida odio.</p>
-							</div>
-						</div>
-						<div class="item">
-							<h2 class="h2-option">CMake 3</h2>
-							<div class="carousel-caption">
-							  <h3>Third slide label</h3>
-							  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-							</div>
-						</div>
-					</div>
-					<!-- Carousel nav ; left, right css gradient exist -->
-					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
-					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_c" data-slide="prev">
-						<span class="glyphicon glyphicon-chevron-left"></span>
-					</a>
-					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_c" data-slide="next">
-						<span class="glyphicon glyphicon-chevron-right"></span>
-					</a>
-				</div>
-
-
+				<!--■■ solution.launch File ■■-->
 				<div id="myCarousel_l" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
 					<!-- Carousel indicators -->
 					<ol class="carousel-indicators">
 						<li data-target="#myCarousel_l" data-slide-to="0" class="active"></li>
 						<li data-target="#myCarousel_l" data-slide-to="1"></li>
-						<li data-target="#myCarousel_l" data-slide-to="2"></li>				
+						<li data-target="#myCarousel_l" data-slide-to="2"></li>
+						<li data-target="#myCarousel_l" data-slide-to="3"></li>
+						<li data-target="#myCarousel_l" data-slide-to="4"></li>
 					</ol>   
 					<!-- Carousel items -->
-					<div class="carousel-inner" id="carousel_launch" style="border-radius:6px;">
-						<div class="active item">
-							<h2 class="h2-option">Launch 1</h2>
-							<div class="carousel-caption">
-							  <h3>First slide label</h3>
-							  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>							 
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_l">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 노드명(Node name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchNodeName" type="text" placeholder="Please enter the launch name."><br>
+							  <h4 style="float:left;">2. 노드 패키지(pkg)와 타입(type)을 입력하세요.</h4><br><br>
+							  <input class="form-control" id="launchNodePkg" style="display:inline; width:49.5%; float:left;" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" id="launchNodeType" style="display:inline; width:49.5%; float:left; margin-left:1%;" type="text" placeholder="Please enter the url address.">
 							</div>
 						</div>
-						<div class="item">
-							<h2 class="h2-option">Launch 2</h2>
-							<div class="carousel-caption">
-							  <h3>Second slide label</h3>
-							  <p>Aliquam sit amet gravida nibh, facilisis gravida odio.</p>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 파라미터명(Param name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamName" type="text" placeholder="Please enter the launch param name."><br>
+							  <h4 style="float:left;">4. 파라미터값을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamValue" type="text" placeholder="Please enter the launch param value.">
 							</div>
 						</div>
-						<div class="item">
-							<h2 class="h2-option">Launch 3</h2>
-							<div class="carousel-caption">
-							  <h3>Third slide label</h3>
-							  <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. Include File을 선택하세요.</h4>
+							  <input class="form-control" id="launchIncludeFile" type="file" placeholder="Please enter the launch include file."><br>
+							  <!-- <h4 style="float:left;">6. </h4>
+							  <input class="form-control" id="launchLauncher" type="text" placeholder="Please enter the launch launcher. ex) turtle_concert/turtle_pond"> -->
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">6. Argument명을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgName" type="text" placeholder="Please enter the launch arg name."><br>
+							  <h4 style="float:left;">7. Argument값을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgValue" type="text" placeholder="Please enter the launch arg value.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. </h4>
+							  <input class="form-control" id="launchParmeters" type="text" placeholder="Please enter launch parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>							  
 							</div>
 						</div>
 					</div>
@@ -963,6 +1023,8 @@ var fileModify = function(fileID){
 			  <br><br>
 			  <!-- <iframe id="iframe_N1" src="TemplateEdit.html" width=100%; style="border:0px;"> </iframe> -->
 			</div>
+
+			<input type="hidden" id="PageNum" value="1"/>
 
 			<!--■■■■■ sectionC : Service Scheduler ■■■■-->
 			<div id="sectionC" class="tab-pane fade">
