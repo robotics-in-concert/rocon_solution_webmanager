@@ -1,11 +1,7 @@
 var app = require('http').createServer(handler), 
-    io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
+    io = require('socket.io').listen(app),
     fs = require('fs'),
-	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
-	
-//	io = require('socket.io').listen(app), 
-//  ROSLIB = require('roslib'),
-
+    ROSLIB = require('roslib'),
     ros = new ROSLIB.Ros();
 	
 app.listen(8080);
@@ -33,7 +29,7 @@ ros.on('connection', function() {
 console.log('Connection made!');
 });
 
-ros.connect('ws://192.168.0.74:9090');
+ros.connect('ws://192.168.0.74:9090'); //임시 192.168.0.74
 
 var driveWheel = new ROSLIB.Service({
 ros : ros,
