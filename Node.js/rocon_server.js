@@ -1,13 +1,25 @@
 var app = require('http').createServer(handler), 
-    io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
+    io = require('socket.io').listen(app), 
     fs = require('fs'),
-	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),
+	ROSLIB = require('roslib'),	
     ros = new ROSLIB.Ros();
-	//base64 = require('./js/base64.js');
-	//process = require('process');
- 
+	
 app.listen(8080);
 console.log("Listening on http://localhost:8080...");
+
+// directs page requests to html files 
+function handler (req, res) {
+	if (req.url == '/') req.url = '/index.html';
+	fs.readFile(__dirname + req.url,	
+	function (err, data) {
+		if (err) {
+			res.writeHead(500);
+			return res.end('Error loading index.html');
+		} 
+		res.writeHead(200);
+		res.end(data);
+	});
+}
 
 ros.on('error', function(error) {
 console.log(error);
@@ -37,20 +49,6 @@ angular : 0
 driveWheel.callService(driveWheelRequest, function(result) {
 console.log('Result for service call on ' + driveWheel.name + ': ' + result.error_message);
 });
-
-// directs page requests to html files 
-function handler (req, res) {
-	if (req.url == '/') req.url = '/index.html';
-	fs.readFile(__dirname + req.url,	
-	function (err, data) {
-		if (err) {
-			res.writeHead(500);
-			return res.end('Error loading index.html');
-		} 
-		res.writeHead(200);
-		res.end(data);
-	});
-}
  
 
 // save the main path
@@ -75,7 +73,7 @@ io.sockets.on('connection', function(socket) {
 						fs.mkdir("Solutions", '0777', function(err){
 							if(err) throw err;
 							console.log('Dir created : Solutions');
-							process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
+							process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
 
 							fs.exists(data.solution, function (exists) {
 								//util.debug(exists ? "it's there" : "no passwd!");
@@ -123,7 +121,7 @@ io.sockets.on('connection', function(socket) {
 					}
 					else
 					{
-						process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
+						process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
 
 						fs.exists(data.solution, function (exists) {
 							//util.debug(exists ? "it's there" : "no passwd!");
@@ -171,14 +169,74 @@ io.sockets.on('connection', function(socket) {
 				});								
 				break;
 			case 'GetSolutionList':				
-				console.log('Get SolutionList : yet'); //ReadFileList와 중복
+				console.log('Get SolutionList'); //ReadFileList와 중복				
+				console.log(data.solution);
+				process.chdir(mainPath);
+				
+				fs.exists("Solutions", function (exists) {
+					//util.debug(exists ? "it's there" : "no passwd!");
+					if (!exists)
+					{
+						fs.mkdir("Solutions", '0777', function(err){
+							if(err) throw err;
+							console.log('Dir created : Solutions');
+							process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
+							console.log(process.cwd()); //chdir 안하면 : current dir! - ex) c:/***/***/ROCON
+							
+							var solusion_list = 
+							fs.readdir('.',function(err,list){
+								if(err) throw err;
+								console.log('dir length : '+list.length);
+								list.forEach(function(file){
+									fs.stat(file,function(err, stat){ //file 정보
+										if(err) throw err;
+										console.log('file : '+file);
+										console.log('isFile : '+stat.isFile()+' , isDir : '+stat.isDirectory());
+
+										if (stat.isDirectory() == true)
+										{
+											var message = {dir : file}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+											socket.send(message);	
+										}
+									});
+								});
+								
+								//var message = {dir : file}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+								//socket.send(message);	
+							});
+						});
+					}
+					else
+					{
+						process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
+						console.log(process.cwd()); //chdir 안하면 : current dir! - ex) c:/***/***/ROCON
+
+						fs.readdir('.',function(err,list){
+							if(err) throw err;
+							console.log('dir length : '+list.length);
+							list.forEach(function(file){
+								fs.stat(file,function(err, stat){ //file 정보
+									if(err) throw err;
+									console.log('file : '+file);
+									console.log('isFile : '+stat.isFile()+' , isDir : '+stat.isDirectory());
+
+									if (stat.isDirectory() == true)
+									{
+										var message = {dir : file}; //{cmd : cmd, solution : solutionName, file : fileName, content : content};
+										socket.send(message);	
+									}
+								});
+							});
+						});
+					}
+				});				
 				break;
 			case 'GetFileList':
 				console.log('Get FileList : yet'); //ReadFileList와 중복
 				break;
 			case 'ReadFile':
-				process.chdir(mainPath  + '\\Solutions');
-				//process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
+				process.chdir(mainPath  + '/Solutions');
+				//process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
 				fs.readFile(data.solution + '/' + data.file, 'utf8', function(err, readData) {
 					if(err) throw err;
 					var cmd = "ReadFile";
@@ -193,7 +251,7 @@ io.sockets.on('connection', function(socket) {
 				//socket.broadcast.send("let there be light!");				
 				break;
 			case 'ModifyFile':
-				process.chdir(mainPath + '\\Solutions'); //main path로 chdir				
+				process.chdir(mainPath + '/Solutions'); //main path로 chdir				
 				fs.exists(data.solution, function (exists) {
 					//util.debug(exists ? "it's there" : "no passwd!");
 					if (!exists)
@@ -234,7 +292,7 @@ io.sockets.on('connection', function(socket) {
 				break;
 			case 'DeleteFile':				
 				process.chdir(mainPath); //main path로 chdir
-				//process.chdir(mainPath  + '\\Solutions'); //Solutions로 chdir
+				//process.chdir(mainPath  + '/Solutions'); //Solutions로 chdir
 				console.log(process.cwd());
 				fs.unlink(data.solution + '/' + data.file, function (err) {
 					if (err) throw err;
@@ -246,8 +304,8 @@ io.sockets.on('connection', function(socket) {
 				console.log('ReadFileList');
 				console.log(data.solution);
 				//var process = require('process');
-				process.chdir(mainPath  + '\\Solutions\\' + data.solution); //process.chdir('c:\\windows'); 
-				//process.chdir(mainPath  + '\\Solutions\\test1'); //Solutions로 chdir
+				process.chdir(mainPath  + '/Solutions/' + data.solution); //process.chdir('c:\\windows'); 
+				//process.chdir(mainPath  + '/Solutions\\test1'); //Solutions로 chdir
 				console.log(process.cwd()); //chdir 안하면 : current dir! - ex) c:/***/***/ROCON
 				 
 				//var fs = require('fs');
