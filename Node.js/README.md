@@ -5,9 +5,9 @@
 
 *Install the ```node_modules```.
 ```
-> npm install -g socket.io
+> npm install socket.io
 > 
-> npm install -g roslib
+> npm install roslib
 >
 ```
 
