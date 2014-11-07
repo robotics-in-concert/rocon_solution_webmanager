@@ -1,7 +1,11 @@
 var app = require('http').createServer(handler), 
-    io = require('socket.io').listen(app), 
+    io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
     fs = require('fs'),
-	ROSLIB = require('roslib'),	
+	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
+	
+//	io = require('socket.io').listen(app), 
+//  ROSLIB = require('roslib'),
+
     ros = new ROSLIB.Ros();
 	
 app.listen(8080);
