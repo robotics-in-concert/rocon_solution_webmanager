@@ -145,9 +145,33 @@ class DummyFuro(object):
         self.loginfo('SetHeadYaw('+str(req.pitch)+','+str(req.speed)+')')
         return SetHeadYawResponse()
 
-    def DriveWheel(self, req):
-        self.loginfo('DriveWheel('+str(req.linear)+','+str(req.angular)+')')
-        return DriveWheelResponse()
+   def DriveWheel(self, param):
+        self.loginfo('DriveWheel('+str(param.linear.x)+','+str(param.angular.x)+')')
+        linear = param.linear.x
+        angular = (param.angular.x) * math.pi / 180
+        axleDistance = 0.3
+        angular = angular * axleDistance / 2
+        slope = 1.5
+        gearRatio = 64
+        wheelDiameter = 0.25
+        leftVel = int(math.floor(slope * 60 * gearRatio * (linear - angular) / (math.pi * wheelDiameter)))
+        rightVel = int(math.floor(slope * 60 * gearRatio * (linear + angular) / (math.pi * wheelDiameter)))
+        self.DriveDifferential(-leftVel, 1000, rightVel, 1000)
+
+    def DriveDifferential(self, left, leftTime, right, rightTime):
+        arr = [0xFF,0xFF,0xFE,0x0E,0x06,0x20,0x04,0x2E,(left & 0xFF),(left >> 8 & 0xFF),(leftTime & 0xFF),(leftTime >> 8 & 0xFF),0x2F,(right & 0xFF),(right >> 8 & 0xFF),(rightTime & 0xFF),(rightTime >> 8 & 0xFF)]
+        self.loginfo('arr : ' + self.array2string(arr))
+        arr.append(self.CalcCheckSum(arr, len(arr)))
+        self._serial.write(self.array2string(arr))
+
+    def CalcCheckSum(self, arr, length):
+        checkSum = 2
+        for b in arr:
+            checkSum += b
+        return (~checkSum & 0xFF)
+
+    def array2string(self, arr):
+        return ''.join(chr(b) for b in arr)
 
     def StopWheel(self):
         self.loginfo('StopWheel()')
