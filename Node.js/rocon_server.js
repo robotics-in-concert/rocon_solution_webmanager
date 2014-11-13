@@ -4,8 +4,26 @@ var app = require('http').createServer(handler),
     ROSLIB = require('roslib'),
     ros = new ROSLIB.Ros();
 	
-app.listen(8080);
-console.log("Listening on http://localhost:8080...");
+var param = process.argv.slice(2);
+
+if (param.length > 1)
+{
+	for (var i=0; i<param.length; )
+	{
+		if (param[i] == '-p')
+		{
+			app.listen(param[i+1]);
+			console.log('app.listen(param[i]) : ' + param[i+1]);		
+			console.log("Listening on http://localhost:" + param[i+1] + "...");
+		}	
+		i = i+2;
+	}
+}
+else
+{	//default : 8080
+	app.listen(8080);
+	console.log("Listening on http://localhost:8080...");
+}
 
 // directs page requests to html files 
 function handler (req, res) {
