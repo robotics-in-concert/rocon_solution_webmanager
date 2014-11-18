@@ -48,17 +48,12 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
+   HeadYaw.msg
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
-   DriveWheel.srv
-   InitPose.srv
-   PlaySpeech.srv
-   SetHeadYaw.srv
-   StopSpeech.srv
-   StopWheel.srv
  )
 
 ## Generate actions in the 'action' folder
