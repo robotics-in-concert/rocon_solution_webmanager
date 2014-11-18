@@ -443,7 +443,7 @@ var fileModify = function(fileID){
 			serviceContent += "  <license>" + document.getElementById('packageLicense').value + "</license>\n";
 			serviceContent += "  <url type=\"" + document.getElementById('packageURLType').value + "\">" + document.getElementById('packageURL').value + "</url>\n";	
 			serviceContent += "  <author>" + document.getElementById('packageAuthor').value + "</author>\n";
-			serviceContent += "  <buildtool_depend>: " + document.getElementById('packageBuildtoolDepend').value + "</buildtool_depend>\n";
+			serviceContent += "  <buildtool_depend>" + document.getElementById('packageBuildtoolDepend').value + "</buildtool_depend>\n";
 			serviceContent += "  <run_depend>" + document.getElementById('packageRunDepend').value + "</run_depend>\n";
 			serviceContent += "  <export>\n";
 			serviceContent += "    <concert_service>" + document.getElementById('packageExport').value + "</concert_service>\n";
