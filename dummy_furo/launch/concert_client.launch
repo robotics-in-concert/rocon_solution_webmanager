@@ -1,0 +1,17 @@
+<launch>
+  <arg name="robot_name" default="furo"/>
+  <arg name="robot_type" default="furo"/>
+  <arg name="simulation" default="false"/>
+
+  <include file="$(find rocon_app_manager)/launch/concert_client.launch">
+    <arg name="robot_name"  value="$(arg robot_name)"/>
+    <arg name="robot_type"  value="$(arg robot_type)"/>
+    <arg name="rapp_package_whitelist" value="[rocon_apps, dummy_furo]"/>
+    <arg name="concert_watch_period" value="1"/>
+    <arg name="screen" value="true"/>
+  </include>
+
+  <include file="$(find dummy_furo)/launch/furo_minimal.launch">
+    <arg name="simulation" value="$(arg simulation)"/>
+  </include>
+</launch>

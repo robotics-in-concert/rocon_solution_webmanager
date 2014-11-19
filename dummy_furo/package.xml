@@ -21,4 +21,7 @@
   <run_depend>std_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
+  <export>
+    <rocon_app>rapps/video_teleop/video_teleop.rapp</rocon_app>
+  </export>
 </package>

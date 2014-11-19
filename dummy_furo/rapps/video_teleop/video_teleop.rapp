@@ -1,0 +1,5 @@
+display:  VideoTeleop
+description: Teleoperate Furo
+compatibility: rocon:/furo/
+launch: video_teleop.launch
+parent_name: rocon_apps/video_teleop
