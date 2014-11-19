@@ -77,11 +77,10 @@ class FuroClient(object):
         self.loginfo('SetHeadYaw('+str(param.pitch)+','+str(param.speed)+')')
 
     def DriveWheel(self, param):
-
-        self.loginfo('DriveWheel('+str(param.linear.x)+','+str(param.angular.x)+')')
+        self.loginfo('DriveWheel('+str(param.linear.x)+','+str(param.angular.z)+')')
         if not self._is_sim:
             linear = param.linear.x
-            angular = (param.angular.x) * math.pi / 180
+            angular = (param.angular.z) * math.pi / 180
             axleDistance = 0.3
             angular = angular * axleDistance / 2
             slope = 1.5

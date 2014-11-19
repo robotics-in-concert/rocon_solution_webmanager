@@ -1,0 +1,7 @@
+<launch>
+  <arg name="simulation" default="false"/>
+
+  <node pkg="dummy_furo" name="furo" type="furo.py" output="screen">
+    <param name="simulation" value="$(arg simulation)"/>
+  </node>
+</launch>

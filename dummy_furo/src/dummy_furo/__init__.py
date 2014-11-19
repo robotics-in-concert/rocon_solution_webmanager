@@ -1,2 +1,2 @@
 
-from .dummy_furo import DummyFuro
+from .furo_client import FuroClient
