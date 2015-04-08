@@ -1,9 +1,10 @@
 var app = require('http').createServer(handler), 
     //io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
-	io = require('socket.io').listen(app),
+    io = require('socket.io').listen(app),
     fs = require('fs'),
-	//ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
-	ROSLIB = require('roslib'),
+    //ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
+    ROSLIB = require('roslib'),
+
     ros = new ROSLIB.Ros();
 	
 var param = process.argv.slice(2);
@@ -43,125 +44,40 @@ function handler (req, res) {
 	});
 }
 
-function driveWheel()
-{	//no use
-	var driveWheel = new ROSLIB.Service({
-	ros : ros,
-	name : '/concert/service/furo/DriveWheel',
-	serviceType : 'DriveWheel'
-	});
+ros.on('error', function(error) {
+console.log(error);
+});
 
-	// Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
-	// fields defined in the rospy_tutorials AddTwoInts.srv file.
-	var driveWheelRequest = new ROSLIB.ServiceRequest({
-	linear : 0.2,
-	angular : 0
-	});
-	
-	// Finally, we call the /concert/service/enable service and get back the results in the callback. The result
-	// is a ROSLIB.ServiceResponse object.
-	driveWheel.callService(driveWheelRequest, function(result) {
-	console.log('Result for service call on ' + driveWheel.name + ': ' + result.error_message);
-	});
-}
+ros.on('connection', function() {
+console.log('Connection made!');
+});
+
+//ros.connect('ws://192.168.0.74:9090');
+
+var driveWheel = new ROSLIB.Service({
+ros : ros,
+name : '/concert/service/furo/DriveWheel',
+serviceType : 'DriveWheel'
+});
+
+// Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
+// fields defined in the rospy_tutorials AddTwoInts.srv file.
+var driveWheelRequest = new ROSLIB.ServiceRequest({
+linear : 0.2,
+angular : 0
+});
+
+// Finally, we call the /concert/service/enable service and get back the results in the callback. The result
+// is a ROSLIB.ServiceResponse object.
+driveWheel.callService(driveWheelRequest, function(result) {
+console.log('Result for service call on ' + driveWheel.name + ': ' + result.error_message);
+});
  
-
-/*-- ROSBridge --*/
-function ConnectROS()
-{
-  //var master_URL = document.getElementById('master_URL').value;
-  // Connecting to ROS
-  // -----------------
-  //var ros = new ROSLIB.Ros();
-  //ros = new ROSLIB.Ros('');
-
-  // If there is an error on the backend, an 'error' emit will be emitted.
-  ros.on('error', function(error) {
-    console.log(error);	
-	//console.log("WebSocket connection to \'" + master_URL + "\' failed : Connection closed before receiving a handshake response."); //Error Message
-  });
-
-  // Find out exactly when we made a connection.
-  ros.on('connection', function() {
-    console.log('Connection made!');
-  });
-
-  // Create a connection to the rosbridge WebSocket server.
-  // master_URL _2014-04-21_shkwak
-  var master_URL = 'ws://192.168.0.28:9090'; //###########################################################################################수정필요!
-  ros.connect(master_URL); //'ws://192.168.0.98:9090'; 
-}
-
-function callService(setServiceName, bool)
-{
-  if (setServiceName == null){
-	  //var serviceName = document.getElementById('serviceList').value;
-  }else{ 
-	  var serviceName = setServiceName;
-  }
-
-  if (bool == null){
-	  //var enabled = document.getElementById('serviceEnabled').value;
-  }else{
-	  var enabled = bool;
-  }
-
-  // Calling a service
-  // -----------------
-  // First, we create a Service client with details of the service's name and service type.
-  var serviceEnable = new ROSLIB.Service({
-    ros : ros,
-    name : '/concert/service/enable',
-    serviceType : 'concert_msgs/EnableService'
-  });
-
-  // Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
-  // fields defined in the rospy_tutorials AddTwoInts.srv file.
-  if (enabled == "true")
-	{
-		var request = new ROSLIB.ServiceRequest({			
-			name : serviceName, //name : 'admin',
-			enable : true
-		});
-
-		//document.getElementById("service_data2").value += "ServiceCall - enable\n";
-	}
-	else
-	{
-		var request = new ROSLIB.ServiceRequest({
-			name : serviceName,
-			enable : false
-		});
-
-		//document.getElementById("service_data2").value += "ServiceCall - disable\n"
-	}
-  
-
-  // Finally, we call the /concert/service/enable service and get back the results in the callback. The result
-  // is a ROSLIB.ServiceResponse object.
-  serviceEnable.callService(request, function(result) { //실제 callService 함수
-    console.log('Result for service call on ' + serviceEnable.name + ': ' + result.error_message);
-	
-	if (result.error_message == "")
-	{
-		//document.getElementById("service_data2").value += "Success : " + result.success + "\n"; //result - success, error_message 두개 뿐!!
-	}
-	else
-	{
-		//document.getElementById("service_data2").value += "Error message : " + result.error_message + "\n";
-	}
-	
-  });
-}
-
-
 
 // save the main path
 var mainPath = process.cwd();
 console.log("Main Path : " + mainPath);
 
-var timer = ""; //var timer = new Array();
-var startTime = "", endTime = "";
 
 // this handles socket.io comm from html files 
 io.sockets.on('connection', function(socket) {
@@ -432,91 +348,16 @@ io.sockets.on('connection', function(socket) {
 			case 'SetServiceSchdule':
 				console.log('SetServiceSchdule');
 				console.log(data.title + ', ' + data.start + ', ' + data.end);				
-				startTime = data.start;
-				endTime = data.end;				
+				
+				var time = new Date().getTime(); //1421805591149
+				var date = new Date(time); //Wed Jan 21 2015 10:59:51 GMT+0900 (대한민국 표준시)				
+				console.log(dateReFormat(date)); //2015-01-21T10:59:51
 
-				ConnectROS();
-				console.log('node.js timer on');
+				setTimeout(function(){
+					console.log('node.js timer on');
+					logging();					
+				}, 2000);
 
-				timer = setInterval(function(){					
-					//var time = new Date().getTime(); //1421805591149
-					//var date = new Date(time); //Wed Jan 21 2015 10:59:51 GMT+0900 (대한민국 표준시)
-					var date = new Date();
-					console.log('Now Time : ' + dateReFormat(date));					
-					if (dateReFormat(date) == startTime)
-					{
-						callService('admin', 'true');
-						console.log(dateReFormat(date)); //2015-01-21T10:59:51
-					}
-
-					if (dateReFormat(date) == endTime)
-					{
-						callService('admin', 'false');
-						console.log(dateReFormat(date)); //2015-01-21T10:59:51
-						console.log('node.js timer off');
-						clearInterval(timer);
-					}
-					//logging();					
-				}, 1000);
-				break;				
-			case 'DelServiceSchdule':
-				console.log('DelServiceSchdule');
-				clearInterval(timer);				
-				//timer[schedule_id] = setInterval("nowTimeCheck('"+schedule_id+"')",5000);
-				break;
-			case 'NewSolution':
-				var sys = require('sys')
-				var exec = require('child_process').exec;
-				function puts(error, stdout, stderr) { sys.puts(stdout) }
-
-				process.chdir(mainPath);
-				//process.chdir('../'); //console.log("Path : " + process.cwd()); //Path : /home/imappak - GOOD!
-				process.chdir('../gazeborocon/src');
-				console.log("Path : " + process.cwd()); //Path : /home/imappak/gazeborocon/src
-				//[info] data = {cmd : cmd, name : solutionName, description : Description, license : License, version : Version, maintainer : Maintainer};
-				exec("catkin_create_pkg " + data.name + ' std_msgs rospy -D \'' + data.description + '\' -l ' + data.license + ' -V ' + data.version + ' -m ' + data.maintainer, puts); 
-				//gnome-terminal -x bash -c 'roslaunch rosbridge_server rosbridge_websocket.launch'
-				//exec("ls -la", puts);	//exec("sudo start avahi-daemon", puts); //ok
-				break; 
-			case 'solutionConfigure':
-				process.chdir(mainPath); //main path로 chdir				
-				process.chdir('../gazeborocon/src');
-				//var message = {cmd : cmd, solution : solutionName, file : fileName, content : content};
-				fs.exists(data.solution, function (exists) {
-					//util.debug(exists ? "it's there" : "no passwd!");
-					if (!exists)
-					{
-						fs.mkdir(data.solution, '0777', function(err){
-							if(err) throw err;
-							console.log('Dir created : ' + data.solution);
-						});
-						
-						fs.writeFile(data.solution + '/' + data.file,
-							Base64.decode(data.content),
-							encoding='utf-8',function(err){
-							if(err) throw err;
-							console.log('File writed : ' + data.file);
-
-							var result = data.file + " is modified!";
-							var message = {result : result}; 
-							socket.send(message);
-						});
-					}
-					else
-					{
-						fs.writeFile(data.solution + '/' + data.file,
-							Base64.decode(data.content),
-							encoding='utf-8',function(err){
-							if(err) throw err;
-							console.log('File writed : ' + data.file);
-							
-							var result = data.file + " is configured!";							
-							var message = {result : result}; 
-							socket.send(message);
-						});
-					}
-				});	
-				console.log('Configuration File : ' + data.file);
 				break;
 		}
 
@@ -727,3 +568,11 @@ function dateReFormat(date){	//2015-01-21(Wed)_shkwak
 	
 	return yyyy+"-"+mm+"-"+dd+'T'+HH+':'+MM+':'+ss; //'2014-09-09T16:00:00'
 } 
+
+function logging()
+{
+	console.log('in');
+	setTimeout(function(){
+		logging();
+	}, 2000)
+}
