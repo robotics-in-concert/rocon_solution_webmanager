@@ -2,7 +2,6 @@
 #
 # License: BSD
 #   https://raw.github.com/robotics-in-concert/rocon_multimaster/license/LICENSE
-#
 
 import concert_msgs.srv as concert_srvs
 import concert_msgs.msg as concert_msgs
