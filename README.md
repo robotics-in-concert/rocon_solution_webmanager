@@ -26,5 +26,7 @@ rocon_solution_webmanager
 *Start client web page on web browser.
 
 ```
-http://localhost:8080
+http://localhost:8080 
+or
+http://<Node.js server ip address>:8080
 ```
