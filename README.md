@@ -12,6 +12,8 @@ rocon_solution_webmanager
 > 
 > npm install roslib
 >
+> npm install fs-readdir-recursive
+>
 ```
 
 *Start the  ```Node.js server```.
