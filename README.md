@@ -1,20 +1,28 @@
 rocon_solution_webmanager
 =========================
 
-##Solution Manager in Node.js
+##Test version
+- Node.js version : 0.10.35
 
-*Download and install the ```Node.js```. ex) node-v0.10.31-x86.msi
+- npm version : 1.4.28
 
-*Install the ```node_modules```
+
+##Solution Manager Get Started
+
+*Download and install ```Node.js```. ex) node-v0.10.35-x86.msi
+
+*Install ```node_modules```
 
 ```
 > npm install socket.io
 > 
 > npm install roslib
 >
+> npm install fs-readdir-recursive
+>
 ```
 
-*Start the  ```Node.js server```.
+*Start ```Node.js server```.
 
 ```
 > node rocon_server.js
@@ -24,5 +32,7 @@ rocon_solution_webmanager
 *Start client web page on web browser.
 
 ```
-http://localhost:8080
+http://localhost:8080 
+or
+http://<Node.js server ip address>:8080
 ```
