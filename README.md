@@ -1,11 +1,17 @@
 rocon_solution_webmanager
 =========================
 
-##Solution Manager in Node.js
+##Test version
+- Node.js version : 0.10.35
 
-*Download and install the ```Node.js```. ex) node-v0.10.31-x86.msi
+- npm version : 1.4.28
 
-*Install the ```node_modules```
+
+##Solution Manager Get Started
+
+*Download and install ```Node.js```. ex) node-v0.10.35-x86.msi
+
+*Install ```node_modules```
 
 ```
 > npm install socket.io
@@ -16,7 +22,7 @@ rocon_solution_webmanager
 >
 ```
 
-*Start the  ```Node.js server```.
+*Start ```Node.js server```.
 
 ```
 > node rocon_server.js
