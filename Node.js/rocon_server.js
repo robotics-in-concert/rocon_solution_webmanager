@@ -30,7 +30,7 @@ else
 }
 
 // directs page requests to html files 
-function handler (req, res) {
+function handler (req, res) { 
 	if (req.url == '/') req.url = '/index.html';
 	fs.readFile(__dirname + req.url,	
 	function (err, data) {
