@@ -1,84 +1,301 @@
 <!DOCTYPE HTML>
-<html class="redesign">
+<html>
  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <!-- <script type="text/javascript" async="" src="./ga.js"></script> -->
-  <!-- <script>(function(d) { d.className = d.className.replace(/\bno-js/, ''); })(document.documentElement);</script> -->
-  <!-- <script src="./js/237572123.js"></script> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <!--favicon-->
+  <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
   
-  <title>ROCON - Authoring Environment Tools</title>
+  <title>ROCON - SOLUTION MANAGER V2.1.2</title>
+  
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <!-- Latest compiiled and minified JQuery --> 
+  <script type="text/javascript" src="./jquery/jquery-1.11.1.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script type="text/javascript" src="./bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="index, follow">
-  <link rel="home" href="#"><!-- <link rel="home" href="/en-US/"> -->
-  <link rel="copyright" href="#copyright">
-  <link rel="stylesheet" href="./css/tabzilla-min.css"><!-- 상단 Hidden 메뉴 Style -->
-  <link rel="stylesheet" media="all" href="./css/mdn-min.css"><!-- 상단 메뉴 Style -->
-  <link rel="stylesheet" media="all" href="./css/wiki-min.css"><!-- 상단 Style -->
+  <!-- Node.js socket.is add -->
+  <script src="socket.io/socket.io.js"></script>
+
+  <!-- SweetAlert Plugin -->
+  <script src="./sweetalert/lib/sweet-alert.min.js"></script> 
+  <link rel="stylesheet" type="text/css" href="./sweetalert/lib/sweet-alert.css">
+
+  <script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+
+  <!-- Bootstrap Toggle -->	
+  <link href="./css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="./js/bootstrap-toggle.min.js"></script>
+
+  <!-- ROS Library -->
+  <script language="JavaScript" type="text/javascript" src="./js/eventemitter2.js"></script>
+  <script language="JavaScript" type="text/javascript" src="./js/roslib.js"></script>
+
+  <!-- FullCalender Plugin -->
+  <!-- <link rel='stylesheet' href='./fullcalendar/fullcalendar.css' />
+  <link rel='stylesheet' href='./fullcalendar/fullcalendar.print.css' media='print' />
+  <!-- <script src='lib/jquery.min.js'></script> 
+  <script src='./fullcalendar/lib/moment.min.js'></script>
+  <script src='./fullcalendar/lib/jquery-ui.custom.min.js'></script>  
+  <script src='./fullcalendar/fullcalendar.js'></script> -->
 
   <!-- <!--[if IE]> -->
   <!-- <meta http-equiv="imagetoolbar" content="no"> -->
   <!-- <script src="./media/js/libs/html5.js"></script> -->
   <!-- <![endif]--> 
-  
-  <!-- <script type="text/javascript" src="./js/scripts.js">
-  // http://cfsimplicity.com/61/removing-analytics-clutter-from-campaign-urls
-  /*
-  var removeUtms = function(){
-      var location = window.location;
-      if (location.hash.indexOf('utm') != -1) {
-          var anchor = location.hash.match(/#(?!utm)[^&]+/);
-          anchor  =   anchor ? anchor[0] : '';
-          if(!anchor && window.history.replaceState){
-              history.replaceState({}, '', location.pathname + location.search);
-          } else {
-              location.hash = anchor;
-          }
+
+<!-- 페이스북 API -->
+  <script src="http://connect.facebook.net/en_US/all.js"></script>
+  <script>
+   FB.init({
+   appId  : '631031887007800',
+   status : true, // check login status
+   cookie : true, // enable cookies to allow the server to access the session
+   xfbml  : true, // parse XFBML
+   version : 'v2.2'
+   });
+
+   var isSend = false; //SNS send true/false
+  </script>
+
+
+	<!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["table"]});
+      google.setOnLoadCallback(drawTable);
+
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Salary');
+        data.addColumn('boolean', 'Full Time Employee');
+        data.addRows([
+          ['Mike',  {v: 10000, f: '$10,000'}, true],
+          ['Jim',   {v:8000,   f: '$8,000'},  false],
+          ['Alice', {v: 12500, f: '$12,500'}, true],
+          ['Bob',   {v: 7000,  f: '$7,000'},  true]
+        ]);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(data, {showRowNumber: true});
       }
-  };
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-36116321-5'],
-            ['_setAllowAnchor', true],
-            ['_trackPageview']);
-  _gaq.push(removeUtms);
+    </script> -->
 
-  (function(a, d) {
-    var ga = d.createElement(a); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == d.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = d.getElementsByTagName(a)[0]; s.parentNode.insertBefore(ga, s);
-  })('script', document);
-  */
-</script> -->
+
 <script language="javascript">
-var Sign_status = false;
 
-function ChangeSubTitle()
-{	
-	document.getElementById("BreadcrumbTitle").innerHTML = "Solution Manager";
-	document.getElementById("pageTitle").innerHTML = "Solution Configuration Manager";
+/*-- ROSBridge --*/
+var ros = "";
+
+function ConnectROS()
+{
+  //var url = location.href;	//2015-01-17(Wed)_shkwak
+  var url = location.host; //localhost:8080 or 192.168.0.129:8080
+  url = String(url).split(':'); 
+  //console.log(url[0] + ", " + url[1]); //localhost, 8080
+
+  var master_URL = "ws://" + url[0] + ":9090"; //document.getElementById('master_URL').value;
+  console.log(master_URL);
+
+  // Connecting to ROS
+  // -----------------
+  //var ros = new ROSLIB.Ros();
+  ros = new ROSLIB.Ros('');
+
+  // If there is an error on the backend, an 'error' emit will be emitted.
+  ros.on('error', function(error) {
+    console.log(error);
+	//alert(error); //Error Message
+	alert("WebSocket connection to \'" + master_URL + "\' failed : Connection closed before receiving a handshake response."); //Error Message
+  });
+
+  // Find out exactly when we made a connection.
+  ros.on('connection', function() {
+    console.log('Connection made!');
+  });
+
+  // Create a connection to the rosbridge WebSocket server. ★★
+  // master_URL _2014-04-21_shkwak
+  ros.connect(master_URL); //'ws://192.168.0.98:9090'; 
+  //ros.connect('ws://192.168.0.129:9090');
+  console.log('ros.connect(' + master_URL + ')');
+  document.getElementById('master_URL').value = master_URL;
 }
 
-function ChangeSigninTitle(status)
-{
-	if (status == "IN"){
-		document.getElementById("signin").innerHTML = "Sign out <i aria-hidden='true' class='icon-ok'></i>";		
-		if (!Sign_status){
-			//alert("정상적으로 로그인 되었습니다.");
-			Sign_status = true;
-		}
+var renew = false;
+var sNum = 0;
+function GetServiceList()
+{	//rostopic - service list를 가져옴.★
+	var select = document.getElementById('serviceList');
+	
+	if (renew == false)
+	{
+		/*selectbox option 삭제*/
+		select.options.length = 0; //option 전체삭제
+		var option_line = document.createElement('option');
+		option_line.value = option_line.text = "-----------";
+		select.add(option_line);
 	}
-	else{
-		document.getElementById("signin").innerHTML = "Sign in <i aria-hidden='true' class='icon-ok'></i>";
-		localStorage.clear(); //Sign out ; access_token 삭제_2014-04-10_shkwak
-		//localStorage.removeItem("access_token");
+	
 
-		if (Sign_status){
-			document.getElementById('accessUserInfo').value = "";
-			alert("정상적으로 로그아웃 되었습니다.");
-			Sign_status = false;
+  // Connecting to ROS
+  //ConnectROS(); //Get Service List 할때마다 Connect 할 필요 없음. 페이지 로드 시 접속!
+
+  //Subscribing to a Topic
+  //----------------------
+  var service_list = new ROSLIB.Topic({
+    ros : ros,
+    name : '/concert/service/list',
+    messageType : 'concert_msgs/Services'
+  });
+
+  service_list.subscribe(function(message) { // subscribe()는 되지만 정상적인 return이 오지는 않음
+    //console.log('Received message on ' + service_list.name + ': ' +  message.services[0].name);	
+	//console.log('Received icon data : ' +  message.services[1].icon.data);
+	//document.getElementById('service2Name').innerHTML = message.services[0].name;
+	$("ul").remove('.dv_sl'); //이전 ul 삭제
+	console.log('Received service_list.name :');
+
+	//var msg = Base64.encode(message);
+	for (var i=0;i<message.services.length;i++)
+	{
+		//document.getElementById("service_data1").value += message.services[i].name + "\n";
+		if (renew == false)
+		{
+			var option = document.createElement('option');
+			option.value = option.text = message.services[i].name;
+			select.add(option);
+			console.log(message.services[i].name);
 		}		
+
+		//SERVICE LIST table 동적생성, 2015-01-29(Thu)★
+		var isrc = "data:image/png;base64," + message.services[i].icon.data;
+		addList(isrc, message.services[i].name, message.services[i].description, message.services[i].author, message.services[i].enabled); //★
+		//console.log(isrc, message.services[i].name, message.services[i].description, message.services[i].author, message.services[i].enabled);
+	}
+	renew = true;
+
+    service_list.unsubscribe();
+  });  
+}
+
+function callService(setServiceName, bool)
+{
+  if (setServiceName == null){
+	  var serviceName = document.getElementById('serviceList').value;
+  }else{ 
+	  var serviceName = setServiceName;
+  }
+
+  if (bool == null){
+	  var enabled = document.getElementById('serviceEnabled').value;
+  }else{
+	  var enabled = bool;
+  }
+
+  // Calling a service
+  // -----------------
+
+  // First, we create a Service client with details of the service's name and service type.
+  var serviceEnable = new ROSLIB.Service({
+    ros : ros,
+    name : '/concert/service/enable',
+    serviceType : 'concert_msgs/EnableService'
+  });
+
+  // Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
+  // fields defined in the rospy_tutorials AddTwoInts.srv file.
+  if (enabled == "true")
+	{
+		var request = new ROSLIB.ServiceRequest({
+			//name : 'admin',
+			//enable : true
+			name : serviceName,
+			enable : true
+		});
+		//document.getElementById("service_data2").value += "ServiceCall - enable\n";
+	}
+	else
+	{
+		var request = new ROSLIB.ServiceRequest({
+			name : serviceName,
+			enable : false
+		});
+		//document.getElementById("service_data2").value += "ServiceCall - disable\n"
+	}
+  
+
+  // Finally, we call the /concert/service/enable service and get back the results in the callback. The result
+  // is a ROSLIB.ServiceResponse object.
+  serviceEnable.callService(request, function(result) {
+    console.log('Result for service call on ' + serviceEnable.name + ': ' + result.error_message);
+	
+	if (result.error_message == "")
+	{
+		//document.getElementById("service_data2").value += "Success : " + result.success + "\n"; //result - success, error_message 두개 뿐!!
+	}
+	else
+	{
+		//document.getElementById("service_data2").value += "Error message : " + result.error_message + "\n";
 	}	
+  });
+}
+
+
+
+
+//Service Scheduler Variable, 2015-01-20(Tue)_shkwak
+var serviceName = "", serviceStart = "", serviceEnd = "", isSchduling = false;
+
+function ServiceSchduling()
+{	//2015-01-20(Tue)_shkwak
+	if (document.getElementById('serviceName').value != "")
+	{		
+		serviceName = document.getElementById('serviceName').value;
+	}
+	if (document.getElementById('serviceStart').value != "")
+	{
+		serviceStart = document.getElementById('serviceStart').value;
+	}
+	if (document.getElementById('serviceEnd').value != "")
+	{
+		serviceEnd = document.getElementById('serviceEnd').value;
+	}
+
+	document.getElementById('serviceName').value = "";
+
+	if (serviceName != "")
+	{
+		isSchduling = true;
+	}
+	else
+	{
+		isSchduling = false;
+	}
+}
+
+var SetServiceSchdule = function(title, start, end)
+{
+	var cmd = "SetServiceSchdule";
+
+	var message = {cmd : cmd, title : title, start : start, end : end};
+	//var message = {cmd : cmd};
+
+	//message send
+	socket.send(message); 	
+}
+
+var DelServiceSchdule = function()
+{
+	var cmd = "DelServiceSchdule";
+	var message = {cmd : cmd};
+	console.log('del');
+	//message send
+	socket.send(message); 	
 }
 
 function pageClose()
@@ -89,20 +306,22 @@ function pageClose()
 
 var win=null;
 function NewWindow(mypage,myname,w,h,scroll,pos)
-{
-        if(pos=="random"){
-                LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
-                TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;}
-        if(pos=="center"){
-                LeftPosition=(screen.width)?(screen.width-w)/2:100;
-                TopPosition=(screen.height)?(screen.height-h)/2:100;}
-        else if((pos!="center" && pos!="random") || pos==null){
-                LeftPosition=20;
-                TopPosition=20}
+{	//modal window, ex)NewWindow('#','myname','700','500','no','center');
+	if(pos=="random"){
+		LeftPosition=(screen.width)?Math.floor(Math.random()*((screen.width-w)-75)):100;
+		TopPosition=(screen.height)?Math.floor(Math.random()*((screen.height-h)-75)):100;
+	}
+    if(pos=="center"){
+        LeftPosition=(screen.width)?(screen.width-w)/2:100;
+        TopPosition=(screen.height)?(screen.height-h)/2:100;
+	}else if((pos!="center" && pos!="random") || pos==null){
+        LeftPosition=20;
+        TopPosition=20
+	}
 
-        settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
-        win=window.open(mypage,myname,settings);
-        if(win.focus){win.focus();}
+    settings='height='+h+',width='+w+',top='+TopPosition+',left='+LeftPosition+',scrollbars='+scroll+',resizable=no, toolbar=no, menubar=no';
+    win=window.open(mypage,myname,settings);
+    if(win.focus){win.focus();}
 }
 
 function ReadValue()
@@ -128,353 +347,1682 @@ function AccessUserInfo()
 	}	
 }
 
+function getInfo()
+{	//imsi for test, 2014-10-20	
+	var imsiValue = ($(window).height() - 74) / 2;
+	alert($(window).width() + ", " + imsiValue + ", " + screen.width + ", " + screen.height);
+}
+
+/*
+$( window ).bind("resize", function(){
+    // Change the width of the div
+    var imsiHeight = ($(window).height() - 80) / 2; //74
+	console.log(imsiHeight);
+	$("#div_no1").height(imsiHeight);
+	$("#div_no2").height(imsiHeight);
+});
+*/
+var isResized = false;
+var nowPage = 'Page1';
+var viewTimer = "";
+function resizeHeight(Title)
+{	//Solution Manager <-> Data Visualizer 전환 시!
+	var imsiHeight1 = ($(window).height() - 80) / 1.5;
+	var imsiHeight2 = ($(window).height() - 80) / 6;
+	var titleTop = 74 / 70;
+	//console.log(Title);
+
+	document.all.btn_back.style.display = 'block';
+	isResized = true;
+	document.all.Title_N0_1.style.display='none';
+	document.all.Title_N0_2.style.display='none';
+
+	if (Title == 'Page1')
+	{			
+		$("#div_no1").height('74');
+		document.getElementById('div_no2').style.display = 'none';
+		document.getElementById('div_content1').style.display = 'block';
+		document.getElementById('div_content2').style.display = 'none';
+		document.getElementById('Title_N1_1').style.display = 'none';		
+		
+		$("#Title_N1").css('top', titleTop);
+		$("#iframe_N1").height(imsiHeight1*0.9);		
+		//$("#iframe_N1_cal").height(imsiHeight1*2); //calendar		
+		$("#Title_N1").css('cursor', 'default');
+
+		nowPage = 'Page1';
+	}
+	else
+	{		
+		$("#div_no2").height('74');
+		document.getElementById('div_no1').style.display = 'none';
+		document.getElementById('div_content2').style.display = 'block';
+		document.getElementById('div_content1').style.display = 'none';
+
+		$("#Title_N2").css('top', titleTop);
+		$("#iframe_N1").height(imsiHeight1*0.7);
+		$("#Title_N2").css('cursor', 'default');
+
+		nowPage = 'Page2';
+
+		// Connecting to ROS
+		ConnectROS();
+		viewTimer = setInterval('GetServiceList()',1000);
+	}
+}
+
+function setDivHeight()
+{	//Main UI height seperation
+	if (!isResized)
+	{
+		var imsiHeight = (($(window).height() - 80) / 2) + 3; //
+		console.log('Sub Layer Height : ' + imsiHeight);
+		//document.getElementById("div_no1").height = imsiHeight; //x
+		$("#div_no1").height(imsiHeight);
+		$("#div_no2").height(imsiHeight);
+
+		var titleTop = imsiHeight / 2.5;
+		var titleTop_sub = titleTop + 20;
+		//console.log('titleTop : ' + titleTop + ", titleTop_sub : " + titleTop_sub);
+		$("#Title_N1").css('top', titleTop); //$("#Title_N1").css('vertical-align', 'middle'); //x
+		$("#Title_N1_1").css('top', titleTop_sub);
+		$("#Title_N2").css('top', titleTop);
+	}	
+}
+
+function resizeView()
+{	//2014-12-26(Fri)_shkwak, no use
+	//var imsiHeight1 = ($(window).height() - 80) / 1.5;
+	console.log("window_size : " + $(window).width() + ", " + $(window).height());
+	var windowWidth = ($(window).width() / 2) - 2;
+	var windowHeight = $(window).height() / 1.5;
+
+	$("#myPublisher").width(windowWidth);
+	$("#myPublisher").height(windowHeight);
+	$("#mySubscriberElement").width(windowWidth);
+	$("#mySubscriberElement").height(windowHeight);
+	
+}
+
+function onMouseEvent(status)
+{	//
+	if (isResized == false)
+	{
+		switch (status)
+		{
+			case 'Over1':
+				document.all.Title_N0_1.innerHTML = "ROCON 솔루션을 생성하고 구성파일을 편집할 수 있습니다.";
+				document.all.Title_N0_1.style.display='block';
+				break;
+			case 'Over2':
+				document.all.Title_N0_2.style.display='block';
+				break;
+			case 'Over1_sub1':
+				document.all.Title_N0_1.innerHTML = "ROCON Template 에디터 도구가 포함되어 있습니다.";
+				document.all.Title_N0_1.style.display='block';					
+				break;
+			case 'Over1_sub2':
+				document.all.Title_N0_1.innerHTML = "ROCON Service 스케줄링 도구가 포함되어 있습니다.";
+				document.all.Title_N0_1.style.display='block';					
+				break;
+			default :
+				document.all.Title_N0_1.style.display='none';
+				document.all.Title_N0_2.style.display='none';
+				break;
+		}
+	}
+	else
+	{	//Title이 접혀진 상태
+		if (status == 'Over_back')
+		{
+			console.log('nowPage : ' + nowPage);
+			if (nowPage == 'Page2')	$("#group_back").css('color', '#4D4E53');
+			else $("#group_back").css('color', '#FFFFFF');
+
+			document.all.group_back.style.display = 'block';
+		}
+		else
+		{
+			document.all.group_back.style.display = 'none';
+		}
+	}
+}
+
+//socket connet!, port 적용!
+var url = location.href;		//2015-01-17(Wed)_shkwak
+var socket = io.connect(url);	//'http://localhost:8080');★
+//////////////////////////////////////////////////////////////////
+var created_solutionName = ""; //사용자가 catkin_create_pkg로 생성한 솔루션 명, 2015-04-29(Wed)_shkwak
+function NewSolution()
+{	//★★ catkin_create_pkg shell command, 2015-01-28(Wed)_shkwak	
+	var solutionName	= document.getElementById('inputName').value;
+	var Description		= document.getElementById('inputDescription').value;
+	var License			= document.getElementById('inputLicense').value;
+	var Version			= document.getElementById('inputVersion').value;
+	var Maintainer		= document.getElementById('inputMaintainer').value;	
+	
+	if (solutionName == "" || Description == "" || License == "" || Version == "" || Maintainer == ""){
+		alert("Insert value!");
+	}else{
+		solutionName = packageName_check(solutionName); //기술적인 Issue : 패키지 Name 관련 해결!
+		console.log("NewSolution pkg_name : " + solutionName);
+
+		var cmd = "NewSolution";  
+		var message = {cmd : cmd, name : solutionName, description : Description, license : License, version : Version, maintainer : Maintainer};
+		
+		//message send
+		socket.send(message);
+		
+		//생성된 솔루션 명 저장, Solution Configurator 페이지 SOLUTION NAME 갱신!
+		created_solutionName = solutionName; 
+		document.getElementById('created_solutionName').value = "SOLUTION NAME : " + solutionName;
+	
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result); //중복문제
+			//document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";
+			//box_result.value += data.result + "\n";
+			return;
+		});	
+	}	
+}
+
+
+var i_new = 0;
+var timer_new;
+
+function SolutionCreate_new(type)
+{	//★	
+	//var box_result = document.getElementById('box_result');
+	/*--생성될 솔루션 파일명--*/
+	var solutionName = ""; 
+	if (type == "modal") solutionName = document.getElementById('inputName').value;
+	else solutionName = document.getElementById('solutionName_new').value;
+
+	var fileName = ["solution.launch", "solution.service", "package.xml", "CMakeLists.txt"];		
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+
+	var cmd = "CreateSolution"; 
+	var content = box[i_new]; 
+	var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content, count : i_new};
+	
+	if (solutionName != "")
+	{
+		socket.send(message); //message send
+		i_new++;
+
+		if (i_new==4)
+		{	
+			i_new = 0;
+			clearTimeout(timer_new);
+		}
+		else
+		{				
+			if (type == "modal") timer_new = setTimeout('SolutionCreate_new(\'modal\')',1000);
+			else timer_new = setTimeout('SolutionCreate_new()',1000);
+		}
+
+		//message receive
+		socket.on('message', function(data) {
+			//console.log(data.result); //중복문제
+			document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";
+			//box_result.value += data.result + "\n";
+			return;
+		});
+	}
+	else
+	{
+		alert("Insert Solution Name!");
+	}
+}
+
+
+function ReadFileList()
+{	//2014-10-14(Tue)_shkwak
+	var solutionName = document.getElementById('solutionName_new').value;
+	var cmd = "ReadFileList";	
+	var message = {cmd : cmd, solution : solutionName};
+
+	//message send
+	socket.send(message); 
+}
+
+//Local System의 Service List를 가져온다. 
+var rServiceContent = [];
+
+String.prototype.replaceAll = function() {
+    var a = arguments, length = a.length;
+     
+    if ( length == 0 ) {
+        return this;
+    }
+     
+    var regExp = new RegExp( a[0], "g");
+     
+    if ( length == 1 ) {
+         
+        return this.replace(regExp, "");
+    } else {
+        return this.replace(regExp, a[1]);
+    }
+    return this;
+}
+
+var data_servicelist = new Array();
+
+function GetLocalServiceList(type)
+{	//2015-04-30(Thu)_shkwak
+	var folder = ""; 
+	var cmd = "GetLocalServiceList";
+	var message = {cmd : cmd, option : 'service_list'};
+	console.log("message : " + message.cmd);
+	
+	//message send
+	socket.send(message); 
+
+	var data_list = new Array();	
+
+	//message receive
+	socket.on('message', function(data) {//typeof(data.content) : string ; OK
+		//sting to json type convert
+		data_list = data.list; //Array type
+		data_servicelist = data.servicelist;
+		//console.log(data_list);
+		console.log(data_servicelist);
+		//if (type == 'full') return data.list;
+		//else return data_servicelist;
+		show_servicelist(); //다음 단계로 이동!
+	});	
+}
+
+var color_sample = ['#59C1E0', '#FCB040', '#EF3E35', '#4D4B45', '#59C1E0', '#FCB040', '#EF3E35', '#4D4B45', '#59C1E0', '#FCB040', '#EF3E35', '#4D4B45', '#59C1E0', '#FCB040', '#EF3E35', '#4D4B45', '#59C1E0', '#FCB040', '#EF3E35', '#4D4B45']; //우선 20개, 추후 random() 적용 예정
+
+function show_servicelist() //ing!
+{	//socket message가 수신된 후(데이터가 저장된 후) 데이터를 확인한다. 순차 실행을 위함.
+	console.log(data_servicelist);
+
+	//***** Element dynamic create/remove *****//
+	$('.list-group-item1').remove(); //기존 sample 리스트 삭제
+
+	var an = 0;
+	data_servicelist.forEach(function(file){		
+		var element = "<a href='#' class='list-group-item sl" + an + "' style='height:75px;'><p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p><h3 class='list-group-item-heading' style='color:" + color_sample[an] + ";' onclick='addService(this.innerHTML, this.style.color);GetLocalServiceContent(" + an + ");'>" + file + "</h3></a>"
+
+		$(element).appendTo("#div_serviceList"); //획득한 service 리스트 추가
+		an++;
+	});		
+		
+	var solutionName = document.getElementById('created_solutionName').value;
+	if (solutionName == "SOLUTION NAME : dummy_concert1")
+	{
+		console.info("솔루션 생성을 먼저 하세요!");
+		//alert("솔루션 생성을 먼저 하세요!");
+	}
+}
+
+function GetLocalServiceContent(num)
+{	//2015-05-06(Wed)_shkwak, 해당 서비스의 내용을 가져온다.
+	var cmd = "GetLocalServiceContent"; 
+	var message = {cmd : cmd, option : 'content', num : num}; //num : 서비스 리스트 항목 번호
+	
+	//message send
+	socket.send(message); 
+
+	//message receive
+	socket.on('message_content', function(data) {
+		var data_content = data.content;
+		//data_content = data_content.replace(/\n/gi, ':');
+		data_content = data.content.replaceAll('\n', ':'); //Uncaught TypeError: Cannot read property 'replaceAll' of undefined 이슈
+		//console.log(data_content);
+		rServiceContent = data_content.split(':');
+		console.log(rServiceContent.length-1);
+		rServiceContent.forEach(function(file){
+			console.log(file.trim()); //trim() 사용하여 좌우 공백 제거
+		});		
+		
+		//var object = {}; //json type으로 변경하고 싶은데..
+		/*for (var i=0; i < rServiceContent.length-1;) {
+			console.log(rServiceContent[i] + ':' + rServiceContent[i+1]);
+			i = i+2;
+		}*/
+	});
+}
+
+function GetLocalServiceLength()
+{	//2015-05-06(Wed)_shkwak, 로컬 서비스 항목 개수를 가져온다.
+	var folder = ""; 
+	var cmd = "GetLocalServiceLength";
+	var message = {cmd : cmd, option : 'length'};
+	
+	//message send
+	socket.send(message); 
+
+	//message receive
+	socket.on('message', function(data) {
+		var data_length = data.length;
+		
+		console.log("service length : " + data_length);
+	});
+}
+
+
+var imsiDir = "";
+var GetSolutionList = function()
+{
+	var cmd = "GetSolutionList";
+	//var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
+	var message = {cmd : cmd};
+
+	//message send
+	socket.send(message); 
+
+	var select = document.getElementById('select_solution');
+	
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+
+	//message receive
+	socket.on('message', function(data) {
+		console.log(data.dir);		
+		if (imsiDir != data.dir)
+		{
+			var option = document.createElement('option');
+			option.value = option.text = data.dir;
+			select.add(option);
+			imsiDir = data.dir;
+		}		
+		return;
+	});
+}
+
+function ReadFile()
+{
+	var cmd = "ReadFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+	//document.getElementById('box_result').innerHTML = Base64.decode(data.content);	
+}
+
+function DeleteFile()
+{
+	var cmd = "DeleteFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 
+		
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+}
+
+function carouselChange(page)
+{
+	//console.log(page);
+	switch (page)
+	{
+		case 'p':			
+			document.all.myCarousel_p.style.display = 'block';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '1';
+			break;
+		case 'c':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'block';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '2';
+			break;
+		case 's':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'block';
+			document.all.myCarousel_l.style.display = 'none';
+			document.all.PageNum.value = '3';
+			break;
+		case 'l':			
+			document.all.myCarousel_p.style.display = 'none';
+			document.all.myCarousel_c.style.display = 'none';
+			document.all.myCarousel_s.style.display = 'none';
+			document.all.myCarousel_l.style.display = 'block';
+			document.all.PageNum.value = '4';
+			break;
+	}
+}
+
+function sweetalert()
+{	//2014-10-29_shkwak
+	//====... and by passing a parameter, you can execute something else for "Cancel".====
+	swal({   
+		title: "Are you sure?",   
+		text: "You will not be able to recover this imaginary file!",   
+		type: "warning",   
+		showCancelButton: true,   
+		confirmButtonColor: "#DD6B55",   
+		confirmButtonText: "Yes, delete it!",   
+		cancelButtonText: "No, cancel plx!",   
+		closeOnConfirm: false,   
+		closeOnCancel: false 
+		}, 
+		function(isConfirm){   
+			if (isConfirm) {     
+				swal("Deleted!", "Your imaginary file has been deleted.", "success");   
+			} else {     
+				swal("Cancelled", "Your imaginary file is safe :)", "error");   
+			} 
+		}
+	);
+
+	//====A title with a text under====
+	//swal("Here's a message!", "It's pretty, isn't it?")		
+
+	//====A success message!==== //warning", "error", "success" and "info".
+	//swal("Good job!", "You clicked the button!", "success")	
+
+	//====A message with auto close timer====
+	//swal({   title: "Auto close alert!",   text: "I will close in 2 seconds.",   timer: 2000 }); 
+
+	//====A warning message, with a function attached to the "Confirm"-button...====
+	//swal({   title: "Are you sure?",   text: "You will not be able to recover this imaginary file!",   type: "warning",   showCancelButton: true,   confirmButtonColor: "#DD6B55",   confirmButtonText: "Yes, delete it!",   closeOnConfirm: false }, function(){   swal("Deleted!", "Your imaginary file has been deleted.", "success"); });
+
+	//====A message with a custom icon====
+	//swal({   title: "Sweet!",   text: "Here's a custom image.",   imageUrl: "images/thumbs-up.jpg" });
+
+}
+
+var fileModify = function(fileID){
+	var serviceContent = ""; //Init!	
+	var solutionName = document.getElementById('select_solution').value;
+	var fileName = "";
+	switch (fileID)
+	{		
+		case '1': 
+			fileName = "package.xml"; 
+			serviceContent += "<package>\n";
+			serviceContent += "  <name>" + document.getElementById('packageName').value + "</name>\n";
+			serviceContent += "  <version>" + document.getElementById('packageVersion').value + "</version>\n";
+			serviceContent += "  <description>" + document.getElementById('packageDescription').value + "</description>\n";
+			serviceContent += "  <maintainer text=\"" + document.getElementById('packageMaintainertext').value + "\">" + document.getElementById('packageMaintainer').value + "</maintainer>\n";
+			serviceContent += "  <license>" + document.getElementById('packageLicense').value + "</license>\n";
+			serviceContent += "  <url type=\"" + document.getElementById('packageURLType').value + "\">" + document.getElementById('packageURL').value + "</url>\n";	
+			serviceContent += "  <author>" + document.getElementById('packageAuthor').value + "</author>\n";
+			serviceContent += "  <buildtool_depend>" + document.getElementById('packageBuildtoolDepend').value + "</buildtool_depend>\n";
+			serviceContent += "  <run_depend>" + document.getElementById('packageRunDepend').value + "</run_depend>\n";
+			serviceContent += "  <export>\n";
+			serviceContent += "    <concert_service>" + document.getElementById('packageExport').value + "</concert_service>\n";
+			serviceContent += "  </export>\n";
+			serviceContent += "</package>\n";
+			break;
+		case '2': 
+			fileName = "CMakeLists.txt"; 
+			serviceContent += "cmake_minimum_required(" + document.getElementById('cmakeVersion').value + ")\n";
+			serviceContent += "project(" + document.getElementById('cmakeProject').value + ")\n";
+			serviceContent += "find_package(" + document.getElementById('cmakeFindPkg').value + ")\n";
+			serviceContent += document.getElementById('cmakeCatkinPkg').value + "\n";
+			break;
+		case '3': 			
+			fileName = "solution.service"; 
+			serviceContent += "name: " + document.getElementById('serviceName').value + "\n";
+			serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
+			serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
+			serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
+			serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
+			serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
+			serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
+			serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
+			serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
+			break;
+		case '4': 
+			fileName = "solution.launch"; 
+			serviceContent += "<launch>\n";
+			serviceContent += "  <node name=\"" + document.getElementById('launchNodeName').value + "\" pkg=\"" + document.getElementById('launchNodePkg').value + "\" type=\"" + document.getElementById("launchNodeType").value + "\">\n";
+			serviceContent += "    <param name=\"" + document.getElementById('launchParamName').value + "\" value=\"" + document.getElementById('launchParamValue').value + "\"/>\n";
+			serviceContent += "  </node>\n";
+			serviceContent += "  <include file=\"" + document.getElementById('launchIncludeFile').value + "\">\n";
+			serviceContent += "    <arg name=\"" + document.getElementById('launchArgName').value + "\" value=\"" + document.getElementById('launchArgValue').value + "\"/>\n";
+			serviceContent += "  </include>\n";
+			serviceContent += "</launch>\n";
+			break;
+	};	
+
+	console.log(serviceContent); //ok
+
+	var cmd = "ModifyFile"; 
+	var content = Base64.encode(serviceContent); 
+	var message = {cmd : cmd, solution : solutionName, file : fileName, content : content};
+		
+	if (solutionName != "")
+	{
+		socket.send(message); //message send
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result);			
+			return;
+		});
+	}
+}
+
+//==== Solution Configurator Func, 2015-02-04(Wed)_shkwak (imsi)
+var solutionConfigure = function(fileID){ //RE : 설정 UI에서 선택한 값을 적용해야 함. 2015-04-28(Tue)
+	var solutionName = created_solutionName; //"dummy_concert1";
+	var serviceContent = ""; //Init!		
+	var fileName = "";	
+
+	switch (fileID)
+	{		
+		case '3': 			
+			fileName = created_solutionName + ".services"; 
+/*			serviceContent += "name: " + "" + "\n";
+			serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
+			serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
+			serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
+			serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
+			serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
+			serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
+			serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
+			serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
+*/			serviceContent = "# PRIORITIES\n#\n# Turtle pond has scheduler_msgs.Request.DEFAULT_PRIORITY, teleop has \n# scheduler_msgs.Request.HIGH_PRIORITY. If you want to change the priority\n# override it as below for any of the services:\n#  overrides:\n#    priority: 1000\n\n- resource_name: concert_service_admin/admin\n  override:\n    name: admin\n    description: Administrative services and tools\n    author: Daniel Stonier \n- resource_name: concert_service_turtlesim/turtlesim\n  override:\n    name: turtlesim\n    description: Turtlesim service\n    author: Yujin Robot\n    priority: 3\n- resource_name: turtle_concert/turtle_pond\n  override:\n    name: turtle_pond\n    description: Turtles on the pond\n    author: Yujin Robot\n    priority: 3";
+			break;
+		case '4': 
+			fileName = created_solutionName + ".launch"; 
+/*			serviceContent += "<launch>\n";
+			serviceContent += "  <node name=\"" + document.getElementById('launchNodeName').value + "\" pkg=\"" + document.getElementById('launchNodePkg').value + "\" type=\"" + document.getElementById("launchNodeType").value + "\">\n";
+			serviceContent += "    <param name=\"" + document.getElementById('launchParamName').value + "\" value=\"" + document.getElementById('launchParamValue').value + "\"/>\n";
+			serviceContent += "  </node>\n";
+			serviceContent += "  <include file=\"" + document.getElementById('launchIncludeFile').value + "\">\n";
+			serviceContent += "    <arg name=\"" + document.getElementById('launchArgName').value + "\" value=\"" + document.getElementById('launchArgValue').value + "\"/>\n";
+			serviceContent += "  </include>\n";
+			serviceContent += "</launch>\n";
+*/			//serviceContent = "<launch>\n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>\n  <arg name='concert_name' default='dummy concert'/>\n  <arg name='scheduler_type' default='compatibility_tree'/>\n\n  <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='$(arg concert_name)'/>\n      <arg name='services' value='$(arg dummy_services)'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
+			serviceContent = "<launch>\n    <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='" + created_solutionName + "'/>\n      <arg name='services' value='" + created_solutionName + ".services'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
+			break;
+	};	
+
+	console.log(serviceContent); //ok
+
+	var cmd = "solutionConfigure"; 
+	var content = Base64.encode(serviceContent); 
+	var message = {cmd : cmd, solution : solutionName, file : fileName, content : content}; //json type
+		
+	if (solutionName != "")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result);						
+			return;
+		});
+	}	
+}
+
+
+function onPageEnter()
+{	//2015-01-07(Wed)_shkwak, 페이지 URL 파싱
+/*	var result = "Not found", tmp = [];
+    location.search
+			.substr(1)
+			.split("&")
+			.forEach(function (item){
+				tmp = item.split("=");
+//              if (tmp[0] === val)
+//              result = decodeURIComponent(tmp[1]);
+                if(tmp[0] == "number") {
+					var number = tmp[1];
+					//customAlert("calling " + number, 1000);
+					//callToRobot(number);
+//					sessionId = getSessionID(number);
+				}
+		console.log("name: " + tmp[0]);
+        console.log("value: " + tmp[1]);
+    });					
+*/	//return result;
+	var url = location.href; //result -> http://localhost:8080/ or http://192.168.0.129:8080/ - OK 
+	//location.search : url에서 ? 이하의 내용을 가져옴
+	console.log("URL : " + url); //URL : http://localhost:8080/	
+
+	//자바스크립트 URL 가져오기, 2015-04-29(Wed)_shkwak
+	var tmp = window.location; //location 값을 가져옴 
+	tmp = String(tmp).split('/'); 
+	console.log(tmp[0] + ", " + tmp[1] + ", " + tmp[2] + ", " + tmp[3]); //http:, , localhost:8080, 
+
+	tmp = document.location.host; //www.bpnr.co.kr:50000 
+	//console.log(tmp); //localhost:8080 - GOOD
+	tmp = String(tmp).split(':'); 
+	console.log(tmp[0] + ", " + tmp[1]); //localhost, 8080
+	
+	//콘솔창의 로그 내용 지움, 2015-05-06(Wed)_shkwak
+	console.clear(); 
+}
+
+
+String.prototype.trim = function()
+{   //Javascript에서 trim 사용하기 
+    return this.replace(/(^\s*)|(\s*$)/g, "");
+}
+
+function packageName_check(name)
+{	//기술적인 이슈 처리 : Name 정보는 (*)영문으로 하고, (1)소문자로 변환하고 (2)공백은 “_” 밑첨자로 변경_2015-04-29(Wed)
+	console.log(name); //제거 전
+	var pName = name.trim(); //좌우 공백제거
+	console.log(pName); //제거 후
+	
+	//var solutionName = document.getElementById('inputName').value;
+
+	//(1)소문자로 변환
+	pName = pName.toLowerCase();
+	console.log(pName); //변환 후
+
+	//(2)공백 "_" 변경
+	//pName = pName.replace(" ","_"); //첫번째 공백만 '_'으로 변경하고 나머지는 변경이 되지 않는 문제 확인!
+	pName = pName.replace(/ /gi,"_"); //따옴표를 슬래시로 대체하고 뒤에 gi 를 붙이면 replaceAll 과 같은 결과를 볼 수 있다.
+	console.log(pName); //변경 후
+
+	return pName;
+}
+
+
+
 </script>
 
 <!-- <link type="text/css" rel="stylesheet" href="./css/syntax-prism-min.css"> -->
+
+<style>
+.Title_N_common{text-align:center;/*vertical-align:middle;*/}
+.logo{	width:400px;; /*350px;*/height:60px;font-size:3.8em;font-weight:bold;	color:#00a3ef; /*#00a3ef;*/	overflow:hidden;padding:12px;}
+@media all and (max-width:1024px){}
+@media all and (max-width:970px){}
+@media all and (max-width: 670px){.logo{width:400px; /*350px;*/ height:60px; font-size:3.6em; font-weight:bold; color:#00a3ef; overflow:hidden; padding:14px 0px 0px 0px;}}
+@media screen and (max-width: 460px){/* body {background-color:lightblue;} */.logo{width:400px; /*350px;*/ height:60px; font-size:3.0em; font-weight:bold; color:#00a3ef; overflow:hidden; padding:0px;}}
+
+.width-100{width:100%}
+.width-40 {width:40%}
+.width-30 {width:30%}
+.width-10 {width:10%}
+
+.height-75{height:75px} 
+.height-150{height:150px}
+.height-225{height:223px} /*225px*/
+
+.h2-option{margin: 0; color: #666;padding-top: 50px;font-size: 44px;font-family: "trebuchet ms", sans-serif;    }
+.item{background: #348FC0;/*#333;*/text-align: center;height: 300px !important;}
+.item_p{background: #5DAA5F;/*#333;*/}
+.item_c1{background: #5A6776;/*#333;*/}
+.item_s1{background: #3F86C3;/*#333;*/}
+.item_l1{background: #3F86C3;/*#333;*/}
+
+.carousel-{margin-top: 20px;}
+.calender-body {margin: 40px 10px;padding: 0;font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;font-size: 14px;}
+#calendar {max-width: 900px;margin: 0 auto;}
+.form-horizontal .control-label{padding-top: 7px;}
+
+.border-gradient{
+	background-image: -webkit-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image:    -moz-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image:      -o-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image: -webkit-gradient(linear, left top, right bottom, from(#00ADED), to(#0B4577));
+	background-image:         linear-gradient(to right, #00ADED 0%, #0B4577 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff00ADED', endColorstr='#ff0B4577', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	background-repeat: repeat-x;
+}
+
+</style>
 </head>
 
-  <!-- <frameset rows="*,0" frameborder="NO" border="0" framespacing="0">
-	<frame src="Default.html" name="mainFrame">
-	<frame name="bottomFrame" scrolling="NO" noresize> 
-  </frameset> -->
+<!--========================================================================-->
+<body onload="onPageEnter();" onunload="pageClose();" onresize="setDivHeight();">
 
-<body data-slug="FileGuide/FileUpDown" data-docid="5791" contextmenu="edit-history-menu" class="html-ltr document" onload="" onunload="pageClose();">
+<!-- Main Logo -->
+<div style="background-color:#EAEFF2; height:74px; padding-left:24px;">
+  <!-- <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b></span> -->
+  <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">ROCON SOLUTION</b></span>
+  <!-- SNS 연동 -->
+  <img id="twitter" src="./images/circle-twitter-128.png" style="width:36px; float:right; margin:22px 14px 0px 3px;" data-toggle="tooltip" title="Twitter Link" onMouseOver="javascript:$('#twitter').tooltip('show');"/>
+  <img id="facebook" src="./images/facebook_circle_color-128.png" style="width:40px; float:right; margin:20px 2px 0px 2px;"/>   
+
+<script>
+var  facebook = document.querySelector("#facebook") 
+	,twitter = document.querySelector("#twitter") 
+	,thisUrl = "project.futurerobot.co.kr/ROCON" 
+	,msg = "웹 저작도구 결과물을 SNS에 공유합니다." 
+	,tag = "shkwak" 
+
+ // 페이스북
+facebook.addEventListener("click", function(){ 
+ goSns('facebook', thisUrl, msg, tag); 
+}, false); 
+
+// 트위터
+twitter.addEventListener("click", function(){ 
+ goSns('twitter', thisUrl, msg, tag); 
+}, false); 
+
+function goSns(site, url, msg, tag) { 
+ var goUrl; 
+ if (site == "facebook"){   
+  // 페이스북 
+  goUrl = "http://www.facebook.com/sharer.php?u=" + url + "&t=" + encodeURIComponent(msg); 
+  win_op(goUrl, '', '700', '500', 'no'); //새창 가운데 열기
+ }else if(site == "twitter"){    
+  // 트위터 
+  goUrl = "http://twitter.com/home?status=" + encodeURIComponent(msg) + " " + encodeURIComponent(url); 
+  win_op(goUrl, '', '700', '280', 'no'); //새창 가운데 열기
+ } 
+ //top.location.href = goUrl; 
+ //win_op(goUrl, '', '700', '500', 'no'); //새창 가운데 열기
+} 
+
+function win_op(mypage, myname, w, h, scroll) {
+	var winl = (screen.width - w) / 2;
+	var wint = (screen.height - h) / 2;
+	winprops = 'height='+h+',width='+w+',top='+wint+',left='+winl+',scrollbars='+scroll+',resizable'
+	win = window.open(mypage, myname, winprops)
+	if (parseInt(navigator.appVersion) >= 4) { win.window.focus(); }
+}
+ 
+  </script>
+</div>
 
 <!------------------------------------------------------------------------------>
-<div id="tabzilla-panel" class="tabzilla-closed" tabindex="-1">  
-  <div id="tabzilla-contents">   
-    <div id="tabzilla-promo">      
-      <div class="snippet" id="tabzilla-promo-fxos">        
-        <a href="#" onclick="javascript:getElementById('subframe').src='http://www.robotconcert.org/wiki/Main_Page', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';" title="ROCON Wiki"><h4>Look ahead</h4><p>Learn all about ROCON»</p></a>      
-      </div><!-- snippet -->    
-    </div><!-- tabzilla-promo -->    
-    <div id="tabzilla-nav">     
-    <ul>        
-    <li><h2>Function</h2>          
-	<div>            
-	  <ul>              
-		<li><a href="https://github.com/robotics-in-concert/rocon_solution_webmanager" target="_blank">solution Repository</a></li>
-	    <li><a href="https://github.com/meddugi723/ROStest1/archive/master.zip">All Files Download</a></li>
-		<li><a href="https://github.com/meddugi723/ROStest1" target="_blank">ROStest1</a></li>
-		<!-- <li><a href="https://github.com/meddugi723/ROStest44" target="_blank">ROStest44</a></li> -->
-		<li><a href="https://github.com/" target="_blank">GitHub</a></li>
-		<li><a href="https://developer.github.com/v3/repos/contents/" target="_blank">Contents GitHub API</a></li>
-	  </ul>          
-	</div>        
-	</li>        
-	<li><h2>Page</h2>          
-	<div>            
-	  <ul>              
-	    <li><a href="#" onclick="javascript:getElementById('subframe').src='NewSolution.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager</a></li>
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='Webgraphviz.html', getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', getElementById('pageTitle').innerHTML='Data Visualizer';">Data Visualizer</a></li>
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='Scheduler.html', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler</a></li>
-		<!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='list2.html', getElementById('BreadcrumbTitle').innerHTML='Solution Folder List', getElementById('pageTitle').innerHTML='Solution Folder List';">Solution Folder List</a></li> -->
-      </ul>          
-	</div>        
-	</li>        
-	<li><h2>Website</h2>          
-	<div>            
-	  <ul>              
-	    <li><a href="#" onclick="javascript:getElementById('subframe').src='http://yujinrobot.com', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';">Yujin Robot</a></li>              
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://www.futurerobot.co.kr', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';">Future Robot</a></li>              
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='http://www.futuremarketing.co.kr', getElementById('BreadcrumbTitle').innerHTML='', getElementById('pageTitle').innerHTML='';">futuremarketing</a></li>
-		<!-- <li><a href="./research/?icn=tabz">Research</a></li>    -->         
-	  </ul>          
-	</div>        
-	</li>        	    
-	</ul>    
-    </div><!-- tabzilla-nav -->  
-  </div><!-- tabzilla-contents -->
-</div><!-- tabzilla-panel -->
-<!------------------------------------------------------------------------------>
 
-<script type="text/javascript">
-  (function(){
-  var FLAGS = {
-    'derby_closed': true,'elasticsearch': true,'external_signup': false,'ga_outbound_links': true,'kumaediting': false,'l10ndashboard': false,'page_move': false,'redesign': true,'redesign_beta_notice': true,'search_doc_navigator': false
-    },
-    SWITCHES = {
-    'apps_landing': true,'html5_landing': true,'home_mwc_promo': false,'apps-market-launch': true,'apps_promo': false,'labs_snippets_landing': false,'signin_metrics': true,'social_promo': true,'wiki_error_on_delete': false,'wiki_force_immediate_rendering': true
-    },
-    SAMPLES = {
-    
-    };
-  window.waffle = {
-    "flag_is_active": function waffle_flag(flag_name) {
-      
-      return !!FLAGS[flag_name];
-    },
-    "switch_is_active": function waffle_switch(switch_name) {
-      
-      return !!SWITCHES[switch_name];
-    },
-    "sample_is_active": function waffle_sample(sample_name) {
-      
-      return !!SAMPLES[sample_name];
-    },
-    "FLAGS": FLAGS,
-    "SWITCHES": SWITCHES,
-    "SAMPLES": SAMPLES
-  };
-})();
+<!-- <div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true">
+</div> -->
 
-  // This represents the site configuration : 상단 메뉴 mouseeover 메뉴★  
-  window.mdn = {
-    build: 'af3100b',
-    // Properties and settings for CKEditor will go here
-    ckeditor: {},
-    // Feature test results and methods will be placed here
-    features: {},
-    // Ensures gettext always returns something, is always set
-//    gettext: function(x) { return x; },
-    // The path to media (images, CSS, JS) in MDN
-    mediaPath: '',
-    // Wiki-specific settings will be placed here
-    wiki: {
-      //autosuggestTitleUrl: '/en-US/docs/get-documents'
-    }
-  };
+<!-- <div>
+	<input type="button" value="login" onclick="FBlogin();"/>
+	<input type="text" id="FBmsg"/>
+	<input type="button" value="sendMsg" onclick="sendMsg('test');"/>
+	<input type="button" value="sendMsg_normal" onclick="sendMsg_normal();"/>
+	<input type="button" value="sendMsg_popup" onclick="sendMsg_popup();"/>
+	<input type="button" value="sendMsg_youtube" onclick="sendMsg_youtube();"/> 
+</div> -->
 
+<script>
+////////////////////////////////////////////////////////////
+function FBlogin()
+{
+	FB.getLoginStatus(function(response) {
+		if (response.status === 'connected') {
+			console.log('Logged in.');	
+		}
+		else {
+			FB.login();
+		}
+	});
+}
+
+function sendMsg(message)
+{
+	var msg = (message != null)? message : document.getElementById('FBmsg').value;
+	FB.login(function(){
+	FB.api('/me/feed', 'post', {message: msg});
+	}, {scope: 'publish_actions'});
+}
+/*
+function sendMsg_normal()
+{	//강제 등록
+	console.log("sendMsg_normal");
+	FB.login(function(response){
+		if(response.authResponse){
+			var publish = {
+				metmethod:'stream.publish',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test', //제목
+				description:'rocon Facebook 테스트'
+			}
+
+			FB.api('/me/feed', 'post', publish, function(response){
+				alert('complete!');
+			});
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+
+function sendMsg_popup()
+{	//팝업 후 등록
+	console.log("sendMsg_popup");
+	FB.login(function(response){
+		if(response.authResponse){
+			FB.ui({
+				metmethod:'feed',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test_popup', //제목
+				description:'rocon Facebook 테스트'
+			)};
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+
+function sendMsg_youtube()
+{	//Youtube 연동
+	FB.login(function(response){
+		if(response.authResponse){
+			FB.ui({
+				metmethod:'feed',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test_youtube', //제목
+				description:'rocon Facebook 유튜브 테스트',
+				source:''
+			});
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+*/
+////////////////////////////////////////////////////////////
 </script>
-  
-<!-- <ul id="nav-access">
-	<li><a href="#content">Skip to main content</a></li>
-    <li><a id="skip-language" href="#language">Select language</a></li>
-    <li><a href="#q" id="skip-search">Skip to search</a></li>
-</ul> -->
 
-<!-- Header -->
-<header id="main-header">
-  <div class="center">
-	<!------------------------------------------------------------------------------>
-    <div class="clear header-login">
-	  <a href="#" id="tabzilla"></a> 
-	    <ul class="user-state signed-out">
-          <li class="user-signin menu">
-          <form class="browserid" action="/en-US/users/browserid_verify" method="POST">
-            <input id="next" name="next" type="hidden" value="/en-US/docs/FileGuide/FileUpDown">
-            <input required="required" type="hidden" name="assertion" id="id_assertion">
-            <!-- <a href="#" class="persona-button persona-login persona-loaded" data-next="/en-US/docs/FileGuide/FileUpDown">
-            <span class="persona-icon"><i aria-hidden="true"></i></span>
-            <span class="signin">Sign in with Persona</span></a> -->
-          </form>    
-		  </li>
-	    </ul>
-    </div>
-	<!------------------------------------------------------------------------------>
-	<!-- Main Logo -->
-    <a href="http://project.futurerobot.co.kr/ROCON/"><b class="logo">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b></a>
 
-	<!-- Main Navigation -->
-    <nav id="main-nav" role="navigation">
-	  <ul>
-	    <li>
-		  <a href="#" onclick="javascript:getElementById('subframe').src='NewSolution.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Manager<i aria-hidden="true" class="icon-caret-down"></i></a>
-          <div class="submenu submenu-single" id="nav-zones-submenu" aria-hidden="true" style="z-index: 99998; display: none;">
-            <div class="submenu-column">
-              <ul>			    
-			    <li><a href="#" onclick="javascript:getElementById('subframe').src='NewSolution.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Create New Solution</a></li>  
-				<li><a href="#" onclick="javascript:getElementById('subframe').src='TemplateEdit.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Solution Template Editor</a></li>  
-				<!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='gitAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">File Git API</a></li> -->
-				<!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='FileAPI.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Local File Edit & Upload</a></li> -->
-				<!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='Default.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">File Upload UI</a></li> -->
-                <!-- <li><a href="#" onclick="javascript:getElementById('subframe').src='fso.html';">Launch File</a></li>-->
-              </ul>
-            </div>
-            <button class="submenu-close transparent">
-			  <span class="offscreen">Close submenu</span><i aria-hidden="true" class="icon-remove-sign"></i>
- 		    </button>
-		  </div>
-        </li>
-		
-		<!-- <li><a href="#">Data Visualizer</a></li> -->
-		<li><a href="#" onclick="javascript:getElementById('subframe').src='Webgraphviz.html', getElementById('BreadcrumbTitle').innerHTML='Data Visualizer', getElementById('pageTitle').innerHTML='Data Visualizer';">Data Visualizer</a></li>
+<!-- 폳더 선택 다이얼로그 --!>
+<!-- <input type="file" webkitdirectory/>
+<input type="file" name="file_input[]" id="file_input" multiple webkitdirectory=""> -->
+<!-- <input type="file" id="file_input" webkitdirectory="" directory=""> -->
 
-		<li><!-- &amp; //& http://dhtmlx.com/docs/products/dhtmlxScheduler/sample_basic.shtml -->
-		  <a href="#" onclick="javascript:getElementById('subframe').src='Scheduler.html', getElementById('BreadcrumbTitle').innerHTML='Service Scheduler', getElementById('pageTitle').innerHTML='Service Scheduler';">Service Scheduler
-		  <!-- <i aria-hidden="true" class="icon-caret-down"></i> --></a>
-            <!-- <div class="submenu" id="nav-platform-submenu" aria-hidden="true" style="z-index:99998; display:none;">
-            <div class="submenu-column">
-              <div class="title">Service List</div>
-              <ul>
-                <li><a href="#">Service 1</a></li>
-                <li><a href="#">Service 2</a></li>
-                <li><a href="#">Service 3</a></li>
-                <li><a href="#">Service 4</a></li>               
-              </ul>
-            </div><div class="submenu-column last"><div class="title">Schedule</div> 
-              <ul>
-                <li><a href="#">Year</a></li>
-                <li><a href="#">Month</a></li>
-                <li><a href="#">Day</a></li>
-                <li><a href="#">Time</a></li>
-              </ul>
-            </div>
-            <button class="submenu-close transparent"><span class="offscreen">Close submenu</span><i aria-hidden="true" class="icon-remove-sign"></i>
-			</button>
-		  </div> -->
-        </li>
-	    
-		<!-- <li><a href="#">CS Log</a></li> -->
-		  
-		<!-- <li><a href="/en-US/demos/">Demos</a></li> -->
-		
-		<li class="main-nav-search">
-		  <form action="/en-US/search" method="get" role="search">
-            <div class="search-wrap">
-              <label for="main-q" class="offscreen">Search</label>
-              <input type="search" id="main-q" name="q" data-placeholder="SEARCH" data-value="" value="">
-              <span class="search-trigger"><i aria-hidden="true" class="icon-search"></i></span>&nbsp;
-              <button type="submit" class="offscreen">Search</button>
-            </div>
-          </form>
-		</li>
+<!-- 도형그리기 - 정삼각형 -->
+<!-- <div class="triangle"></div> -->
 
-      </ul>
-	</nav>
-  </div>
-</header>
-<!------------------------------------------------------------------------------>
 
 <!-- Content will go here -->
 <main id="content" role="main">
-<div class="center clear">
+<img src="./images/mb_back.png" id="btn_back" style="position:absolute; width:74px; float:left; padding:10px; cursor:pointer; z-index=-3; display:none;" onclick="location.reload();" onMouseOver="onMouseEvent('Over_back');" onMouseOut="onMouseEvent('Out_back');"/>
+<!-- <nav>
+  <ul class="pager">
+    <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+    <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav> -->
+<span id="group_back" style="position:absolute; font-size:2.5em; float:left; margin-left:70px; padding:10px; text-align:center; font-family:'Times New Roman', Times, serif; font-weight: normal; color:#EAEFF2; display:none;" >Previous page.</span><!-- Go to the previous page. -->
 
-  <div class="wiki-main-content">
-  <div class="center">
-    <div class="article-meta">
-      <!-- action buttons -->
-	  <ul class="page-buttons">
-		<!-- Access User Info -->
-		<li>
-		  <input type="text" id="accessUserInfo" value="" style="font-size:12px; color:#6699cc; border:0;" readonly>
-		</li>
+<div id="Title_N0_1" style="position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">ROCON 솔루션을 생성하고 구성파일을 편집할 수 있습니다.</div>
 
-	    <!-- <li>
-		  <a href="javascript:;" id="languages-menu" class="button transparent" aria-haspopup="true" aria-owns="languages-menu-submenu" aria-expanded="false"><span>Languages</span><i aria-hidden="true" class="icon-comments"></i></a>
-	      <div class="submenu" id="languages-menu-submenu">
-	        <div class="submenu-column">
-              <ul id="translations">
-		        <li class="smaller">No translations exist for this document.</li>
-                <li><a href="/en-US/docs/FileGuide/FileUpDown$locales">Add a translation</a></li>
-              </ul>
-            </div>
-          </div>
-		</li> -->	
+<div id="div_no1" style="clear:both; background-color:#348FD4;" class="Title_N_common">  
+  <span id="Title_N1" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer; color:#FFFFFF;" onclick="resizeHeight('Page1');" onMouseOver="onMouseEvent('Over1');" onMouseOut="onMouseEvent('Out1');">Solution Manager</span><p>
+  <span id="Title_N1_1" style="position:relative; font-size:1.5em; font-family: 'trebuchet ms', sans-serif; color:#FFFFFF; float:right; padding-right:30px; cursor:default;"><span onMouseOver="onMouseEvent('Over1_sub1');" onMouseOut="onMouseEvent('Out1_sub');">Template Editor</span> + <span onMouseOver="onMouseEvent('Over1_sub2');" onMouseOut="onMouseEvent('Out1_sub');">Service Scheduler</span></span>
+</div>
+<div id="div_content1" style="display:none; padding:20px 20px 0px 20px;" class="">
+	<!-- Modal 1 -->
+	<div id="myModal" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Confirmation</h4>
+				</div>
+				<div class="modal-body">
+					<p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify(document.getElementById('PageNum').value);">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 1-1 -->
+	<div id="Modal_sSchedule" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Service Schedule Registration</h4>
+				</div>
+				<div class="modal-body">
+					<!-- <p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p> -->
+				
+					<form class="form-horizontal" style="padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="serviceName" class="control-label col-xs-3" style="text-align:left;">Service Name <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name." style="background-color: #D9EAFD;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="serviceStart" class="control-label col-xs-3" style="text-align:left;">Start Time <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="serviceStart" placeholder="ex) 2015-01-21T16:00:00" style="background-color: #9FC4F3;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="serviceEnd" class="control-label col-xs-3" style="text-align:left;">End Time <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="serviceEnd" placeholder="ex) 2015-01-21T17:00:00" style="background-color: #BFCEDC;">
+							</div>
+						</div>
+					</form>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="ServiceSchduling();">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 2 -->
+	<div id="newSolutionModal" class="modal fade">
+		<div class="modal-dialog" style="margin:10% auto;">
+			<div class="modal-content">
+				<div class="border-gradient" style="width:100%; height:10px;"></div>
+				<div class="modal-header" style="padding:30px;"> <!-- border-top:8px solid #397EBA; -->
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:-12px; font-size:36px; font-weight:400; opacity:.4;">&times;</button>
+					<h2 class="modal-title" style="text-align:center;">Create a solution!</h2>
+				</div>
+				<div class="modal-body">
+					<!-- <p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>-->
+					<!-- <div class="well">	Look, I'm in a well! </div> --> 
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="inputName" class="control-label col-xs-3" style="text-align:left;">Name <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputName" placeholder="솔루션의 이름을 만들어 주세요. 예) OFFICE SOLUTION" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputDescription" class="control-label col-xs-3" style="text-align:left;">Description <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<!-- <input type="text" class="form-control" id="inputDescription" placeholder="솔루션 내용을 설명해 주세요." style="background-color: #eee;"> -->
+								<textarea class="form-control" id="inputDescription" placeholder="솔루션의 내용을 설명해 주세요.                                          예) 앱에서 음료를 주문하면 배달로봇이 음료를 배달한다." style="background-color:#eee; col:2;" spellcheck='false'></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputLicense" class="control-label col-xs-3" style="text-align:left;">License </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputLicense" placeholder="ex) BSD" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputVersion" class="control-label col-xs-3" style="text-align:left;">Version <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputVersion" placeholder="솔루션 버전을 입력해 주세요." style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputMaintainer" class="control-label col-xs-3" style="text-align:left;">Maintainer</label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputMaintainer" placeholder="ex) shkwak" style="background-color: #eee;">
+							</div>
+						</div>
+					</form>
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px; margin-top:4px;">
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Import service <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%;">									
+									<input type="text" class="form-control" id="input1" value="Local system" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="alert('no service now.');">
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<input type="text" class="form-control" id="input2" value="Service repository" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="alert('no service now.');">
+								</div>
+							</div>							
+						</div>						
+					</form>					
+				</div>							   
+				<div class="modal-footer"><!-- packageName_check(document.getElementById('inputName').value); -->
+					<button type="button" class="btn btn-lg btn-default" data-dismiss="modal" style="width:49%; height:75px;"  onclick="alert('no service now.');">Recent solution</button>
+					<button type="button" class="btn btn-lg btn-primary" data-dismiss="modal" style="width:49%; height:75px;" onclick="NewSolution();">NEW</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+	function sectionD_click() 
+	{
+		GetLocalServiceList();		
+	}
+	</script>
 
-		<!-- <li>
-		  <a href="#" class="button" onclick="NewWindow('NewSolution.html','centerwindow','600','620','no');return false" onfocus="this.blur()">popup<i aria-hidden="true" class="icon-star"></i></a>
-		</li> -->	
-		
-		<!-- <li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='list2.html', getElementById('BreadcrumbTitle').innerHTML='Solution Folder List', getElementById('pageTitle').innerHTML='Solution Folder List';">List<i aria-hidden="true" class="icon-list"></i></a>
-		</li> -->
+	<!-- Tab Menu -->
+	<div class="container width-100">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="active"><a data-toggle="tab" href="#sectionA">New Solution</a></li>
+			<li><a data-toggle="tab" href="#sectionB" onclick="GetSolutionList();">Template Editor</a></li>
+			<li><a data-toggle="tab" href="#sectionC">Service Scheduler</a></li>
+			<li><a data-toggle="tab" href="#sectionD" onclick="sectionD_click();">Solution Configurator</a></li>
+			<!-- <li class="dropdown">
+				<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a data-toggle="tab" href="#dropdown1">Dropdown1</a></li>
+					<li><a data-toggle="tab" href="#dropdown2">Dropdown2</a></li>
+				</ul>
+			</li> -->
+		</ul>
+		<div class="tab-content">
+			<!--■■■■■ sectionA : New Solution ■■■■-->
+			<div id="sectionA" class="tab-pane fade in active">
+				<h3>Solution Creation</h3>
+				<div class="container width-100">
+				  <div class="jumbotron">
+					<h2>Create a new solution!</h2>      
+					<p>새로운 솔루션을 생성하고, 그 내부에 구성파일들을 생성합니다.</p>   
+					<div class="form-group width-40">
+					  <label for="solutionName_new">Solution Name</label>
+					  <input class="form-control" id="solutionName_new" type="text" placeholder="Please enter the solution name."/>					  
+					 <!-- <input type="file" name="fileupload" id="fileupload" onchange="this.select(); document.getElementById('fileupload').value=document.selection.createRange().text.toString();" /> -->
+					</div>					
+					<a href="#" class="btn btn-success" onclick="SolutionCreate_new();"><span class="glyphicon glyphicon-plus"></span>&nbsp; LOCAL CREATE</a>
+					<a href="#newSolutionModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span>&nbsp; CATKIN_CREATE_PKG</a><!-- btn-lg -->
+					<a href="#" class="btn btn-default" onclick="ReadFileList();"><span class="glyphicon glyphicon-check"></span>&nbsp; FileList</a>
+					<a href="#" class="btn btn-info" onclick="GetLocalServiceList();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceList</a>
+					<a href="#" class="btn btn-warning" onclick="GetLocalServiceLength();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceLength</a>
+					<a href="#" class="btn btn-danger" onclick="GetLocalServiceContent(0);"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceContent(0)</a>
+					<a href="#" class="btn btn-danger" onclick="GetLocalServiceContent(1);"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceContent(1)</a>
+					<span id="solutionCreate_result" style="color:#cc3300;">&nbsp; &nbsp; </span>
+				  </div>
+				</div>
 
-		<li>
-		  <a href="#" id="signin" class="button" onclick="javascript:getElementById('subframe').src='Signin.html', getElementById('BreadcrumbTitle').innerHTML='Sign in', getElementById('pageTitle').innerHTML='';ChangeSigninTitle('OUT');">Sign in<i aria-hidden="true" class="icon-ok"></i></a>
-		</li>
+				<h3>Created Solution Files Description</h3>							
+				<p>새로운 솔루션을 생성하면 기본 구성파일로 아래와 같은 파일들이 생성됩니다.</p>
+  <pre class="brush:plain;" style="margin: 10px 15px;">
+  <span class="token">- package.xml : 솔루션에 대한 메타 정보 및 의존성 설정 파일</span>
+  <span class="token">- CMakeLists.txt : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span>  
+  <span class="token">- solution.service : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일</span>
+  <span class="token">- solution.launch : 솔루션 실행 설정 파일</span>
+  </pre>  
+				<!-- <h3>Result Report</h3>
+				<p>솔루션 생성 결과를 보여줍니다.</p>
+				&nbsp; &nbsp; <textarea id="box_result" style="width:98%; margin-top:5px;" rows="4" title="source" spellcheck="false"></textarea> -->		
+			</div>
 
-		<li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='TemplateEdit.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit<i aria-hidden="true" class="icon-pencil"></i></a>
-		</li>
 
-		<!-- <li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='./ace-builds/scrollable-page.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit 1<i aria-hidden="true" class="icon-pencil"></i></a>
-		</li>
+			<!--■■■■■ sectionB : Template Editor ■■■■-->
+			<div id="sectionB" class="tab-pane fade">
+			  <h3>Step 1</h3>
+			  <div class="container width-30" style="margin-left:0px;">
+				<p>아래에서 편집하고자 하는 솔루션을 선택하세요.</p>
+				<select class="form-control" id="select_solution">
+                    <option>solution1</option>
+					<option>solution2</option>
+					<option>solution3</option>
+					<option>solution4</option>
+                </select>
+			  </div>
 
-		<li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='./ace-builds/textarea/editor.html', getElementById('BreadcrumbTitle').innerHTML='Solution Manager', getElementById('pageTitle').innerHTML='Solution Configuration Manager';">Edit 2<i aria-hidden="true" class="icon-pencil"></i></a>
-		</li> -->
+			  <h3>Step 2</h3>
+			  <div class="container width-100">
+				<p>선택한 솔루션에서 편집하고자 하는 구성파일을 선택하세요.</p>
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn btn-default active" onclick="carouselChange('p');"><input type="radio" name="options" id="option1"> package.xml</label>
+					<label class="btn btn-default" onclick="carouselChange('c');"><input type="radio" name="options" id="option2""> CMakeLists.txt</label>
+					<label class="btn btn-default" onclick="carouselChange('s');"><input type="radio" name="options" id="option3"> solution.service</label>
+					<label class="btn btn-default" onclick="carouselChange('l');"><input type="radio" name="options" id="option4"> solution.launch</label>
+				</div>				
+			  </div>
+				
+			  <h3>Step 3</h3>
+			  <div class="container width-100">
+				<p>아래 항목을 차례차례 입력하고 Modify 버튼을 누르세요.</p>
+				
+				<!--■■ package.xml File ■■-->
+				<div id="myCarousel_p" class="carousel slide" data-interval="0" data-ride="carousel">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_p" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_p" data-slide-to="1"></li>
+						<li data-target="#myCarousel_p" data-slide-to="2"></li>		
+						<li data-target="#myCarousel_p" data-slide-to="3"></li>
+						<li data-target="#myCarousel_p" data-slide-to="4"></li>
+						<li data-target="#myCarousel_p" data-slide-to="5"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_p">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 패키지명을 입력하세요.</h4>
+							  <input class="form-control" id="packageName" type="text" placeholder="Please enter the package name."><br>
+							  <h4 style="float:left;">2. 패키지 버전을 입력하세요.</h4>
+							  <input class="form-control" id="packageVersion" type="text" placeholder="Please enter the package version. ex) 0.1.1">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">							  
+							  <h4 style="float:left;">3. 패키지에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="packageDescription" type="text" placeholder="Please enter the package description."><br>
+							  <h4 style="float:left;">4. Maintainer 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageMaintainertext" type="text" placeholder="Please enter the maintainer text.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageMaintainer" type="text" placeholder="Please enter the maintainer.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 라이센스(License)를 입력하세요.</h4>
+							  <input class="form-control" id="packageLicense" type="text" placeholder="Please enter the license." value="BSD"><br>
+							  <h4 style="float:left;">6. URL 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageURLType" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageURL" type="text" placeholder="Please enter the url address.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 저작자(Author)를 입력하세요</h4>
+							  <input class="form-control" id="packageAuthor" type="text" placeholder="Please enter the package author." ><br>
+							  <h4 style="float:left;">8. Buildtool Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageBuildtoolDepend" type="text" placeholder="Please enter the package buildtool depend." value="catkin">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageRunDepend" type="text" placeholder="Please enter package run depend."><br>
+							  <h4 style="float:left;">10. Export(concert_service)를 선택하세요.</h4><br><br>
+							  <input class="form-control" id="packageExport" type="file" accept=".service" onchange="this.value = this.files[0].name;">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageParmeters" type="text" placeholder="Please enter package run depend."><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <a href="#myModal" class="btn btn-success" style="float:left;" data-toggle="modal">Modify</a>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_p" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_p" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				
+				<!--■■ CMakeLists.txt File ■■-->
+				<div id="myCarousel_c" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_c" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_c" data-slide-to="1"></li>
+						<li data-target="#myCarousel_c" data-slide-to="2"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_c">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. cmake_minimum_required 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeVersion" type="text" placeholder="Please enter the cmake name." value="VERSION 2.8.3"><br>
+							  <h4 style="float:left;">2. 프로젝트(project)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeProject" type="text" placeholder="Please enter the cmake project.">
+							</div>
+						</div>
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. find_package 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeFindPkg" type="text" placeholder="Please enter the cmake find_package." value="catkin REQUIRED"><br>
+							  <h4 style="float:left;">4. catkin_package 를 확인하세요.</h4>
+							  <input class="form-control" id="cmakeCatkinPkg" type="text" placeholder="Please enter the cmake catkin_package." value="catkin_package()";>
+							</div>
+						</div>						
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeParmeters" type="text" placeholder="Please enter cmake parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-default" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_c" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_c" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
 
-		<!-- <li>
-		  <a href="#" class="button" onclick="javascript:getElementById('subframe').src='http://dhtmlx.com/docs/products/demoApps/dhtmlxXMLEditor/index.html', getElementById('BreadcrumbTitle').innerHTML='XML Editor', getElementById('pageTitle').innerHTML='XML Editor';">Edit 3<i aria-hidden="true" class="icon-pencil"></i></a>
-		</li> -->
+				<!--■■ solution.service File ■■-->
+				<div id="myCarousel_s" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_s" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_s" data-slide-to="1"></li>
+						<li data-target="#myCarousel_s" data-slide-to="2"></li>
+						<li data-target="#myCarousel_s" data-slide-to="3"></li>
+						<li data-target="#myCarousel_s" data-slide-to="4"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 서비스명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name."><br>
+							  <h4 style="float:left;">2. 서비스에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceDescription" type="text" placeholder="Please enter the service description.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 저작자(Author)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceAuthor" type="text" placeholder="Please enter the service author."><br>
+							  <h4 style="float:left;">4. 우선순위(Priority)를 입력하세요.</h4>
+							  <input class="form-control" id="servicePriority" type="number" placeholder="Please enter the service priority.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 런처 타입(Launcher Type)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceLauncherType" type="text" placeholder="Please enter the service name." value="roslaunch"><br>
+							  <h4 style="float:left;">6. 런처(Launcher)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceLauncher" type="text" placeholder="Please enter the service launcher. ex) turtle_concert/turtle_pond">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 아이콘(Icon)을 선책하세요.</h4>
+							  <input class="form-control" id="serviceIcon" type="file" accept=".png,.jpg,.jpeg,.gif" value=""><br>
+							  <h4 style="float:left;">8. 상호작용(Interactions)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceInteractions" type="text" placeholder="Please enter the service interactions.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceParmeters" type="text" placeholder="Please enter service parmeters. ex) turtle_concert/turtle_pond"><br>
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+				<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_s" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_s" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+
+				<!--■■ solution.launch File ■■-->
+				<div id="myCarousel_l" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_l" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_l" data-slide-to="1"></li>
+						<li data-target="#myCarousel_l" data-slide-to="2"></li>
+						<li data-target="#myCarousel_l" data-slide-to="3"></li>
+						<li data-target="#myCarousel_l" data-slide-to="4"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_l">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 노드명(Node name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchNodeName" type="text" placeholder="Please enter the launch name."><br>
+							  <h4 style="float:left;">2. 노드 패키지(pkg)와 타입(type)을 입력하세요.</h4><br><br>
+							  <input class="form-control" id="launchNodePkg" style="display:inline; width:49.5%; float:left;" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" id="launchNodeType" style="display:inline; width:49.5%; float:left; margin-left:1%;" type="text" placeholder="Please enter the url address.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 파라미터명(Param name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamName" type="text" placeholder="Please enter the launch param name."><br>
+							  <h4 style="float:left;">4. 파라미터값을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamValue" type="text" placeholder="Please enter the launch param value.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. Include File을 선택하세요.</h4>
+							  <input class="form-control" id="launchIncludeFile" type="file" placeholder="Please enter the launch include file."><br>
+							  <!-- <h4 style="float:left;">6. </h4>
+							  <input class="form-control" id="launchLauncher" type="text" placeholder="Please enter the launch launcher. ex) turtle_concert/turtle_pond"> -->
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">6. Argument명을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgName" type="text" placeholder="Please enter the launch arg name."><br>
+							  <h4 style="float:left;">7. Argument값을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgValue" type="text" placeholder="Please enter the launch arg value.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. </h4>
+							  <input class="form-control" id="launchParmeters" type="text" placeholder="Please enter launch parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_l" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_l" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+					
+				<!-- <div class="jumbotron">
+					<h2>!</h2>      
+					<p>니다.</p>   
+					<div class="form-group width-40">
+					  <label for="Name_new">Name</label>
+					  <input class="form-control" id="Name_new" type="text" placeholder="Please enter the name.">
+					</div>
+					<a href="#" class="btn btn-success" onclick=""><span class="glyphicon glyphicon-pencil"></span>&nbsp; MODIFY</a>
+				 </div> -->
+			  </div>
+
+			  <br><br>
+			  <!-- <iframe id="iframe_N1" src="TemplateEdit.html" width=100%; style="border:0px;"> </iframe> -->
+			</div>
+
+			<input type="hidden" id="PageNum" value="1"/>
+
+			<!--■■■■■ sectionC : Service Scheduler ■■■■-->
+			<div id="sectionC" class="tab-pane fade">
+				<!-- <h3>Service Schedule Calender</h3> -->
+				<!-- <p>Vestibulum nec erat eu nulla rhoncus fringilla ut non neque. Vivamus nibh urna, ornare id gravida ut, mollis a magna. Aliquam porttitor condimentum nisi, eu viverra ipsum porta ut. Nam hendrerit bibendum turpis, sed molestie mi fermentum id. Aenean volutpat velit sem. Sed consequat ante in rutrum convallis. Nunc facilisis leo at faucibus adipiscing.</p> -->
+
+				<!-- <div class="calender-body"> -->
+					<!-- <div id='calendar' ></div> -->
+				<!-- </dir> -->
+				<iframe id="iframe_N1_cal" src="fullcalender.html" width=100% height=792px style="border:0px;"> </iframe>
+				<!-- <iframe id="iframe_N1" src="Scheduler.html" width=100%; style="border:0px;"> </iframe> -->
+			</div>
+
 			
-		<li>
-		  <a href="javascript:;" id="advanced-menu" class="button only-icon" aria-haspopup="true" aria-owns="advanced-menu-submenu" aria-expanded="false"><span>Advanced</span><i aria-hidden="true" class="icon-cog"></i></a>
-          <div class="submenu" id="advanced-menu-submenu">
-            <!-- this page -->
-            <div class="submenu-column">
-              <div class="title">Advanced</div>
-              <ul>
-                <li><a href="#" onclick="javascript:ReadValue();AccessUserInfo();">Settings</a></li>
-                <li class="page-print"><a href="#" onclick="return window.print();" title="Print page">Print this page</a></li>
-              </ul>
-            </div>
-          </div>
-		</li>
-	  </ul><!-- page-buttons -->
-	  <!-- action buttons End-->
+			<!--■■■■■ sectionD : SOLUTION MANAGER (Solution Configurator) ■■■■-->
+			<!-- RE : 서비스 정보 불러오기, DP, 솔루션 생성 시 사용한 Name 적용, 2015-04-29(Wed)_shkwak -->
+			<div id="sectionD" class="tab-pane fade">				
+				<div class="container width-100" >			
+				<br>
+				<form>
+					<div class="row">
+						<div class="col-xs-3" style="min-width:156px;" >
+							<div class="input-group">
+								<input type="text" class="form-control" value="SERVICE LIST" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<span class="input-group-addon" style="cursor:pointer;" onclick="addElement();">Add  <span class="glyphicon glyphicon-plus"></span></span>
+								<span class="input-group-addon" style="cursor:pointer;" onclick="delElement();">Del  <span class="glyphicon glyphicon-minus"></span></span>
+							</div>
+							<div id="div_serviceList"> <!-- list-group -->
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">  
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#59C1E0;" title="Administrative services and tools" onclick="addService(this.innerHTML, this.style.color, this.title);">admin</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#FCB040;" title="Turtlesim service" onclick="addService(this.innerHTML, this.style.color, this.title);">turtlesim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#EF3E35;" title="Turtles on the pond" onclick="addService(this.innerHTML, this.style.color, this.title);">turtle_pond</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_delivery</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_delivery_sim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_database</h3>
+								</a>															
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">gazebo_robot_world</h3>
+								</a>								
+							</div>				
+						</div>
+						<div class="col-xs-1">
+							<div class="input-group">
+								<!-- <input type="text" class="form-control" placeholder="Amount"> -->
+								<!-- <span class="glyphicon glyphicon-chevron-right"></span> --> <!-- glyphicon glyphicon-play -->
+								<img src="./images/small-triangle-right-grey.png" style="padding:184px 0px 0px 20px;"/>
+							</div>
+						</div>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<input type="text" id="created_solutionName" class="form-control" value="SOLUTION NAME : dummy_concert1" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<span class="input-group-addon" style="cursor:pointer; color:; background-color:#FCFCBD;" onclick="solutionConfigure('3');solutionConfigure('4');">CONFIGURE</span>
+							</div>
+							<div id="div_serviceName"> <!-- list-group //end!   -->				
+								<!-- <a href='#' class='list-group-item height-75 b44'><div><p id='b44' class='list-group-item-text col-xs-9' style='color:; padding-left:0px;' onclick='delService(this.id);'>sName (<span id='icon44' class='glyphicon glyphicon-minus'></span>)</p></div><div class='col-xs-9' style='padding:0px;'><h6> description </h6></div><div class='col-xs-3' style='padding:0px; margin-top:-24px;'><h6 id='h6_1' style='color:#FCB040; float:right; margin:8px 0px 4px 0px;' onclick='classChange(this.id);'>Auto enabled service <span id='check_h6_1' class='glyphicon glyphicon-unchecked'></span></h6><div><span style='float:right; padding-right:63px; color:#ccc; font-size:12px;'>overrided <span id='check_override44' class='glyphicon glyphicon-remove'></span></span></div><strong><div style='float:right; padding-right:108px; color:; font-size:12px;' id="editBtn_44" onclick="editView(this.id);">edit</div></strong></div></a>
+								<a href='#' class='list-group-item height-225 b44' id="edit44" style="display:none; background-color:#FFFFFF;"><div class="table-responsive" style="font-size:12px;"> <table class="table"><button type="button" id="saveBtn_44" class="btn btn-info" style="position: absolute; right: 25px; height: 30px; font-size: 12px;" onclick="classOverrideChange(this.id);editView(this.id);">Save</button><thead><tr><th>Service Name</th><th>MakeAMap </th></tr></thead><tbody><tr style="height:28px;"><td style="padding:5px 8px">Description</td><td style="padding:2px 8px;"><input type="text" id="" class="form-control" value="Capture a robot for teleoperation." style="padding:2px 8px; height:24px;"></td></tr><tr style="height:28px;"><td style="padding:5px 8px">Icon</td><td style="padding:2px 8px;"><input type="text" id="" class="form-control" value="concert_service_make_a_map/make_a_map_bubble_icon.png" style="padding:2px 8px; height:24px;"></td></tr><tr style="height:28px;"><td style="padding:5px 8px">Priority</td><td style="padding:2px 8px;"><input type="text" id="" class="form-control" value="1000" style="padding:2px 8px; height:24px;"></td></tr><tr style="height:28px;"><td style="padding:5px 8px">Interactions</td><td style="padding:2px 8px;"><input type="text" id="" class="form-control" value="" style="padding:2px 8px; height:24px;"></td></tr><tr style="height:28px;"><td style="padding:5px 8px">Parameters</td><td style="padding:2px 8px;"><input type="text" id="" class="form-control" value="concert_service_make_a_map/make_a_map" style="padding:2px 8px; height:24px;"></td></tr></tbody></table></div></a> -->
+							</div>				
+							
+							<div style="float:right; margin-top:10px; margin-right:15px;">					
+								Local client only  &nbsp; 
+								<input id="toggle-event" type="checkbox" checked data-toggle="toggle" data-onstyle="success">&nbsp;
+								<button type="button" class="btn btn-primary" style="" onclick="">RUN SOLUTION</button>
+								<div id="console-event"></div>
 
-      <!-- Breadcrumb -->
-	  <nav class="crumbs" role="navigation">
-	    <ol xmlns:v="http://rdf.data-vocabulary.org/#" aria-label="breadcrumbs">
-		  <li typeof="v:Breadcrumb"><a href="http://project.futurerobot.co.kr/ROCON/" rel="v:url" property="v:title">Authoring Environment Tools</a></li>
-          <!--<li class="crumb" typeof="v:Breadcrumb"><a href="/en-US/docs/FileGuide" rel="v:url" property="v:title">FileGuide</a></li>-->
-          <li id="BreadcrumbTitle" class="crumb" typeof="v:Breadcrumb" property="v:title">Solution Manager</li>
-        </ol>
-	  </nav>
-      <!-- Breadcrumb End-->
+								<script>
+								  $(function() {
+									$('#toggle-event').change(function() {
+									  $('#console-event').html('Toggle: ' + $(this).prop('checked'))
+									})
+								  })
 
-    </div><!-- article-meta -->
+								  //**** edit ****//
+								  function editView(id){
+									//추가한 Service의 요소값을 수정하기 위한 영역을 보이게 한다.
+									//console.log(id); //editBtn_1 ; OK
+									var sID = id.split('_');
+									//console.log(sID[1]); //1 ; OK
+									var eID = 'edit' + sID[1];
+									console.log(eID); //edit1 ; OK
+
+									if (document.getElementById(eID).style.display == 'none'){
+										document.getElementById(eID).style.display = 'block';
+									}else{
+										document.getElementById(eID).style.display = 'none';
+									}									
+								  }
+									
+								  //***** Element dynamic create/remove *****//
+								  var an = 0;
+								  function addElement(){
+									  an++;
+									  var element = "<a href='#' class='list-group-item a" + an + "' style='height:75px;'><p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p><h3 class='list-group-item-heading' style='color:#59C1E0;' onclick='addService(this.innerHTML, this.style.color);'>Service " + an + "</h3></a>"
+									$(element).appendTo("#div_serviceList");						
+								  }								
+
+								  function delElement(){						  
+									//$("a").remove(); //<a> all remove ㄷㄷ!
+									//$("a").detach(); //same? remove()
+									if (an > 0)
+									{
+										var element = ".a" + an;
+										$("a").remove(element); 
+										an--;
+									}						
+								  }						  
+								  //******************************************//
+								  var anr = 0;
+								  function addService(sName, tColor, tTitle) //★★★
+								  { //Solution에 Service 추가, 2015-01-07(Wed)_shkwak									
+									anr++;
+									console.log("anr : " + anr);
+									var description = "";
+
+									//if (tTitle == ""){
+										description = 'Robot deliveries what you order through your application. You can choose delivery robots as your needs. e.g.beverage,...';
+									//}else{
+									//	description = tTitle;
+									//}
+									
+									var element = "<a href='#' class='list-group-item height-75 add-service" + anr + "'><div><p id='add-service" + anr + "' class='list-group-item-text col-xs-9' style='color:" + tColor + "; padding-left:0px;' onclick='delService(this.id);'>" + sName + " (<span id='icon" + anr + "' class='glyphicon glyphicon-minus'></span>)</p></div><div class='col-xs-9' style='padding:0px;'><h6>" + description + "</h6></div><div class='col-xs-3' style='padding:0px; margin-top:-24px;'><h6 id='h6_n" + anr + "' style='color:#FCB040; float:right; margin:8px 0px 0px 0px;' onclick='classChange(this.id);'>Auto enabled service <span id='check_h6_n" + anr + "' class='glyphicon glyphicon-unchecked'></span></h6><div><span style='float:right; padding-right:63px; color:#ccc; font-size:12px;'>overrided <span id='check_override" + anr + "' class='glyphicon glyphicon-remove'></span></span></div><strong><div id='editBtn_" + anr + "' style='float:right; padding-right:108px; color:; font-size:12px;' onclick='editView(this.id)';>edit</div></strong></div></a>																																						 <a href='#' class='list-group-item height-225 add-service" + anr + "' id='edit" + anr + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'> <table class='table'><button type='button' id='saveBtn_" + anr + "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChange(this.id);editView(this.id);'>Save</button><thead><tr><th>Service Name</th><th>" + sName + "</th></tr></thead><tbody><tr style='height:28px;'><td style='padding:5px 8px'>Description</td><td style='padding:2px 8px;'><input type='text' id='description_" + anr +"' class='form-control' value='" + description + "' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Icon</td><td style='padding:2px 8px;'><input type='text' id='icon_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Priority</td><td style='padding:2px 8px;'><input type='text' id='priority_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Interactions</td><td style='padding:2px 8px;'><input type='text' id='interactions_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Parameters</td><td style='padding:2px 8px;'><input type='text' id='parameters_" + anr + "' class='form-control' value='concert_service_make_a_map/make_a_map' style='padding:2px 8px; height:24px;'></td></tr></tbody></table></div></a>"
+									$(element).appendTo("#div_serviceName"); //<span style='float:right;'>edit</span>						
+								  }								
+
+								  function delService(sID)
+								  { //Solution의 Service 삭제, 2015-01-07(Wed)_shkwak 						  
+									if (anr > 0)
+									{
+										var element = "." + sID;
+										$("a").remove(element); 
+										anr--;
+									}						
+								  }						  
+
+								  function classChange(cID, cColor)
+								  {	 //Auto enabled service - checkBox class 변경 함수, 2015-01-07(Wed)_shkwak
+									 var chk_id = "#check_" + cID, h6_id = '#' + cID;
+									 var this_class = $(chk_id).attr('class');
+									 console.log(cID + ', ' + h6_id + ', ' + chk_id + ', ' + this_class);
+
+									 if (this_class == "glyphicon glyphicon-unchecked")
+									 {
+										 $(chk_id).removeClass();
+										 $(chk_id).attr("class", "glyphicon glyphicon-check");
+										 //$("#keyWord_1 span").removeClass( 'aaa' );  // 기존 클래스를 지운다.
+										 //$("#keyWord_1 span").addClass( 'bbb' );  // 새로운 클래스를 적용한다.
+										 $(h6_id).css('color', '#59C1E0'); //color 변경!
+										 //$(this).css('color', 'red');
+										 //$(this).css({ 'color': 'red', 'font-size': '150%' });
+									 }
+									 else
+									 {
+										 $(chk_id).removeClass();
+										 $(chk_id).attr("class", "glyphicon glyphicon-unchecked");
+										 $(h6_id).css('color', '#FCB040'); //color 변경!
+									 }
+								  }
+
+									function classOverrideChange(id)
+									{	 //overrided - check class 변경 함수, 2015-05-07(Thu)_shkwak
+										var sID = id.split('_');
+										var chk_id = "#check_override" + sID[1];
+										var this_class = $(chk_id).attr('class');
+										console.log(sID[1] + ', ' + chk_id + ', ' + this_class);
+
+										if (this_class == "glyphicon glyphicon-remove")
+										{
+											$(chk_id).removeClass();
+											$(chk_id).attr("class", "glyphicon glyphicon-ok");
+										}
+										else
+										{
+											$(chk_id).removeClass();
+											$(chk_id).attr("class", "glyphicon glyphicon-remove");
+										}
+								  }
+								  //******************************************//									
+								</script>
+							</div>
+
+						</div><!-- col-xs-7 -->
+					</div><!-- row -->
+				</form>
+				
+				
+				<br>
+				<!-- //////////////////////// -->
+
+				</div><!-- container --> 	
+			</div><!-- sectionD -->
+			
 
 
-  <!-- heading -->
-  <div class="document-head">
-    <h1><span id="pageTitle">Solution Configuration Manager</span></h1>      
-  </div>
-  <!-- heading End-->
+			<style type="text/css">
+				.list-group{
+					width: 200px;
+				}				
+			</style>
 
-  <!-- start the main content container ★-->
-  <div id="wiki-column-container" class="wiki-right-present wiki-left-closed wiki-left-none">
-	
-  <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ style="display:none;" -->  
-  <iframe id="subframe" name="subframe" src="NewSolution.html" style="width:100%; height:900px; margin-top:10px;" ></iframe><P></P>
-<!-- <script>
-function resizeHeight() 
-{
-	fr = typeof fr == 'string' ? document.getElementByld(fr) : fr;
-	//var fr = document.getElementByld('subframe');
-	alert("in");
-	fr.setExpression('height',ifrm_deal_board_tab.document.body.scrollHeight);
-}
-</script>
-  <iframe id="subframe" src="list2.html" width="100%" height="100%" marginheight="0" scrolling="no" frameborder="0" onload="resizeHeight(this);"></iframe> -->
-  <!-- ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ -->
-
-    <!-- content row with three strips -->
-    <div class="column-container column-container-reverse">
-	
-      <!-- TOC, approvals, etc -->
-      <div class="column-strip wiki-column" id="wiki-right">	  
-        <!-- table of contents -->
-        <!--<div id="toc" class="toc toggleable" style="width:auto; max-height:none;">
-          <a href="#toc" class="title toggler" data-open-icon="icon-plus" data-closed-icon="icon-minus" aria-haspopup="true">In This Article<i class="icon-minus"></i></a>
-          <ol class="toggle-container">
-            <code></code><code></code><code></code><li><ol>
-		    <li><a href="#HTTP_File_Upload" rel="internal">Subtitle 1</a><code></code><code></code></li>
-		    <li><a href="#HTTP_PUT" rel="internal">Subtitle 2</a><code></code></li>
-		    <li><a href="#Downloading_Files" rel="internal">Subtitle 3</a></li>
-		    </ol></li>
-          </ol>
-        </div><!-- toc -->
-      </div><!-- column-strip -->
-	  <!-- TOC, approvals, etc END -->
-                        
-      <!-- center: main article content -->
-      <div id="wiki-content" class="column-main wiki-column text-content">
-                                        
-													 
-      <!-- just the article content -->
-      <!-- <article id="wikiArticle"> -->            
-	  <!-- <p><strong><a href="/en-US/docs/FileGuide/IO" title="FileGuide/IO">File and Stream Guide</a>:</strong> <strong>[</strong> <code><a href="/en-US/docs/XPCOM_Interface_Reference/nsIScriptableIO" title="">nsIScriptableIO</a></code> | <a href="/en-US/docs/FileGuide/Accessing_Files" title="FileGuide/Accessing_Files">Accessing Files</a> | <a href="/en-US/docs/FileGuide/FileInfo" title="FileGuide/FileInfo">Getting File Information</a> | <a href="/en-US/docs/FileGuide/FileReading" title="FileGuide/FileReading">Reading from Files</a> | <a href="/en-US/docs/FileGuide/FileWriting" title="FileGuide/FileWriting">Writing to Files</a> | <a href="/en-US/docs/FileGuide/MoveCopyDelete" title="FileGuide/MoveCopyDelete">Moving, Copying and Deleting Files</a> | <a href="/en-US/docs/FileGuide/FileUpDown" title="FileGuide/FileUpDown">Uploading and Downloading Files</a> | <a href="/en-US/docs/FileGuide/Directories" title="FileGuide/Directories">Working With Directories</a> <strong>]</strong></p> -->
-
-<!-- <div class="warning">
-  <strong>Important note:</strong> The pages from the <em>File and Stream Guide</em> use the <code>IO</code>&nbsp;object&nbsp;(<code>nsIScriptableIO</code>), which was not available in any released version of the platform (pending <a class="external link-https" href="./show_bug.cgi?id=396051" title="./show_bug.cgi?id=396051">some fixes</a>). There are alternative XPCOM&nbsp;APIs you can use, your help in updating this pages to use the supported API&nbsp;is very much welcome!</div> -->
-<!-- <p>Other documentation on files and I/O not using the unavailable nsIScriptableIO APIs: <a href="/en-US/docs/Code_snippets/File_I_O">Code snippets: File I/O.</a></p> -->
+			<div id="dropdown1" class="tab-pane fade">
+				<h3>Dropdown 1</h3>
+				<p>WInteger convallis, nulla in sollicitudin placerat, ligula enim auctor lectus, in mollis diam dolor at lorem. Sed bibendum nibh sit amet dictum feugiat. Vivamus arcu sem, cursus a feugiat ut, iaculis at erat. Donec vehicula at ligula vitae venenatis. Sed nunc nulla, vehicula non porttitor in, pharetra et dolor. Fusce nec velit velit. Pellentesque consectetur eros.</p>
+			</div>
+			<div id="dropdown2" class="tab-pane fade">
+				<h3>Dropdown 2</h3>
+				<p>Donec vel placerat quam, ut euismod risus. Sed a mi suscipit, elementum sem a, hendrerit velit. Donec at erat magna. Sed dignissim orci nec eleifend egestas. Donec eget mi consequat massa vestibulum laoreet. Mauris et ultrices nulla, malesuada volutpat ante. Fusce ut orci lorem. Donec molestie libero in tempus imperdiet. Cum sociis natoque penatibus et magnis dis parturient.</p>
+			</div>
+		</div>	
+	</div>
+</div>
 
 
-<!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
+
+<!--■■■■■■■■■■ Data Visualizer ■■■■■■■■■■-->
+<div id="Title_N0_2" style="clear:both; position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">dotgraph 데이터와 운영정보 Log를 시각화하는 도구입니다.</div>
+<div id="div_no2" style="clear:both; background-color:#FFF8C9;" class="Title_N_common">  
+<!-- <div id="div_no2" style="clear:both; background-color:#CCC;" class="Title_N_common"> -->
+  <span id="Title_N2" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="resizeHeight('Page2');" onMouseOver="onMouseEvent('Over2');" onMouseOut="onMouseEvent('Out2');">Data Visualizer</span>      
+</div>
+
+<div id="div_content2" style="display:none; padding:20px;" class="">
+  <!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
 <p>Some web sites allow one to upload a file. This is done by using an HTML &lt;input&gt; element using the <code>file</code> type from within a form. When the user selects a file, it can be uploaded to a server. This operation can also be performed via a script using the XMLHttpRequest object. This is a common technique for uploading files as it is compatible with existing servers and <a href="#" title="/en-US/docs/DOM/XMLHttpRequest/FormData">FormData</a> interface makes that task fairly simple.</p>
 <pre class="brush:js;  language-js" data-number=""><code class=" language-js"><span class="token keyword">function</span> <span class="token function">upload<span class="token punctuation">(</span></span>postUrl<span class="token punctuation">,</span> fieldName<span class="token punctuation">,</span> filePath<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -484,46 +2032,124 @@ function resizeHeight()
   req<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span><span class="token string">"POST"</span><span class="token punctuation">,</span> postUrl<span class="token punctuation">)</span><span class="token punctuation">;</span>
   req<span class="token punctuation">.</span>onload <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
   req<span class="token punctuation">.</span><span class="token function">send<span class="token punctuation">(</span></span>formData<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre> -->
+<span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre>   
+ -->
 
+	<div class="container width-100">
+		<ul class="nav nav-tabs" id="myTab2">
+			<li class="active"><a data-toggle="tab" href="#2sectionA" onclick="GetServiceList1111();">Concert_Service_List</a></li>
+			<li><a data-toggle="tab" href="#2sectionB">dotgraph</a></li>
+			<li><a data-toggle="tab" href="#2sectionC">Conductor_concert_clients</a></li>
+			<li><a data-toggle="tab" href="#2sectionD">Interactions_interactive_clients</a></li>			
+		</ul>
+		<div class="tab-content">
+			<!--■■■■■ 2sectionA : Service List ■■■■-->
+			<div id="2sectionA" class="tab-pane fade in active">			
+				<ul class="list-group" style="width:80%;">
+					<li class="list-group-item" style="border:0;" id="dv_serviceList"><h3 style="margin-top:10px;">SERVICE LIST</h3>
+						<ul class="list-inline">
+							<li class="list-group-item" style="width:42px; padding-left:3px; background-color: #D4E2EF; color: #2BB043;"><span>ICON</span></li>
+							<li class="list-group-item" style="width:70%; background-color: #D4E2EF; color: #2BB043;">
+								<span class="col-xs-3" style="">NAME</span>
+								<span class="col-xs-1" style="width:14px; padding:2px 2px 0px 0px;"></span>
+									<span class="col-xs-6" style="padding-left:0px;">DESCRIPTION</span>
+								<span class=""></span>&nbsp;AUTHOR
+							</li>
+							<li class="list-group-item " style="width:90px; background-color: #D4E2EF; color: #2BB043;"><span class="">&nbsp; &nbsp;STATUS</span></li>
+						</ul>		
+					</li> 
+				<script>
+				//***** Element dynamic create/remove *****//
+				var num = 0;
+				function addList(i, n, d, a, e){ //★	
+					var s = e;
+					num++;
+					i = (i=="data:image/png;base64,")? "./images/no-image.png":i; 
+					e = (e)? "btn-success' style='width:90px; margin-left:4px;'><span class='glyphicon glyphicon-ok'>&nbsp;enabled":"btn-default' style='width:90px; margin-left:4px;'><span class='glyphicon glyphicon-remove'>&nbsp;disabled"; //glyphicon-remove
+				
+					var element = "<ul class='list-inline dv_sl' style='margin-top:5px;'><li class='list-group-item' style='padding:0px;'><img src=" + i + " style='width:40px;'/></li><li class='list-group-item' style='width:70%; margin-left:4px; background-color:#F2FBFF;'><span class='col-xs-3' style=''>" + n + "</span><span class='col-xs-1 glyphicon glyphicon-bookmark' style='width:14px; padding:2px 2px 0px 15px;'></span><span class='col-xs-6'>" + d + "</span><span class='glyphicon glyphicon-user'></span>&nbsp;" + a + "</li><li class='list-group-item " + e + "</span></li></ul>" 
+					$(element).appendTo("#dv_serviceList");	
+					
+					//==== SNS 통보, 2015-04-14(Tue)_shkwak ====
+					if (n == "admin" && s == false && isSend == false) {
+						sendMsg1('admin disabled2222222222!');
+						console.log('============ SNS Send ============');
+						isSend = true;
+					} else if (n == "admin" && s == true && isSend == true) {
+						isSend = false;
+						console.log('============ SNS no ============' + n + ', ' + s);
+					}
+				}								
+				
+				function delList(){						  
+					if (num > 0)
+					{
+						var element = ".l" + num;
+						$("li").remove(element); 
+						num--;
+					}						
+				}						  
 
-<!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Services File</h4>
-<p>This is a common technique for uploading files as it is compatible with existing servers and interface makes that task fairly simple.</p>
+				function sendMsg1(msg)
+				{
+					//var msg = (message != null)? message : document.getElementById('FBmsg').value;
+					FB.login(function(){
+					FB.api('/me/feed', 'post', {message: msg});
+					}, {scope: 'publish_actions'});
+					console.log('-------------------------------------');
+				}
+				//******************************************//
+				</script>
+				</ul>
 
-<h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Package.xml File</h4>
-<p>This is a common technique for uploading files as it is compatible with existing servers and interface makes that task fairly simple.</p>
+&nbsp; <span style="font-size:12px; padding-left:15px; color:#fff;">master_URL</span>&nbsp;<span id="gitUserRepo" style="font-size:12px;">
+	<input type="text" id="master_URL" value="ws://192.168.0.129:9090" style="width:140px; font-size:12px; padding-left:2px; color:#ccc; border:0px;" spellcheck="false">&nbsp;	
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Service List &nbsp;: &nbsp;
+<select id="serviceList">
+	<option value="">-----------</option>		
+</select>	
+<button type="button" class="btn btn-primary btn-sm" style="padding:1px 10px;" onclick="GetServiceList();">GetList</button>
+<span id="span_callService">
+	<select id="serviceEnabled">
+		<option value="false">false</option>
+		<option value="true">true</option>		
+	</select>
+	<button type="button" class="btn btn-success btn-sm" style="padding:1px 10px;" onclick="callService();">callService</button>
+</span>
+<input type="image" src="./images/settings-1.png" onclick="addList();" style="vertical-align:middle;" title=""/>
+<!-- <span class="glyphicon glyphicon-plus"></span> -->
 
-<h4 id="HTTP_File_Upload" name="HTTP_File_Upload">CMaleLists File</h4>
-<p>This is a common technique for uploading files as it is compatible with existing servers and interface makes that task fairly simple.</p> -->
-       
-	<!-- contributors -->
-	<div class="wiki-block contributors">
-	  <h2 class="offscreen">Document Tags and Contributors</h2>
-		<div class="contributor-sub"> <i aria-hidden="true" class="icon-group"></i><strong>Contributors to this page:</strong> <a href="#">shkwak</a>, <a href="#">jyj</a></div>                              
-		<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">April 18, 2014 15:56:44 PM</time></div>
-    </div><!-- wiki-block -->
-	<!-- contributors END-->
+			</div>
 
-      </div><!-- wiki-content :  main article content END-->
+			<!--■■■■■ 2sectionB : dotgraph ■■■■-->
+			<div id="2sectionB" class="tab-pane fade">	
+				<br>
+				<iframe id="iframe_N1_view" src="Webgraphviz2.html" width="100%;" height="630px;" style="border:0px;"> </iframe>
+			</div>
 
-    </div><!-- column-container -->
-  </div><!-- wiki-column-container : start the main content container ★ End-->
-  </div><!-- center -->
-  </div><!-- wiki-main-content --> 
-  <!-- ends "main-content" -->
+			<!--■■■■■ 2sectionC : Conductor_concert_clients ■■■■-->
+			<div id="2sectionC" class="tab-pane fade">	
+				<h3 style="padding-left:15px;">Conductor_concert_clients</h3>
+				
+			</div>
 
-  <!-- <menu type="context" id="edit-history-menu">
-    <menuitem data-action="$edit" label="Edit page"></menuitem>
-    <menuitem data-action="$history" label="View page history"></menuitem>
-  </menu> -->
+			<!--■■■■■ 2sectionD : Interactions_interactive_clients ■■■■-->
+			<div id="2sectionD" class="tab-pane fade">	
+				<h3 style="padding-left:15px;">Interactions_interactive_clients</h3>				
+			</div>
+		</div>
+	</div>
 
-</div><!-- center clear -->
-</main>
-<!------------------------------------------------------------------------------>
-  
-  
-  <!-- Footer -->
-  <footer>
+<div id="table_div" style="display:none;"></div>
+
+</div><!-- div_content2 -->
+
+<!-- <div class="contributor-sub"> <i aria-hidden="true" class="icon-group"></i><strong>Contributors to this page:</strong> <a href="#">shkwak</a>, <a href="#">jyj</a></div>                              
+<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">2014-10-20</time></div> -->
+
+ <!-- Footer -->
+  <!-- <footer>
     <div class="center">
       <div class="column-container">
         <div class="column-main">         
@@ -534,29 +2160,95 @@ function resizeHeight()
         </div>
       </div>
     </div>
-  </footer>
-
-<!-- 팝업창 -->
-<!-- <br><center>
-<a href="NewSolution.html" onclick="NewWindow(this.href,'randomwindow','600','600','no','random');return false" onfocus="this.blur()">랜덤 위치에 팝업창 열기</a><br><br>
-<a href="NewSolution.html" onclick="NewWindow(this.href,'centerwindow','600','600','no','center');return false" onfocus="this.blur()">화면 중앙에 팝업창 열기</a><br><br>
-<a href="NewSolution.html" onclick="NewWindow(this.href,'randomwindow','600','600','no');return false" onfocus="this.blur()">디폴트 위치에 팝업창 열기</a></center><br><br> -->
+  </footer> -->
+</main>
+<!------------------------------------------------------------------------------>
 
 
-  <!-- site js -->
-  <!-- <script src="./js/build_af3100b.js"></script> -->
-  <!--[if lte IE 8]><script src="/media/redesign/js/libs/selectivizr-1.0.2/selectivizr-build.js?build=af3100b"></script><div id="feature-test-old-ie"></div><![endif]-->  
-  <script src="./js/jquery.min.js"></script><!-- <script src="./js/jquery1-min.js"></script> -->
-  <script src="./js/redesign-main-min.js"></script>
-  <div id="feature-test-element"></div>
-  <script>
-	  //mdn.analytics.initOutboundLinks($('body'));
-  </script>
-  <!-- 상단 히든 메뉴 -->
-  <script src="./js/tabzilla.js" async=""></script>
-  <script src="./js/wiki-min.js"></script>
-  <!-- <script data-manual="" async="" src="./js/syntax-prism-min.js"></script> -->
-  <!-- <script src="./js/prism-line-highlight.js"></script> -->
+<!-- concert.launch -->
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
+PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
+</textarea>
+<!-- solution.services -->
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
+LSByZXNvdXJjZTogcm9jb25fc2VydmljZV90dXJ0bGVzaW0vdHVydGxlc2ltCiAgb3ZlcnJpZGU6CiAgICBwcmlvcml0eTogMwotIHJlc291cmNlOiByb2Nvbl9zZXJ2aWNlX2FkbWluL2FkbWluCiAgb3ZlcnJpZGU6CiAgICBuYW1lOiBhd2Vzb21lIGFkbWluCiAgICBkZXNjcmlwdGlvbjogVGhpcyBpcyBjb29sCi0gcmVzb3VyY2U6IHR1cnRsZV9jb25jZXJ0L3R1cnRsZV9wb25kCiAgb3ZlcnJpZGU6CiAgICBkZXNjcmlwdGlvbjogcG9uLWRhbmcgcG9uLWRhbmcgZG9sIGV1bCBkdXVuIGppIGphCi0gcmVzb3VyY2U6IGNoYXR0ZXJfY29uY2VydC9jaGF0dGVyCg==
+</textarea>
+<!-- package.xml -->
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
+PHBhY2thZ2U+CiAgPG5hbWU+Y29uY2VydF90dXRvcmlhbDwvbmFtZT4KICA8dmVyc2lvbj4wLjUuNjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+CiAgICBJbnRyb2R1Y3Rvcnkgc29mdCB0dXRvcmlhbCBmb3IgdGhlIHJvY29uIGNvbmNlcnQuCiAgPC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iZC5zdG9uaWVyQGdtYWlsLmNvbSI+RGFuaWVsIFN0b25pZXI8L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+RGFuaWVsIFN0b25pZXI8L2F1dGhvcj4KCiAgPGJ1aWxkdG9vbF9kZXBlbmQ+Y2F0a2luPC9idWlsZHRvb2xfZGVwZW5kPgoKICA8cnVuX2RlcGVuZD5jb25jZXJ0X21hc3RlcjwvcnVuX2RlcGVuZD4KICA8cnVuX2RlcGVuZD5yb2Nvbl9zZXJ2aWNlX2FkbWluPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX3NlcnZpY2VfdHVydGxlc2ltPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcF9tYW5hZ2VyPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcHM8L3J1bl9kZXBlbmQ+CiAgPHJ1bl9kZXBlbmQ+cm9zcHlfdHV0b3JpYWxzPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnplcm9jb25mX2F2YWhpPC9ydW5fZGVwZW5kPiAKPC9wYWNrYWdlPgoK
+</textarea>
+<!-- CMakeLists.txt -->
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdChjb25jZXJ0X3R1dG9yaWFsKQoKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENhdGtpbgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCgpmaW5kX3BhY2thZ2UoY2F0a2luIFJFUVVJUkVEKQpjYXRraW5fcGFja2FnZSgpCg==
+</textarea>
+
+<script>
+setDivHeight(); //onload event
+</script>
+
+
+ <div id="gk-social-icons" class="right" style="display:none;">
+	<a href="https://www.facebook.com/" class="gk-facebook-icon">Facebook</a>
+	<a href="https://twitter.com/" class="gk-twitter-icon">Twitter</a>
+	<!-- <a href="https://plus.google.com/+WalkswithmeNetblog/" class="gk-gplus-icon">Google+</a>
+	<a href="http://www.walkswithme.net/feed/" class="gk-rss-icon">RSS</a> -->
+ </div>
+
+<style>
+#gk-social-icons {
+background: #333;
+-webkit-border-radius: 0 3px 3px 0;
+-moz-border-radius: 0 3px 3px 0;
+border-radius: 0 3px 3px 0;
+-webkit-box-shadow: 0 0 6px #939393;
+-moz-box-shadow: 0 0 6px #939393;
+-ms-box-shadow: 0 0 6px #939393;
+-o-box-shadow: 0 0 6px #939393;
+box-shadow: 0 0 6px #939393;
+left: 0;
+padding: 10px 0;
+position: fixed;
+text-align: center;
+top: 0.1%;
+width: 48px;
+z-index: 1001;
+}
+
+#gk-social-icons.right {
+-webkit-border-radius: 3px 0 0 3px;
+-moz-border-radius: 3px 0 0 3px;
+border-radius: 3px 0 0 3px;
+left: auto;
+right: 0;
+}
+
+.gk-facebook-icon {
+background: #727272 url('./images/fb_icon.png') no-repeat center center;
+}
+
+.gk-twitter-icon {
+background: #727272 url('./images/twitter_icon.png') no-repeat center center;
+}
+
+.gk-facebook-icon, .gk-twitter-icon, .gk-gplus-icon, .gk-rss-icon {
+-webkit-border-radius: 50%;
+-moz-border-radius: 50%;
+border-radius: 50%;
+display: inline-block;
+float: none!important;
+height: 22px;
+margin: 2px 5px;
+text-indent: -9999px;
+-webkit-transition: all 0.3s ease-out;
+-moz-transition: all 0.3s ease-out;
+-ms-transition: all 0.3s ease-out;
+-o-transition: all 0.3s ease-out;
+transition: all 0.3s ease-out;
+width: 22px;
+}
+
+
+</style>
 
  </body>
 </html>

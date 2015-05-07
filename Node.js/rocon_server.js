@@ -154,11 +154,15 @@ function callService(setServiceName, bool)
   });
 }
 
-
-
 // save the main path
-var mainPath = process.cwd();
+var mainPath = process.cwd(); //Node가 실행된 폴더 Path
 console.log("Main Path : " + mainPath);
+
+// read file list recursive!!
+// 2015-05-06(Wed)_shkwak
+var read = require('fs-readdir-recursive');
+//console.log("Read Path : " + mainPath + "/myservices");
+
 
 var timer = ""; //var timer = new Array();
 var startTime = "", endTime = "";
@@ -170,7 +174,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('message', function(data) {
 		//date - {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
 		switch(data.cmd){
-			case 'CreateSolution':		
+			case 'CreateSolution': //Local Solution 파일 생성		
 				process.chdir(mainPath); //main path로 chdir
 				//Solutions Dir 체크 및 생성
 				fs.exists("Solutions", function (exists) {
@@ -467,6 +471,7 @@ io.sockets.on('connection', function(socket) {
 			case 'NewSolution':
 				var sys = require('sys')
 				var exec = require('child_process').exec;
+				//var exec = require('child_process').spawn;
 				function puts(error, stdout, stderr) { sys.puts(stdout) }
 
 				process.chdir(mainPath);
@@ -474,7 +479,9 @@ io.sockets.on('connection', function(socket) {
 				process.chdir('../gazeborocon/src');
 				console.log("Path : " + process.cwd()); //Path : /home/imappak/gazeborocon/src
 				//[info] data = {cmd : cmd, name : solutionName, description : Description, license : License, version : Version, maintainer : Maintainer};
-				exec("catkin_create_pkg " + data.name + ' std_msgs rospy -D \'' + data.description + '\' -l ' + data.license + ' -V ' + data.version + ' -m ' + data.maintainer, puts); 
+				//exec("catkin_create_pkg " + data.name + ' std_msgs rospy -D \'' + data.description + '\' -l ' + data.license + ' -V ' + data.version + ' -m ' + data.maintainer, puts); 
+				console.log("catkin_create_pkg " + data.name + " std_msgs rospy -D \'" + data.description + "\' -l " + data.license + " -V " + data.version + " -m " + data.maintainer); 
+				exec("catkin_create_pkg " + data.name + " std_msgs rospy -D \'" + data.description + "\' -l " + data.license + " -V " + data.version + " -m " + data.maintainer, puts); 
 				//gnome-terminal -x bash -c 'roslaunch rosbridge_server rosbridge_websocket.launch'
 				//exec("ls -la", puts);	//exec("sudo start avahi-daemon", puts); //ok
 				break; 
@@ -517,6 +524,97 @@ io.sockets.on('connection', function(socket) {
 					}
 				});	
 				console.log('Configuration File : ' + data.file);
+				break;
+			case 'GetLocalServiceList':				
+				console.log('GetLocalServiceList'); 
+				process.chdir(mainPath);				
+				console.log(process.cwd());
+
+				var fList = read(mainPath + '/myservices');
+				var sList_full = new Array(), sList_short = new Array(), iList =  new Array(), mList =  new Array();
+				var aNum = 0;
+
+				fList.forEach(function(file){
+					//console.log('fList : ' + file);
+					iList = file.split('.');
+					if (iList[1].match('service'))
+					{	
+						mList = iList[0].split('/');
+						sList_short[aNum] = mList[mList.length-1];
+						sList_full[aNum++] = file;
+						console.log(file);
+					}					
+				});
+				
+				console.log("sList.length : " + sList_full.length);
+
+				var cmd = "GetLocalServiceList";
+				var message = {cmd : cmd, list : sList_full, servicelist : sList_short};
+				
+				socket.send(message);
+				console.log(message);
+
+				aNum = 0;
+				break;
+			case 'GetLocalServiceLength':				
+				console.log('GetLocalServiceLength'); 
+				process.chdir(mainPath);				
+				console.log(process.cwd());
+
+				var fList = read(mainPath + '/myservices');
+				var sList = new Array(), iList =  new Array();
+				var aNum = 0;
+
+				fList.forEach(function(file){					
+					iList = file.split('.');
+					if (iList[1].match('service'))
+					{
+						sList[aNum++] = file;
+					}					
+				});
+
+				console.log("sList.length : " + sList.length); //11개
+
+				var cmd = "GetLocalServiceLength";				
+				var length = sList.length; //★
+				var message = {cmd : cmd, length : length};
+				
+				socket.send(message);
+				console.log(message);
+
+				aNum = 0;
+				break;
+			case 'GetLocalServiceContent':				
+				console.log('GetLocalServiceContent'); 
+				process.chdir(mainPath);				
+				console.log(process.cwd());
+
+				var fList = read(mainPath + '/myservices');
+				var sList = new Array(), iList =  new Array();
+				var aNum = 0;
+
+				fList.forEach(function(file){
+					iList = file.split('.');
+					if (iList[1].match('service'))
+					{
+						sList[aNum++] = file;
+					}									
+				});
+
+				process.chdir(mainPath  + '/myservices');					
+				fs.readFile(sList[data.num], 'utf8', function(err, readData) {
+					if(err) throw err;
+					var cmd = "GetLocalServiceContent";
+					var serviceName = sList[data.num];
+					var content = readData; //★
+					var message_content = {cmd : cmd, service : serviceName, content : content};
+					
+					//socket.send(message_content);
+					io.emit('message_content', message_content);
+					console.log(message_content);
+				});					
+
+				aNum = 0;
 				break;
 		}
 
@@ -727,3 +825,11 @@ function dateReFormat(date){	//2015-01-21(Wed)_shkwak
 	
 	return yyyy+"-"+mm+"-"+dd+'T'+HH+':'+MM+':'+ss; //'2014-09-09T16:00:00'
 } 
+
+function logging()
+{
+	console.log('in');
+	//setTimeout(function(){
+	//	logging();
+	//}, 2000)
+}
