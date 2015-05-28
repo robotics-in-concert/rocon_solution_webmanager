@@ -1,0 +1,320 @@
+function CreatePullRequest() //no run! xxxx test 실패!
+{
+	/*
+	Input
+	----------------------------------------------------------------------------------------------------------------
+	Name	|	Type	|	Description
+	----------------------------------------------------------------------------------------------------------------
+	title	|	string	|	Required. The title of the pull request.
+	head	|	string	|	Required. The name of the branch where your changes are implemented. For cross-repository pull requests in the same network, 
+							namespace head with a user like this: username:branch.
+	base	|	string	|	Required. The name of the branch you want your changes pulled into. This should be an existing branch on the current 
+							repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
+	body	|	string	|	The contents of the pull request.
+	----------------------------------------------------------------------------------------------------------------
+	*/
+	//.set('Authorization', "token "+config.github_token) //yujin code
+
+	var userID = 'futurerobot', userPW = 'frmac12';	//futurerobot 계정 정보
+	var data = userID + ":" + userPW;
+	var base64IDPW_fr = Base64.encode(data) //futurerobot ; Authorization: basic ZnV0dXJlcm9ib3Q6ZnJtYWMxMg==
+	var owner2 = 'futurerobot', repo2 = 'ROStest1'; //octocat/Spoon-Knife, dwlee/concert_common_solutions
+
+	
+	var cmds = {
+		title: "First PR", 
+		body: "Please pull this in!", 
+		//head fork: "futurerobot/ROStest1",
+		head: "futurerobot: branch1", 
+		//base fork: "meddugi723/ROStest1",
+		base: "master"
+	}
+
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "basic " + base64IDPW_fr);
+		},
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/pulls", // + "?access_token=" + access_token,
+		type: "POST",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			console.log(data);
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+}
+
+function Create_Branch(branch) //x
+{	//Create a Reference(Branch), 2015-05-14(Thu)_shkwak	
+	var access_token2 = localStorage.getItem("access_token2");
+
+	if (access_token2 == null)
+	{
+		alert("Access Token 정보가 없습니다.");		
+	}
+	else
+	{
+		var userID = document.getElementById("ID").value;
+		var userPW = document.getElementById("PW").value;
+	
+		if (userID == "" || userPW == "")
+		{
+			alert("User account와 Password를 입력하세요.");
+		}
+		else
+		{
+			var data = userID + ":" + userPW;
+			base64IDPW = Base64.encode(data);
+		}
+
+		var ref = 'refs/heads/' + branch;		
+		var sha = GetGitHubMasterSHA(); //Sha1.hash(ref); //sha1 hash encode
+		var cmds = {ref : ref, sha : sha}
+		console.log(cmds);
+
+		jQuery.support.cors = true;
+		$.ajax({
+			beforeSend: function (request) {
+				request.setRequestHeader("Authorization", "Basic " + base64IDPW); //bWVkZHVnaTcyMzpzaGt3YWs3OTE4
+			},
+			url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/git/refs",
+			type: "POST",
+			data: JSON.stringify(cmds),
+			contentType: "application/json;charset=utf-8",
+			success: function (data) {
+				console.log(data);
+			},
+			error: function (x, y, z) {
+				alert(x + "\n" + y + "\n" + z);
+			}
+		});		
+	}
+}
+
+function Delete_Branch() //x
+{	//Delete a Reference(Branch), 2015-05-14(Thu)_shkwak
+	var access_token = '5d5859d492d4c361c505c1caebb6afd845804bb4'; //localStorage.getItem("access_token");
+	
+	if (access_token == null)
+	{
+		alert("Access Token 정보가 없습니다.");		
+	}
+	else
+	{
+	var cmds = {title: "First PR", body: "Please pull this in!", head: "meddugi723: branch1", base: "master"}
+
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "token " + access_token);
+		},
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/pulls", // + "?access_token=" + access_token,
+		type: "POST",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			console.log(data);
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});
+	}
+}
+
+
+function repo_branch() //for test
+{	//RE 검증, 2015-05-19(Tue)_shkwak, branch 생성 테스트 : 성공! ★★
+	var github = new Github({
+		username: "futurerobot", //"meddugi723",
+		password: "frmac12", //"shkwak7918",
+		auth: "basic"
+	});
+	var gitRepo = github.getRepo("futurerobot", "ROStest1");
+
+	var oldBranchName = "master";
+	var newBranchName = "fr_branch1";
+	gitRepo.branch(oldBranchName, newBranchName, function(err) {
+		if(err) console.log(err);
+		else console.log(newBranchName + " branch created!");
+	});
+}
+
+function repo_createPullRequest() //for test!
+{
+	var message = "Pull Request test";
+
+	var pull = {
+	  title: message,
+	  body: "This pull request has been automatically generated by futurerobot.",	  
+	  head: "futurerobot" + ":" + "branch1", //from, 출발지
+	  base: "master"	//to, 목적지
+	};
+	gitRepo.createPullRequest(pull, function(err, pullRequest) {
+		if(err) console.log(err);
+		else console.log(pullRequest);
+	});
+	/*
+	Input
+	----------------------------------------------------------------------------------------------------------------
+	Name	|	Type	|	Description
+	----------------------------------------------------------------------------------------------------------------
+	title	|	string	|	Required. The title of the pull request.
+	head	|	string	|	Required. The name of the branch where your changes are implemented. 
+	                        For cross-repository pull requests in the same network, namespace head with a user like this: username:branch.
+	base	|	string	|	Required. The name of the branch you want your changes pulled into. This should be an existing branch on the current 
+							repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
+	body	|	string	|	The contents of the pull request.
+	----------------------------------------------------------------------------------------------------------------
+	*/
+}
+
+
+function UserAuthorization() //no use!
+{	//2015-05-13(Wed)_shkwak_RE
+	var userID = document.getElementById("ID").value;
+	var userPW = document.getElementById("PW").value;
+	
+	if (userID == "" || userPW == "")
+	{
+		alert("User account와 Password를 입력하세요.");
+	}
+	else
+	{
+		var data = userID + ":" + userPW;
+		base64IDPW = Base64.encode(data);
+
+		/*--이전 base64UserIDPW 삭제--*/
+		//localStorage.removeItem("base64UserIDPW");
+
+		/*--base64UserIDPW 갱신--*/
+		localStorage.setItem("base64UserIDPW", base64IDPW);	
+		//console.log(localStorage.getItem('base64UserIDPW')); //
+
+		AuthorizationList(); //user 정보를 이용하여 token 정보 확인
+	}
+}
+
+function AuthorizationList() //no use!
+{	//token 리스트 가져오기
+	var userID = document.getElementById("ID").value;
+	var exist = false;
+	//var exist_num = 0;
+	//var access_token = ""; //중요!
+	var token_id = "";
+
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW); /*bWVkZHVnaTcyMzpzaGt3YWs3OTE4");*/
+		},
+		url: "https://api.github.com/authorizations",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//data.length : 4!!!, data[0].app.name : GitHub for Windows!!! Good
+			console.log(data); 
+			for (var i=0;i<data.length;i++)
+			{	//if (data[i].app.name == userID)				
+				console.log(data[i].note + ', ' + data[i].token); //object 4ea,, meddugi723, null, null, GitHub for Windows on shkwak-PC,
+
+				if (data[i].note == userID)
+				{
+					console.log("Auth exist!");
+					//exist_num++;
+					exist = true;
+					//access_token = data[i].token; //★ empty string("") return!!!
+					token_id = data[i].id;
+					console.log('token_id : ' + token_id);
+					break; //for에서 나가기
+				}				
+			}		
+			
+			if (exist)
+			{				
+				AuthorizationDelete(token_id); //기존 token 삭제!
+			}
+			else
+			{
+				//alert("Auth no exist! ");
+				/*--userID와 같은 name의 Auth 생성★--*/				
+				AuthorizationCreate();				
+			}
+			
+		},
+		error: function (x, y, z) {
+			//alert(x + "\n" + y + "\n" + z);
+			alert("User account와 Password를 다시 확인해 주세요.");
+		}
+	});	
+}
+
+function AuthorizationCreate() //no use!
+{	//새로운 token 생성하기, data.token 값 저장
+	var userID = document.getElementById("ID").value;
+	//var note = userID + ' note'; //meddugi723, futurerobot
+	var scope = [ "public_repo" ];
+	var cmds = {scopes : scope, note : userID};
+
+	if (userID == "" || base64IDPW == "")
+	{
+		alert("User account를 입력하세요!");
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW); //bWVkZHVnaTcyMzpzaGt3YWs3OTE4
+		},
+		url: "https://api.github.com/authorizations",
+		type: "POST",
+		data: JSON.stringify(cmds),
+		contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			/*--AuthorizationList() 함수 재실행, access_token 획득--*/
+			//AuthorizationList(); //기존 access_token 가져오기 위해 사용 -> but, now no use!
+			console.log('AuthorizationCreate()');			
+			console.log(data); //token ; "3b16f466d4d3dd2718a939807cfb1b5df3d46eca"			
+			access_token2 = data.token; //새로 생성된 token 값
+			console.log('access_token2 : ' + access_token2);
+			/*--access_token localStorage 저장--*/
+			localStorage.setItem("access_token2", access_token2);
+			console.log('localStorage.setItem(access_token2)');
+			/*--access User Name--*/
+			//localStorage.setItem("access_user", userID);
+		},
+		error: function (x, y, z) {
+			//alert(x + "\n" + y + "\n" + z);
+			alert("Access Token 생성 중에 오류가 발생했습니다.");
+		}
+	});	
+	}
+}
+
+function AuthorizationDelete(id)
+{	//Delete an authorization, 2015-05-14(Thu)_shkwak
+	jQuery.support.cors = true;
+	$.ajax({
+		beforeSend: function (request) {
+			request.setRequestHeader("Authorization", "Basic " + base64IDPW); //bWVkZHVnaTcyMzpzaGt3YWs3OTE4
+		},
+		url: "https://api.github.com/authorizations/" + id,
+		type: "DELETE",
+		//data: JSON.stringify(cmds),
+		//contentType: "application/json;charset=utf-8",
+		success: function (data) {
+			/*--AuthorizationList() 함수 재실행, access_token 획득--*/
+			console.log('AuthorizationDelete()');
+			AuthorizationCreate(); //token 재생성
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+			//alert("Access Token 생성 중에 오류가 발생했습니다.");
+		}
+	});	
+}

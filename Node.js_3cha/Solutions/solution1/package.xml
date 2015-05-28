@@ -1,0 +1,14 @@
+<package>
+  <name></name>
+  <version></version>
+  <description></description>
+  <maintainer text=""></maintainer>
+  <license>BSD</license>
+  <url type=""></url>
+  <author></author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend></run_depend>
+  <export>
+    <concert_service></concert_service>
+  </export>
+</package>

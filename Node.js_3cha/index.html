@@ -1,0 +1,2916 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <!--favicon-->
+  <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
+  <!-- page title -->
+  <title>ROCON - SOLUTION MANAGER V2.1.0</title> 
+  <!-- Bootstrap css -->
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="./bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <!-- Latest compiiled and minified JQuery --> 
+  <script type="text/javascript" src="./jquery/jquery-1.11.1.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script type="text/javascript" src="./bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <!-- Node.js socket.io, github-api load -->
+  <script src="socket.io/socket.io.js"></script>
+  <script src="./node_modules/github-api/github.js"></script>
+  <!-- SweetAlert Plugin -->
+  <script src="./sweetalert/lib/sweet-alert.min.js"></script> 
+  <link rel="stylesheet" type="text/css" href="./sweetalert/lib/sweet-alert.css">
+  <!-- base64 library -->
+  <script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
+  <!-- Bootstrap Toggle -->	
+  <link href="./css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="./js/bootstrap-toggle.min.js"></script>	
+  <!-- Bootstrap Select -->
+  <link rel="stylesheet" href="./css/bootstrap-select.min.css">
+  <!-- ROS Library -->
+  <script language="JavaScript" type="text/javascript" src="./js/eventemitter2.js"></script>
+  <script language="JavaScript" type="text/javascript" src="./js/roslib.js"></script>
+  <!-- sha1 hash encoding js -->
+  <!-- <script src="./js/sha1.js"></script> -->
+
+  <!-- FullCalender Plugin -->
+  <!-- <link rel='stylesheet' href='./fullcalendar/fullcalendar.css' />
+  <link rel='stylesheet' href='./fullcalendar/fullcalendar.print.css' media='print' />
+  <!-- <script src='lib/jquery.min.js'></script> 
+  <script src='./fullcalendar/lib/moment.min.js'></script>
+  <script src='./fullcalendar/lib/jquery-ui.custom.min.js'></script>  
+  <script src='./fullcalendar/fullcalendar.js'></script> -->
+
+  <!-- <!--[if IE]> -->
+  <!-- <meta http-equiv="imagetoolbar" content="no"> -->
+  <!-- <script src="./media/js/libs/html5.js"></script> -->
+  <!-- <![endif]--> 
+    
+
+  <!-- 페이스북 API -->
+  <script src="http://connect.facebook.net/en_US/all.js"></script>
+  <script>
+   FB.init({
+   appId  : '631031887007800',
+   status : true, // check login status
+   cookie : true, // enable cookies to allow the server to access the session
+   xfbml  : true, // parse XFBML
+   version : 'v2.2'
+   });
+
+   var isSend = false; //SNS send true/false
+  </script>
+  <!-- common style -->
+  <link rel="stylesheet" href="./css/style.css">
+
+<!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+	google.load("visualization", "1", {packages:["table"]});
+	google.setOnLoadCallback(drawTable);
+	
+	function drawTable() {
+	    var data = new google.visualization.DataTable();
+	    data.addColumn('string', 'Name');
+		data.addColumn('number', 'Salary');
+		data.addColumn('boolean', 'Full Time Employee');
+		data.addRows([
+			['Mike',  {v: 10000, f: ',000'}, true],
+			['Jim',   {v:8000,   f: ',000'},  false],
+			['Alice', {v: 12500, f: ',500'}, true],
+			['Bob',   {v: 7000,  f: ',000'},  true]
+		]);
+
+		var table = new google.visualization.Table(document.getElementById('table_div'));
+		table.draw(data, {showRowNumber: true});
+	}
+</script> -->
+
+<!-- Local System 관련 --> 
+<script src="./js/local_system.js"></script>
+
+<!-- common js -->
+<script src="./js/script.js"></script>
+
+<!-- github repository 관련 -->
+<script src="./js/github_repository.js"></script>
+
+<script>
+//socket connet!, port 적용!
+var url = location.href; //2015-01-17(Wed)_shkwak
+var socket = io.connect(url); //'http://localhost:8080');★
+
+/*-- ROSBridge --*/
+var ros = "";
+
+function ConnectROS()
+{
+	var url = location.host; //localhost:8080 or 192.168.0.129:8080 //2015-01-17(Wed)_shkwak
+	url = String(url).split(':'); //console.log(url[0] + ", " + url[1]); //localhost, 8080
+
+	var master_URL = "ws://" + url[0] + ":9090"; //document.getElementById('master_URL').value;
+	console.log(master_URL);
+
+	// Connecting to ROS
+	// -----------------
+	ros = new ROSLIB.Ros('');
+
+	// If there is an error on the backend, an 'error' emit will be emitted.
+	ros.on('error', function(error) {
+		console.log(error);
+		alert("WebSocket connection to \'" + master_URL + "\' failed : Connection closed before receiving a handshake response."); //Error Message
+	});
+
+	// Find out exactly when we made a connection.
+	ros.on('connection', function() {
+		console.log('Connection made!');
+	});
+
+	// Create a connection to the rosbridge WebSocket server. ★★
+	// master_URL _2014-04-21_shkwak
+	ros.connect(master_URL); //'ws://192.168.0.98:9090'; //ros.connect('ws://192.168.0.129:9090');	
+	console.log('ros.connect(' + master_URL + ')');
+	document.getElementById('master_URL').value = master_URL;
+}
+
+var renew = false;
+var sNum = 0;
+
+function GetServiceList()
+{	//rostopic - service list를 가져옴.★
+	var select = document.getElementById('serviceList');
+	
+	if (renew == false)
+	{
+		/*selectbox option 삭제*/
+		select.options.length = 0; //option 전체삭제
+		var option_line = document.createElement('option');
+		option_line.value = option_line.text = "-----------";
+		select.add(option_line);
+	}	
+
+	// Connecting to ROS
+	//ConnectROS(); //Get Service List 할때마다 Connect 할 필요 없음. 페이지 로드 시 접속!
+
+	//Subscribing to a Topic
+	//----------------------
+	var service_list = new ROSLIB.Topic({
+		ros : ros,
+		name : '/concert/service/list',
+		messageType : 'concert_msgs/Services'
+	});
+
+	service_list.subscribe(function(message) { // subscribe()는 되지만 정상적인 return이 오지는 않음
+		//console.log('Received message on ' + service_list.name + ': ' +  message.services[0].name);	
+		//console.log('Received icon data : ' +  message.services[1].icon.data);
+		//document.getElementById('service2Name').innerHTML = message.services[0].name;
+		$("ul").remove('.dv_sl'); //이전 ul 삭제
+		console.log('Received service_list.name :');
+
+		//var msg = Base64.encode(message);
+		for (var i=0;i<message.services.length;i++)
+		{
+			//document.getElementById("service_data1").value += message.services[i].name + "\n";
+			if (renew == false)
+			{
+				var option = document.createElement('option');
+				option.value = option.text = message.services[i].name;
+				select.add(option);
+				console.log(message.services[i].name);
+			}		
+
+			//SERVICE LIST table 동적생성, 2015-01-29(Thu)★
+			var isrc = "data:image/png;base64," + message.services[i].icon.data;
+			addList(isrc, message.services[i].name, message.services[i].description, message.services[i].author, message.services[i].enabled); //★
+			//console.log(isrc, message.services[i].name, message.services[i].description, message.services[i].author, message.services[i].enabled);
+		}
+		renew = true;
+
+		service_list.unsubscribe();
+	});  
+}
+
+function callService(setServiceName, bool)
+{
+	if (setServiceName == null)
+	{
+		var serviceName = document.getElementById('serviceList').value;
+	}
+	else
+	{ 
+		var serviceName = setServiceName;
+	}
+
+	if (bool == null)
+	{
+		var enabled = document.getElementById('serviceEnabled').value;
+	}
+	else
+	{
+		var enabled = bool;
+	}
+
+	// Calling a service
+	// -----------------
+
+	// First, we create a Service client with details of the service's name and service type.
+	var serviceEnable = new ROSLIB.Service({
+		ros : ros,
+		name : '/concert/service/enable',
+		serviceType : 'concert_msgs/EnableService'
+	});
+
+	// Then we create a Service Request. The object we pass in to ROSLIB.ServiceRequest matches the 
+	// fields defined in the rospy_tutorials AddTwoInts.srv file.
+	if (enabled == "true")
+	{
+		var request = new ROSLIB.ServiceRequest({			
+			name : serviceName,
+			enable : true
+		});
+		console.log("ServiceCall - enable");
+	}
+	else
+	{
+		var request = new ROSLIB.ServiceRequest({
+			name : serviceName,
+			enable : false
+		});
+		console.log("ServiceCall - disable");
+	}
+  
+	// Finally, we call the /concert/service/enable service and get back the results in the callback. The result
+	// is a ROSLIB.ServiceResponse object.
+	serviceEnable.callService(request, function(result) {
+		console.log('Result for service call on ' + serviceEnable.name + ': ' + result.error_message);	
+		if (result.error_message == "")
+		{
+			//document.getElementById("service_data2").value += "Success : " + result.success + "\n"; //result - success, error_message 두개 뿐!!
+		}
+		else
+		{
+			//document.getElementById("service_data2").value += "Error message : " + result.error_message + "\n";
+		}	
+	});
+}
+
+
+//Service Scheduler Variable, 2015-01-20(Tue)_shkwak
+var serviceName = "", serviceStart = "", serviceEnd = "", isSchduling = false;
+
+function ServiceSchduling()
+{	//2015-01-20(Tue)_shkwak
+	if (document.getElementById('serviceName').value != "")
+	{		
+		serviceName = document.getElementById('serviceName').value;
+	}
+	if (document.getElementById('serviceStart').value != "")
+	{
+		serviceStart = document.getElementById('serviceStart').value;
+	}
+	if (document.getElementById('serviceEnd').value != "")
+	{
+		serviceEnd = document.getElementById('serviceEnd').value;
+	}
+
+	document.getElementById('serviceName').value = "";
+
+	if (serviceName != "")
+	{
+		isSchduling = true;
+	}
+	else
+	{
+		isSchduling = false;
+	}
+}
+
+var SetServiceSchdule = function(title, start, end)
+{	//서비스 스케줄 등록
+	var cmd = "SetServiceSchdule";
+	var message = {cmd : cmd, title : title, start : start, end : end};
+	console.log('SetServiceSchdule');
+
+	//message send
+	socket.send(message); 	
+}
+
+var DelServiceSchdule = function()
+{	//서비스 스케줄 삭제
+	var cmd = "DelServiceSchdule";
+	var message = {cmd : cmd};
+	console.log('DelServiceSchdule');
+
+	//message send
+	socket.send(message); 	
+}
+
+//////////////////////////////////////////////////////////////////
+var created_solutionName = ""; //사용자가 catkin_create_pkg로 생성한 솔루션 명, 2015-04-29(Wed)_shkwak
+function NewSolution()
+{	//★★ catkin_create_pkg shell command, 2015-01-28(Wed)_shkwak	
+	var solutionName	= document.getElementById('inputName').value;
+	var Description		= document.getElementById('inputDescription').value;
+	var License			= document.getElementById('inputLicense').value;
+	var Version			= document.getElementById('inputVersion').value;
+	var Maintainer		= document.getElementById('inputMaintainer').value;	
+	
+	if (solutionName == "" || Description == "" || License == "" || Version == "" || Maintainer == "")
+	{
+		//alert("Please insert values!");
+		SweetAlert_Group('basicA', 'Please insert values!');
+	}
+	else
+	{
+		solutionName = packageName_check(solutionName); //기술적인 Issue : 패키지 Name 관련 해결!
+		console.log("NewSolution pkg_name : " + solutionName);
+
+		var cmd = "NewSolution";  
+		var message = {cmd : cmd, name : solutionName, description : Description, license : License, version : Version, maintainer : Maintainer};
+		
+		//message send
+		socket.send(message);
+		
+		//생성된 솔루션 명 저장, Solution Configurator 페이지 SOLUTION NAME 갱신!
+		created_solutionName = solutionName; 
+		document.getElementById('created_solutionName').value = "SOLUTION NAME : " + solutionName;
+	
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result); 
+			//document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";			
+			return;
+		});	
+	}	
+}
+
+var i_new = 0;
+var timer_new = null;
+
+function SolutionCreate_new(type)
+{	//Node.js 폴더 내에 솔루션 생성 ; fs 이용		
+	/*--생성될 솔루션 파일명--*/
+	if (type == "modal") var solutionName = document.getElementById('inputName').value;
+	else var solutionName = document.getElementById('solutionName_new').value;
+	
+	var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+	var fileName = ["solution.launch", "solution.service", "package.xml", "CMakeLists.txt"];
+
+	var cmd = "CreateSolution";	
+	var content = box[i_new]; 
+	var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content, count : i_new};
+	
+	if (solutionName != "")
+	{	
+		//message send
+		socket.send(message); 
+		i_new++;
+
+		if (i_new==4)
+		{	
+			i_new = 0;
+			clearTimeout(timer_new);
+		}
+		else
+		{				
+			if (type == "modal") timer_new = setTimeout('SolutionCreate_new(\'modal\')',1000);
+			else timer_new = setTimeout('SolutionCreate_new()',1000);
+		}
+
+		//message receive
+		socket.on('message', function(data) {
+			//console.log(data.result); //중복문제
+			document.getElementById('solutionCreate_result').innerHTML = "&nbsp; &nbsp; * " + data.result + " is successfully created!";
+			return;
+		});
+	}
+	else
+	{
+		alert("Insert Solution Name!");
+	}
+}
+
+function ReadFileList()
+{	//Node.js 폴더 내의 솔루션 read, 2014-10-14(Tue)_shkwak
+	var solutionName = document.getElementById('solutionName_new').value;
+	var cmd = "ReadFileList";	
+	var message = {cmd : cmd, solution : solutionName};
+
+	//message send
+	socket.send(message); 
+}
+
+//------------------------------------------------------------------------------------------------//
+
+
+//------------------------------------------------------------------------------------------------//
+
+
+//------------------------------------------------------------------------------------------------//
+
+var imsiDir = "";
+var GetSolutionList = function()
+{	//for Template Editor
+	var cmd = "GetSolutionList";
+	//var message = {cmd : cmd, solution : solutionName, file : fileName[i_new], content : content};
+	var message = {cmd : cmd};
+
+	//message send
+	socket.send(message); 
+
+	var select = document.getElementById('select_solution');
+	
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+
+	//message receive
+	socket.on('message', function(data) {
+		console.log(data.dir);		
+		if (imsiDir != data.dir)
+		{
+			var option = document.createElement('option');
+			option.value = option.text = data.dir;
+			select.add(option);
+			imsiDir = data.dir;
+		}		
+		return;
+	});
+}
+
+function ReadFile()
+{
+	var cmd = "ReadFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+	//document.getElementById('box_result').innerHTML = Base64.decode(data.content);	
+}
+
+function DeleteFile()
+{
+	var cmd = "DeleteFile";
+	var solutionName = ""; //document.getElementById('selectbox').value;
+	var fileName = ""; //document.getElementById('selectbox_sub').value;
+
+	var message = {cmd : cmd, solution : solutionName, file : fileName}; //, content : content};
+
+	if (solutionName != "-----------" && fileName != "-----------")
+	{
+		//message send
+		socket.send(message); 
+		
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.content);
+			document.getElementById('box_result1').innerHTML = Base64.decode(data.content);
+			return;
+		});
+	}
+	else
+	{
+		alert("Select Solution name and File name!");
+	}
+}
+
+
+//==== Solution Configurator Func, 2015-02-04(Wed)_shkwak (imsi)
+var solutionConfigure = function(fileID){ //RE : 설정 UI에서 선택한 값을 적용해야 함. 2015-04-28(Tue)
+	var solutionName = created_solutionName; //"dummy_concert1";
+	var serviceContent = ""; //Init!		
+	var fileName = "";	
+
+	switch (fileID)
+	{		
+		case '3': 			
+			fileName = created_solutionName + ".services"; 
+/*			serviceContent += "name: " + "" + "\n";
+			serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
+			serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
+			serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
+			serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
+			serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
+			serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
+			serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
+			serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
+*/			serviceContent = "# PRIORITIES\n#\n# Turtle pond has scheduler_msgs.Request.DEFAULT_PRIORITY, teleop has \n# scheduler_msgs.Request.HIGH_PRIORITY. If you want to change the priority\n# override it as below for any of the services:\n#  overrides:\n#    priority: 1000\n\n- resource_name: concert_service_admin/admin\n  override:\n    name: admin\n    description: Administrative services and tools\n    author: Daniel Stonier \n- resource_name: concert_service_turtlesim/turtlesim\n  override:\n    name: turtlesim\n    description: Turtlesim service\n    author: Yujin Robot\n    priority: 3\n- resource_name: turtle_concert/turtle_pond\n  override:\n    name: turtle_pond\n    description: Turtles on the pond\n    author: Yujin Robot\n    priority: 3";
+			break;
+		case '4': 
+			fileName = created_solutionName + ".launch"; 
+/*			serviceContent += "<!-- <launch>n";
+			serviceContent += "  <node name="" + document.getElementById('launchNodeName').value + "" pkg="" + document.getElementById('launchNodePkg').value + "" type="" + document.getElementById("launchNodeType").value + "">n";
+			serviceContent += "    <param name="" + document.getElementById('launchParamName').value + "" value="" + document.getElementById('launchParamValue').value + ""/>n";
+			serviceContent += "  </node>n";
+			serviceContent += "  <include file="" + document.getElementById('launchIncludeFile').value + "">n";
+			serviceContent += "    <arg name="" + document.getElementById('launchArgName').value + "" value="" + document.getElementById('launchArgValue').value + ""/>n";
+			serviceContent += "  </include>n";
+			serviceContent += "</launch>n";
+*/			//serviceContent = "<launch>n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>n  <arg name='concert_name' default='dummy concert'/>n  <arg name='scheduler_type' default='compatibility_tree'/>nn  <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='$(arg concert_name)'/>n      <arg name='services' value='$(arg dummy_services)'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
+			serviceContent = "<launch>n    <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='" + created_solutionName + "'/>n      <arg name='services' value='" + created_solutionName + ".services'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
+			break;
+	};	
+
+	console.log(serviceContent); //ok
+
+	var cmd = "solutionConfigure"; 
+	var content = Base64.encode(serviceContent); 
+	var message = {cmd : cmd, solution : solutionName, file : fileName, content : content}; //json type
+		
+	if (solutionName != "")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result);						
+			return;
+		});
+	}	
+}
+
+
+//==== Solution Configurator Function, 2015-02-04(Wed)_shkwak (imsi), 2015-05-27(Wed)_RE
+function LocalServiceConfigure(fileID)
+{	//RE : 설정 UI에서 선택한 값을 적용해야 함. 2015-04-28(Tue), 적용진행_2015-05-27(Wed)
+	created_solutionName = (created_solutionName)? created_solutionName : "dummy_concert1";
+	var solutionName = created_solutionName; //"dummy_concert1";
+	var serviceContent = ""; //Init!		
+	var fileName = "";	
+
+	switch (fileID)
+	{		
+		case '3': 			
+			fileName = created_solutionName + ".services"; 
+			serviceContent += "name: " + "" + "\n";
+			serviceContent += "description: " + document.getElementById('serviceDescription').value + "\n";
+			serviceContent += "author: " + document.getElementById('serviceAuthor').value + "\n";
+			serviceContent += "priority: " + document.getElementById('servicePriority').value + "\n";
+			serviceContent += "launcher_type: " + document.getElementById('serviceLauncherType').value + "\n";
+			serviceContent += "launcher: " + document.getElementById('serviceLauncher').value + "\n";
+			serviceContent += "icon: " + document.getElementById('serviceIcon').value + "\n";
+			serviceContent += "interactions: " + document.getElementById('serviceInteractions').value + "\n";
+			serviceContent += "parameters: " + document.getElementById('serviceParmeters').value + "\n";
+			break;
+		case '4': 
+			fileName = created_solutionName + ".launch"; 
+/*			serviceContent += "<!-- <launch>n";
+			serviceContent += "  <node name="" + document.getElementById('launchNodeName').value + "" pkg="" + document.getElementById('launchNodePkg').value + "" type="" + document.getElementById("launchNodeType").value + "">n";
+			serviceContent += "    <param name="" + document.getElementById('launchParamName').value + "" value="" + document.getElementById('launchParamValue').value + ""/>n";
+			serviceContent += "  </node>n";
+			serviceContent += "  <include file="" + document.getElementById('launchIncludeFile').value + "">n";
+			serviceContent += "    <arg name="" + document.getElementById('launchArgName').value + "" value="" + document.getElementById('launchArgValue').value + ""/>n";
+			serviceContent += "  </include>n";
+			serviceContent += "</launch>n";
+*/			//serviceContent = "<launch>n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>n  <arg name='concert_name' default='dummy concert'/>n  <arg name='scheduler_type' default='compatibility_tree'/>nn  <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='$(arg concert_name)'/>n      <arg name='services' value='$(arg dummy_services)'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
+			serviceContent = "<launch>n    <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='" + created_solutionName + "'/>n      <arg name='services' value='" + created_solutionName + ".services'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
+			break;
+	};	
+
+	console.log(serviceContent); //ok
+
+	var cmd = "solutionConfigure"; 
+	var content = Base64.encode(serviceContent); 
+	var message = {cmd : cmd, solution : solutionName, file : fileName, content : content}; //json type
+		
+	if (solutionName != "")
+	{
+		//message send
+		socket.send(message); 		
+
+		//message receive
+		socket.on('message', function(data) {
+			console.log(data.result);						
+			return;
+		});
+	}	
+}
+
+
+
+
+function packageName_check(name)
+{	//기술적인 이슈 처리 : Name 정보는 (*)영문으로 하고, (1)소문자로 변환하고 (2)공백은 “_” 밑첨자로 변경_2015-04-29(Wed)
+	console.log(name); //제거 전
+	var pName = name.trim(); //좌우 공백제거
+	console.log(pName); //제거 후
+	
+	//var solutionName = document.getElementById('inputName').value;
+
+	//(1)소문자로 변환
+	pName = pName.toLowerCase();
+	console.log(pName); //변환 후
+
+	//(2)공백 "_" 변경
+	//pName = pName.replace(" ","_"); //첫번째 공백만 '_'으로 변경하고 나머지는 변경이 되지 않는 문제 확인!
+	pName = pName.replace(/ /gi,"_"); //따옴표를 슬래시로 대체하고 뒤에 gi 를 붙이면 replaceAll 과 같은 결과를 볼 수 있다.
+	console.log(pName); //변경 후
+
+	return pName;
+}
+
+//	//Yujin robot sample code
+//ServiceStore.prototype._createPullRequest = function(branch_name, title, description){
+//  logger.info('PR : ', branch_name);
+//  return new Promise(function(resolve, reject){
+//    var head = config.service_repo.split("/")[0] + ":" + branch_name;
+//    var data = {title: title, head: head, base: config.service_repo_branch, body: description}
+//    logger.info('PR : ', data);
+//    request.post('https://api.github.com/repos/' + config.service_repo_base + "/pulls")
+//      .set('Authorization', "token "+config.github_token) 
+//      .type('json')
+//      .send(data)
+//      .end(function(e, res){
+//        if(e){
+//          console.log("PR - E", e);
+//
+//          reject(e);
+//        } else {
+//          console.log('PR - OK');
+//
+//          resolve(res);
+//        }
+//      });
+//  });
+//};
+
+//============= GitHub service repository, solution repo 연동 =============
+//2015-05-10(Sun)_shkwak
+//============= ing!
+
+/* service repository */
+var owner = 'robotics-in-concert'; 
+var repo = 'rocon_demos';
+var pre_content = ""; //수정 전 content base64 값
+var tree_sha = "";
+var name_GitHubServiceList = new Array(), path_GitHubServiceList = new Array();
+var sha_GitHubServiceList = new Array(), url_GitHubServiceList = new Array();
+
+/* solution repository */
+var owner2 = 'dwlee'; //'dwlee'; 'meddugi723'
+var repo2 = 'concert_common_solutions'; //'concert_common_solutions'; 'ROStest1'
+var pre_contentF; //수정 전 content base64 값
+var data_shaF = "", solution_master_sha = "";;
+var data_typeF = new Array(), data_type_subF = new Array(), data_type_sub_subF = new Array();
+var access_token2 = ""; //no use!
+var selectedIndex_type = [,,]; //select 1, 2, 3에서 선택된 항목의 type 저장 ; 3개만 사용!, 2015-05-21(Thu)
+
+//==== User Authorization, get access_token(x), 2015-05-13(Wed)_RE_shkwak ====
+var base64IDPW = "";
+
+function GetGitHubBranchTreeSHA()
+{	//2015-05-10(Sun)_shkwak, Get Branch - tree sha 값 가져오기
+	var branch = 'concert_common_services';
+	
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/branches/" + branch,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			console.log(data);
+			console.log(data.length); //x 안나옴!
+			console.log("brach name : " + data.name);
+			console.log("tree sha : " + data.commit.commit.tree.sha); //성공
+			tree_sha = data.commit.commit.tree.sha; //sha 저장!
+			//return tree_sha;
+			GetGitHubServiceList();
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+}
+
+function GetGitHubMasterSHA() //나중에 GetGitHubBranchTreeSHA()와 통합!
+{	//2015-05-14(Thu)_shkwak, Get master sha 값 가져오기
+	var branch = 'master';
+	
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/branches/" + branch,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			console.log(data);
+			console.log(data.length); //x 안나옴!
+			console.log("name : " + data.name);
+			console.log("sha : " + data.commit.sha); //성공
+			solution_master_sha = data.commit.sha; //sha 저장!
+			return data.commit.sha;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+}
+
+function GetGitHubBranchList() //use this! ------ Pull Request 시, 재사용 검토!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{	//2015-05-14(Thu)_shkwak, Get Branch List 가져오기	
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/branches",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			console.log(data);
+			console.log(data.length); //			
+			for (var i=0;i<data.length;i++ )
+			{
+				console.log("name : " + data[i].name);
+			}			
+			//return branchList;
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+}
+
+function GetGitHubServiceList() //(owner, repo, branch) next time~
+{	//2015-05-11(Mon)_shkwak, Get GitHub Service List
+	//var owner = 'robotics-in-concert'; 
+	//var repo = 'rocon_demos';		   
+	var branch = 'concert_common_services';
+		
+	if (tree_sha == "" || owner == "" || repo == "")
+	{
+		alert("Check Tree_SHA, Owner and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner + "/" + repo + "/git/trees/" + tree_sha + "?recursive=1",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			console.log("tree length : " + data.tree.length); 
+			var j = 0;
+			for (var i=0;i<data.tree.length;i++)
+			{	//document.getElementById('box1').value += data[i].name + "n";
+				//console.log(data.tree[i].type + ', ' + data.tree[i].path);				
+				if (data.tree[i].type == "blob")
+				{	//blob(파일)만 리스트업_2015-05-11(Mon)_shkwak
+					//console.log(data.tree[i].path);					
+					var tree_file = data.tree[i].path.split('.'); //확장자 검색
+					if (tree_file[1] == "service")
+					{
+						//console.log(data.tree[i].path);
+						var service_file = tree_file[0].split('/'); //ubuntu에서는 '/' 사용!
+						console.log(service_file[service_file.length-1]);
+						name_GitHubServiceList[j] = service_file[service_file.length-1]; //GitHub Service name★	
+						path_GitHubServiceList[j] = data.tree[i].path;	//GitHub Service Full path
+						sha_GitHubServiceList[j] = data.tree[i].sha;	//GitHub Service sha
+						url_GitHubServiceList[j] = data.tree[i].url;	//GitHub Service content url
+						j++;
+					}
+				}				
+			}
+			show_GitHubServiceList();
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function show_GitHubServiceList() //use this!
+{	//socket message가 수신된 후(데이터가 저장된 후) 데이터를 확인한다. 순차 실행을 위함.
+	console.log(name_GitHubServiceList);
+
+	//***** Element dynamic create/remove *****//
+	$('.list-group-item2').remove(); //기존 sample 리스트 삭제
+
+	var an = 0;
+	name_GitHubServiceList.forEach(function(file){		
+		var element = "<div class='list-group-item sl" + an + " list-group-item2' style='height:75px; cursor: pointer;'><p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p><h3 class='list-group-item-heading' style='color:" + color_sample[an] + ";' onclick='addServiceE(this.innerHTML, this.style.color);GetGitHubServiceContent(" + an + ");'>" + file + "</h3></div>"
+
+		$(element).appendTo("#div_serviceListE"); //획득한 service 리스트 추가
+		an++;
+	});		
+		
+	var solutionName = document.getElementById('created_solutionName').value;
+	if (solutionName == "SOLUTION NAME : dummy_concert1")
+	{
+		console.info("솔루션 생성을 먼저 하세요!");
+		//alert("솔루션 생성을 먼저 하세요!");
+	}
+}
+
+function GetGitHubServiceContent(url_num) //or sha, use this!
+{	//2015-05-11(Mon)_shkwak, Get service content
+	//var branch = 'concert_common_services';
+	var url = url_GitHubServiceList[url_num]; //
+	console.log(url_GitHubServiceList[0]);
+	var textarea_id = 'textarea' + url_num;
+	console.log('textarea_id : ' + textarea_id);
+	jQuery.support.cors = true;
+	$.ajax({
+		url: url, //"https://api.github.com/repos/robotics-in-concert/rocon_demos/git/blobs/ffb6a85ebc80b5f2f4b8444f23fb6ae41fba20b8",
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
+			console.log(data);
+			console.log(data.content);
+			console.log(Base64.decode(data.content)); //성공
+			document.getElementById(textarea_id).innerHTML = Base64.decode(data.content);
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+}
+
+// edit forked repository contents 
+var commit_changes_file = ""; //2015-05-26_shkwak
+
+function GetFileListF() //(1)
+{	//GitHub에서 파일 리스트를 가져온다. 
+	var select = document.getElementById('select_repo1');
+	var select_sub = document.getElementById('select_repo2');
+	var select_sub_sub = document.getElementById('select_repo3');
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "------ Select 1st ------";
+	select.add(option_line);
+
+	select_sub.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "------ Select 2nd ------";
+	select_sub.add(option_line);
+
+	select_sub_sub.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "------ Select final ------";
+	select_sub_sub.add(option_line);
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+	
+	if (owner2 == "" || repo2 == "")
+	{
+		alert("Check Owner and Repository value!");		
+	}
+	else
+	{
+		jQuery.support.cors = true;
+		$.ajax({
+			url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents",
+			type: "GET",
+			dataType: "json",
+			success: function (data) {
+				//jsonData = eval(data); //eval() : 검사?
+				var j = 1;
+				for (var i=0;i<data.length;i++)
+				{
+					var option = document.createElement('option');
+					//if (data[i].type == "dir")
+					//{	//솔루션만 리스트업_2014-04-16_유진로봇 요청사항
+						option.value = option.text = data[i].name;
+						select.add(option);
+						/*--data_type 저장--*/
+						data_typeF[j] = data[i].type; //★
+						//console.log(data[i].name + ', ' + data[i].type); ////////////
+						j++;
+					//}
+				}
+			},
+			error: function (x, y, z) {
+				alert(x + "\n" + y + "\n" + z);
+			}
+		});	
+	}
+}
+
+//자바스크립트 코드 압축 사이트, 2015-05-12(Tue)_shkwak - http://javascriptcompressor.com/
+
+function GetFileList_subF() //(3)
+{
+	var select = document.getElementById('select_repo2');
+	var solution = document.getElementById('select_repo1').value;
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "----------------------";
+	select.add(option_line);
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+	
+	if (owner2 == "" || repo2 == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + solution,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			var j = 1;
+			for (var i=0;i<data.length;i++)
+			{
+				var option = document.createElement('option');
+		        //if (data[i].type == "file")
+				//{	//type이 file만 표시 -> 모두 표시
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type_subF[j] = data[i].type; //★
+					j++;
+				//}
+			}						
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetFileList_sub_subF() //(5)
+{
+	var select = document.getElementById('select_repo3');
+	var solution = document.getElementById('select_repo1').value;
+	var solution_path = document.getElementById('select_repo2').value;
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "----------------------";
+	select.add(option_line);
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+	
+	if (owner2 == "" || repo2 == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+	jQuery.support.cors = true;
+	$.ajax({
+		url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + solution + "/" + solution_path,
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			var j = 1; //0 -> 1
+			for (var i=0;i<data.length;i++)
+			{
+				var option = document.createElement('option');
+		        //if (data[i].type == "file")
+				//{	//type이 file만 표시 -> 모두 표시
+					option.value = option.text = data[i].name;
+					select.add(option);
+					/*--data_type 저장--*/
+					data_type_sub_subF[j] = data[i].type; //★
+					j++;
+				//}
+			}						
+		},
+		error: function (x, y, z) {
+			alert(x + "\n" + y + "\n" + z);
+		}
+	});	
+	}
+}
+
+function GetDataF(name) //(2)
+{	//select 1 chage event ; 항목 type이 'dir'이면 select 2에 하위 리스트를 가져오고, 'file'이면 content를 표시한다.
+	var select = document.getElementById('select_repo1');
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+	
+	if (owner2 == "" || repo2 == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+		/*--select 1 항목 type 저장하기--*/ 
+		selectedIndex_type[0] = data_typeF[select.selectedIndex];
+		console.log('selectedIndex_type[0] : ' + selectedIndex_type[0]);
+
+		/*--select box index 넘버 가져오기--*/ 		
+		if (data_typeF[select.selectedIndex] == "dir")
+		{
+			GetFileList_subF(); //solution 폴더의 하위 파일을 다시 읽어오기
+		}
+		else if (data_typeF[select.selectedIndex] == "file")
+		{
+			// save editing file name, 2015-05-26_shkwak
+			commit_changes_file = name;
+
+			jQuery.support.cors = true;
+			$.ajax({
+				url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + name,
+				type: "GET",
+				dataType: "json",
+				success: function (data) {
+					//document.getElementById('box_result').innerHTML = Base64.decode(data.content);
+					document.getElementById('box_result').value = Base64.decode(data.content);
+					pre_contentF = Base64.decode(data.content);
+					data_shaF = data.sha;
+				},
+				error: function (x, y, z) {
+					alert(x + "\n" + y + "\n" + z);
+				}
+			});
+		}
+		else
+		{
+			alert('해당 파일은 수정할 수 없습니다.');
+		}
+	}
+}
+
+function GetData_subF(name) //(4)
+{
+	var select = document.getElementById('select_repo2');
+	var solution = document.getElementById('select_repo1').value;
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+
+	if (owner2 == "" || repo2 == "")
+	{
+		alert("Insert Owner value and Repository value!");		
+	}
+	else
+	{
+		/*--select 2 항목 type 저장하기--*/ 
+		selectedIndex_type[1] = data_type_subF[select.selectedIndex];
+		console.log('selectedIndex_type[1] : ' + selectedIndex_type[1]);
+		//console.log('type : ' + data_type_subF[select.selectedIndex]);
+
+		/*--select box index 넘버 가져오기--*/				
+		if (data_type_subF[select.selectedIndex] == "dir")
+		{
+			GetFileList_sub_subF(); //solution 폴더의 하위 파일을 다시 읽어오기
+		}
+		else if (data_type_subF[select.selectedIndex] == "file")
+		{
+			// save editing file name, 2015-05-26_shkwak
+			commit_changes_file = name;
+
+			jQuery.support.cors = true;
+			$.ajax({
+				url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + solution + "/" + name,
+				type: "GET",
+				dataType: "json",
+				success: function (data) {
+					document.getElementById('box_result').value = Base64.decode(data.content); //innerHTML -> value
+					//console.log(document.getElementById('box_result').innerHTML); //이상 확인! ; '<' -> '&lt;'
+					pre_contentF = Base64.decode(data.content);					
+					data_shaF = data.sha;
+				},
+				error: function (x, y, z) {
+					alert(x + "\n" + y + "\n" + z);
+				}
+			});
+		}
+	}
+}
+
+function GetData_sub_subF(name) //(6)
+{
+	var select = document.getElementById('select_repo3');
+	var solution = document.getElementById('select_repo1').value;
+	var solution_path = document.getElementById('select_repo2').value;
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
+	
+	if (owner2 == "" || repo2 == "")
+	{
+		console.log("Insert Owner value and Repository value!");
+		SweetAlert_Group('basicC', 'Oops...', "Please check Owner and Repository value!", "error");
+	}
+	else
+	{	
+		/*--select 2 항목 type 저장하기--*/ 
+		selectedIndex_type[2] = data_type_sub_subF[select.selectedIndex];
+		console.log('selectedIndex_type[2] : ' + selectedIndex_type[2]);
+		
+		/*--select box index 넘버 가져오기--*/	
+		if (data_type_sub_subF[select.selectedIndex] == "dir")
+		{			
+			alert('no more');
+		}
+		else if (data_type_sub_subF[select.selectedIndex] == "file")
+		{
+			// save editing file name, 2015-05-26_shkwak
+			commit_changes_file = name;
+
+			jQuery.support.cors = true;
+			$.ajax({
+				url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + solution + "/" + solution_path + "/" + name,
+				type: "GET",
+				dataType: "json",
+				success: function (data) {
+					//document.getElementById('box_result').innerHTML = Base64.decode(data.content); //
+					document.getElementById('box_result').value = Base64.decode(data.content); //2015-05-26(Tue)_shkwak
+					pre_contentF = Base64.decode(data.content);
+					data_shaF = data.sha;
+				},
+				error: function (x, y, z) {
+					alert(x + "\n" + y + "\n" + z);
+				}
+			});
+		}
+	}
+}
+
+function FileUpdate_subF() //to master update! 
+{	//Required : message, content(수정 후), sha(수정 전), 2015-05-21(Thu)_RE_shkwak	
+	var select1 = document.getElementById('select_repo1').value;
+	var select2 = document.getElementById('select_repo2').value;
+	var select3 = document.getElementById('select_repo3').value;
+	
+	var userID = document.getElementById("git_username").value;
+	var userPW = document.getElementById("git_password").value;
+	
+	if (userID == "" || userPW == "")
+	{
+		console.log('Please check GitHub username and password!');
+		SweetAlert_Group('basicC', 'Oops...', "Please check GitHub username and password!", "error");
+	}
+	else
+	{
+		if (select1 == '------ Select 1st ------') {
+			alert('Please select options!');
+		} else {
+			var owner2 = document.getElementById("git_username").value; //'meddugi723';
+			var repo2 = document.getElementById("solution_repo").value; //'concert_common_solutions';
+			var url = "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/";
+			url += select1;
+			if (select2 != '------ Select 2nd ------') url = url + '/' + select2;
+			if (select3 != '------ Select final ------') url = url + '/' + select3;
+			//url = url + '?ref=branch1'; //imsi test ; 반응 없음!
+
+			console.log(select1);
+			console.log(select2);
+			console.log(select3);
+
+			var data = userID + ":" + userPW;
+			var base64IDPW_user = Base64.encode(data) //futurerobot ; Authorization: basic ZnV0dXJlcm9ib3Q6ZnJtYWMxMg==			
+
+			var msg = document.getElementById('updateMsg').value;
+			if (msg == "") msg = "Solution Manager commit!";
+			//var content = Base64.encode(document.getElementById('box_result').innerHTML); //<, >, /, ... 이슈 발생_150521
+			var content = Base64.encode(document.getElementById('box_result').value); //<, >, /, ... 이슈 발생_150521, 2015-05-26(Tue)_shkwak
+			var sha = data_shaF;
+			var cmds = {message : msg, content : content, sha : sha};					
+
+			console.log(cmds);
+			console.log(url);
+			
+			//console.log(document.getElementById('box_result').innerHTML); //x
+			console.log(document.getElementById('box_result').value);
+			console.log(content);			
+			console.log(Base64.encode(pre_contentF));
+			//document.getElementById('box_result_re').value = document.getElementById('box_result').value;
+			
+			if (content == Base64.encode(pre_contentF))
+			{
+				console.log("Content가 이전 Content와 같습니다.");
+				SweetAlert_Group('basicC', 'Oops...', "Content가 이전 Content와 같습니다.", "warning");
+			}
+			else
+			{
+				console.log('Content가 이전 Content와 같지 않습니다.');
+				jQuery.support.cors = true;
+				$.ajax({
+					beforeSend: function (request) { 
+						request.setRequestHeader("Authorization", "basic " + base64IDPW_user);
+					},
+	//url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/contents/" + solution + "/" + fileName + "?access_token=" + access_token,
+					url: url,
+					type: "PUT",
+					data: JSON.stringify(cmds),
+					contentType: "application/json;charset=utf-8",
+					success: function (data) {
+						console.log(data);
+						//alert("Update complete!");
+						SweetAlert_Group('basicC', 'Good job!', "Update complete!", 'success');
+					},
+					error: function (x, y, z) {
+						console.log(x + "\n" + y + "\n" + z);
+						SweetAlert_Group('basicC', 'Oops...', "Something went wrong!", "error");
+					}
+				});
+			}
+		}
+	}
+}
+
+//==== Pull Request, 2015-05-12(Tue)_shkwak ==== 
+function sha1_test()
+{	//2015-05-14(Thu)_shkwak, sha1 hash 생성 코드
+	var str = 'The quick brown fox jumps over the lazy dog.'; //408d94384216f890ff7a0c3528e8bed1e0b01621
+	console.log(Sha1.hash(str));							  //408d94384216f890ff7a0c3528e8bed1e0b01621
+}
+
+function CreateFork() //use this!
+{	//2015-05-19(Tue), tested ; meddugi723 계정으로 로그인하여 dwlee의 concert_common_solutions repository를 fork하는 테스트 ; 성공!! ★★★
+	/*
+	Parameters (optional)
+	----------------------------------------------------------------------------------------------------------------
+	Name	 	 | Type	  | Description
+	organization | string |	The organization login. The repository will be forked into this organization.
+	----------------------------------------------------------------------------------------------------------------
+	*/	
+	var userID = document.getElementById("git_username").value;
+	var userPW = document.getElementById("git_password").value;
+	
+	if (userID == "" || userPW == "")
+	{
+		console.log('Please check GitHub username and password!');
+		SweetAlert_Group('basicC', 'Oops...', "Please check GitHub username and password!", "error");
+	}
+	else
+	{
+		var data = userID + ":" + userPW;
+		var base64IDPW_fr = Base64.encode(data) //futurerobot ; Authorization: basic ZnV0dXJlcm9ib3Q6ZnJtYWMxMg==
+
+		var owner2 = document.getElementById("solution_owner").value; //'dwlee';
+		var repo2 = document.getElementById("solution_repo").value; //'concert_common_solutions'; //octocat/Spoon-Knife, dwlee/concert_common_solutions
+
+		jQuery.support.cors = true;
+		$.ajax({
+			beforeSend: function (request) { 
+				request.setRequestHeader("Authorization", "basic " + base64IDPW_fr);
+			},
+			url: "https://api.github.com/repos/" + owner2 + "/" + repo2 + "/forks", // + "?organization
+			type: "POST",
+			//data: JSON.stringify(cmds),
+			contentType: "application/json;charset=utf-8",
+			success: function (data) {
+				console.log(data);
+				SweetAlert_Group('basicC', 'Good job!', "fork success!", "success");
+			},
+			error: function (x, y, z) {
+				alert(x + "\n" + y + "\n" + z);
+			}
+		});	
+	}
+}
+
+//======== github third-party library 적용 =========
+//== 2015-05-15(Fri)_shkwak, githua-api/github.js ==
+//==================================================
+
+//var github-api = require('github-api');
+
+// Create a Github instance.
+var github = new Github({
+	//apiUrl: "https://serverName/api/v3", //var API_URL = options.apiUrl || 'https://api.github.com';
+	username: "futurerobot", //"meddugi723",
+	password: "frmac12", //"shkwak7918",
+	auth: "basic"
+});
+// Or if you prefer OAuth, it looks like this:
+//	var github = new Github({
+//		token: "OAUTH_TOKEN",
+//		auth: "oauth"
+//	});
+
+//var username: "meddugi723", reponame = "ROStest1";
+var gitRepo = github.getRepo("futurerobot", "ROStest1");
+
+// Show repository information
+function repo_show()
+{
+	gitRepo.show(function(err, repo) {
+		if(err) console.log(err);
+		else console.log(repo);
+	});
+}
+
+// Get contents at a particular path in a particular branch.
+function repo_contents()
+{
+	var branch = "";
+	var path = "";
+	gitRepo.contents(branch, path, function(err, contents) {
+		if(err) console.log(err);
+		else console.log(contents);
+	});
+	/* github.js 실제 코드
+	this.contents = function(ref, path, cb) {
+		_request("GET", repoPath + "/contents" + (path ? "/" + path : ""), { ref: ref }, cb);
+	};
+	*/
+}
+
+// Fork repository. This operation runs asynchronously. You may want to poll for repo.contents until the forked repo is ready.
+function repo_fork()
+{
+	gitRepo.fork(function(err) {
+		if(err) console.log(err);
+		else console.log('fork!');
+	});
+}
+
+// Create new branch for repo. You can omit oldBranchName to default to "master".
+function repo_branch44(branch) //use this!
+{	//RE 검증, 2015-05-20(Wed)_shkwak, branch 생성 테스트 : 성공! ★★
+	var userID = document.getElementById("git_username").value;
+	var userPW = document.getElementById("git_password").value;
+	var owner2 = document.getElementById("solution_owner").value; //'dwlee';
+	var repo2 = document.getElementById("solution_repo").value; //concert_common_solutions
+
+	if (userID == "" || userPW == "" || owner2 == "" || repo2 == "")
+	{
+		console.log('Please check GitHub username and password, base username and repo!');
+		SweetAlert_Group('basicC', 'Oops...', "Please check GitHub username and password, base username and repo!", "error");
+	}
+	else
+	{
+		var github = new Github({
+			username: userID, //"futurerobot", //"meddugi723",
+			password: userPW,
+			auth: "basic"
+		});
+
+		var gitRepo = github.getRepo(userID, repo2); //"futurerobot", "ROStest1");
+		branch = branch != "" ? branch : "branch1";
+
+		var oldBranchName = "master";
+		var newBranchName = branch;
+		gitRepo.branch(oldBranchName, newBranchName, function(err) {
+			if(err) {
+				console.log(err);
+				console.log(err.error);
+				console.log(err.request.statusText);
+				console.log(err.request.response);
+				//var response_re = JSON.stringify(err.request.response); //결과 ; string
+				var response_re = JSON.parse(err.request.response);		  //결과 ; object
+				console.log(response_re); //굿굿, 2015-05-26(Tue)
+
+				// GitHub api 처리 결과 알림 처리, 2015-05-26(Tue)_shkwak
+				//SweetAlert_Group('basicA',response_re1.message);
+				SweetAlert_Group('basicB',response_re.message, err.error + ' ' + err.request.statusText);
+			} else {
+				console.log(newBranchName + " branch created!");
+				SweetAlert_Group('basicC', 'Good job!', newBranchName + " created!", 'success');
+			}
+		});
+	}
+}
+
+// Create Pull Request.
+function repo_createPullRequest44(tt, bd, bs, hd) //use this!
+{	//2015-05-19(Tue)_shkwak, futurerobot 계정 로그인 -> meddugi723 master로 PR 테스트 : 성공! ★★★★
+	var userID = document.getElementById("git_username").value;
+	var userPW = document.getElementById("git_password").value;
+	var owner2 = document.getElementById("solution_owner").value; //'dwlee';
+	var repo2 = document.getElementById("solution_repo").value; //
+
+	if (userID == "" || userPW == "")
+	{
+		console.log('Please check GitHub username and password');
+		SweetAlert_Group('basicA', 'Please check GitHub username and password!');
+	}
+	else
+	{
+		console.log(userID + ', ' + userPW);
+		console.log(tt + ', ' + bd + ', ' + bs + ', ' + hd);
+
+		var github = new Github({
+			username: userID, //"futurerobot", //"meddugi723",
+			password: userPW, //"frmac12", //"shkwak7918",
+			auth: "basic"
+		});
+		var gitRepo = github.getRepo(owner2, repo2); //"meddugi723", "ROStest1"); //입력받아야 함!
+
+		//var PR_title = "Pull Request test";
+
+		var pull = {
+		  title: tt,
+		  body: bd, //"This pull request has been automatically generated by user.",	  
+		  head: hd, //"futurerobot" + ":" + "branch1", //from, 출발지
+		  base: bs //"master"	//to, 목적지
+		};
+		console.log(pull);
+		
+		gitRepo.createPullRequest(pull, function(err, pullRequest) {
+			if(err) {
+				console.log(err);
+				console.log(err.error);
+				//console.log(err.request.response);				
+				//console.log(err.request.statusText);
+				var response_re = JSON.parse(err.request.response);		  //결과 ; object
+				console.log(response_re); //굿굿, 2015-05-26(Tue)
+				console.log(response_re.errors)
+
+				// GitHub api 처리 결과 알림 처리, 2015-05-26(Tue)_shkwak
+				SweetAlert_Group('basicB',response_re.errors[0].message, err.error + ' ' + err.request.statusText);
+			} else {
+				console.log(pullRequest);
+				console.log(pullRequest.title);
+				SweetAlert_Group('basicC', 'Good job!', pullRequest.title + " created!", 'success');
+			}
+		});
+	}
+	/*
+	Input
+	----------------------------------------------------------------------------------------------------------------
+	Name	|	Type	|	Description
+	----------------------------------------------------------------------------------------------------------------
+	title	|	string	|	Required. The title of the pull request.
+	head	|	string	|	Required. The name of the branch where your changes are implemented. 
+	                        For cross-repository pull requests in the same network, namespace head with a user like this: username:branch.
+	base	|	string	|	Required. The name of the branch you want your changes pulled into. This should be an existing branch on the current 
+							repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
+	body	|	string	|	The contents of the pull request.
+	----------------------------------------------------------------------------------------------------------------
+	*/
+}
+
+// https clone url : https://github.com/octocat/Spoon-Knife.git
+
+//==== Solution Manager : Tab Menu Onclick Event ====
+function sectionC_click() 
+{
+	console.log('sectionC_click - ();');
+}
+
+function sectionD_click() 
+{
+	GetLocalServiceList();		
+	console.log('sectionD_click - GetLocalServiceList();');
+}
+
+function sectionE_click() 
+{
+	GetGitHubBranchTreeSHA();			
+	console.log('sectionE_click - GetGitHubBranchTreeSHA();');
+}
+
+function sectionF_click() 
+{
+	GetFileListF();
+	console.log('sectionF_click - GetFileList();');
+}
+
+</script>
+
+<!-- <link type="text/css" rel="stylesheet" href="./css/syntax-prism-min.css"> -->
+
+</head>
+
+<!--========================================================================================================================================================================-->
+<body onload="onPageEnter();" onunload="pageClose();" onresize="setDivHeight();">
+
+<!-- Main Logo -->
+<div style="background-color:#EAEFF2; height:74px; padding-left:24px;">
+  <!-- <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">RO<b style="color:#336699;">bot</b> CON<b style="color:#336699;">cert</b></b></span> -->
+  <span style="font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="location.reload();"><b class="logo" style="">ROCON SOLUTION</b></span>
+  <!-- SNS 연동 -->
+  <img id="twitter" src="./images/circle-twitter-128.png" style="width:36px; float:right; margin:22px 14px 0px 3px; cursor:pointer;" data-toggle="tooltip" data-placement="bottom" title="Twitter" onMouseOver="javascript:$('#twitter').tooltip('show');"/>
+  <img id="facebook" src="./images/facebook_circle_color-128.png" style="width:40px; float:right; margin:20px 2px 0px 2px; cursor:pointer;" data-toggle="tooltip" data-placement="bottom" title="Facebook" onMouseOver="javascript:$('#facebook').tooltip('show');"/>
+  <!-- GitHub Settings, 2015-05-20(Wed)_shkwak -->
+  <a href="#SettingsModal" data-toggle="modal"><img id="settings" src="./images/settings-0.png" style="width:40px; float:right; margin:20px 2px 0px 2px; cursor:pointer;" data-toggle="tooltip" data-placement="bottom" title="GitHub settings" onMouseOver="javascript:$('#settings').tooltip('show');"/></a>
+  <!-- <img id="settings" src="./images/settings-0.png" style="width:40px; float:right; margin:20px 2px 0px 2px;" data-toggle="tooltip" data-placement="bottom" title="GitHub settings" onMouseOver="javascript:$('#settings').tooltip('show');"/> -->
+
+	<!-- Modal 4 ; settings modal, 2015-05-20(Wed)_shkwak, #SettingsModal -->
+	<div id="SettingsModal" class="modal fade">
+		<div class="settings-modal-dialog" style="margin:7% auto;">
+			<div class="modal-content">
+				<!-- <div class="border-gradient-settings" style="width:100%; height:10px;"></div> -->
+				<div class="modal-header" style="padding:20px;"> <!-- border-top:8px solid #397EBA; -->
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:-12px; font-size:36px; font-weight:400; opacity:.4;">&times;</button>
+					<h2 class="modal-title" style="text-align:center;">Solution Manager Settings</h2>
+				</div>
+				<div class="modal-body">
+	 				<p>ROCON SOLUTON 저작도구 운용과 관련된 설정을 합니다.</p>
+					<p class="text-warning"><small>If you don't click the SAVE button, your modification will be not applied. &nbsp; <span style="color: #F63832;">*</span> <span style="color: #00AEEF;">*</span> <strong style="color: black;"> Required.</strong></small></p>
+					<!-- <div class="well">	Look, I'm in a well! </div> -->
+					<form class="form-horizontal" style="border:1px solid #F63832; padding:10px 15px 0px 15px; margin-bottom:4px; border-radius: 4px; background-color: #FFE7E7;">
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">GitHub User Info <span style="color: #F63832;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%;">									
+									<input type="text" class="form-control form-control2 red-tooltip" id="git_username" value="" style="width:100%; text-align:center;  background-color: #fff; color: #F63832;" spellcheck="false" placeholder="username" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#git_username').tooltip('show');" data-original-title="git_username">
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<input type="password" class="form-control form-control2 red-tooltip" id="git_password" value="" style="width:100%; text-align:center;  background-color: #fff; color: #F63832;" spellcheck="false" placeholder="password" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#git_password').tooltip('show');" data-original-title="git_password">
+								</div>
+							</div>
+						</div>
+					</form>
+					<form class="form-horizontal" style="border:1px solid #00AEEF; padding:10px 15px 0px 15px; margin-bottom:4px; border-radius: 4px;   background-color: #E0F6FF;">
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Service Repository <span style="color: #00AEEF;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%;">									
+									<input type="text" class="form-control blue-tooltip" id="service_owner" value="robotics-in-concert" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_owner').tooltip('show');" data-original-title="service_owner">
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<input type="text" class="form-control blue-tooltip" id="service_repo" value="rocon_demos" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_repo').tooltip('show');" data-original-title="service_repository">				
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Solution Repository <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%;">									
+									<input type="text" class="form-control green-tooltip" id="solution_owner" value="dwlee" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#solution_owner').tooltip('show');" data-original-title="solution_owner">
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<input type="text" class="form-control green-tooltip" id="solution_repo" value="concert_common_solutions" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#solution_repo').tooltip('show');" data-original-title="solution_repository">
+								</div>
+							</div>
+						</div>
+					</form>									
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px; border-radius: 4px;">
+						<div class="form-group">
+							<label for="" class="control-label col-xs-3" style="text-align:left;">Option 1 </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="" placeholder="" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label col-xs-3" style="text-align:left;">Option 2</label>
+							<div class="col-xs-9">
+								<!-- <input type="text" class="form-control" id="" placeholder="솔루션 내용을 설명해 주세요." style="background-color: #eee;"> -->
+								<textarea class="form-control" id="" placeholder="" style="background-color:#eee; col:2; resize:vertical;" spellcheck='false'></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label col-xs-3" style="text-align:left;">Option 3 </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="" value="" placeholder="" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label col-xs-3" style="text-align:left;">Option 4 </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="" placeholder="" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label col-xs-3" style="text-align:left;">Option 5</label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="" placeholder="" style="background-color: #eee;">
+							</div>
+						</div>
+					</form>						
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:49%;" onclick="SettingsValueRead();">CANCEL</button>
+					<button type="button" class="btn btn-success" data-dismiss="modal" style="width:49%;" onclick="SettingsValueSave_SweetAlert();">SAVE</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 4-1 ; Settings second modal -->
+	<div id="SettingsModal2" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Confirmation</h4>
+				</div>
+				<div class="modal-body">
+					<p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify(document.getElementById('PageNum').value);">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+<!------------------------------------------------------------------------------>
+<!-- <div class="fb-like" data-share="true" data-width="450" data-show-faces="true"></div> -->
+<!-- <div>
+	<input type="button" value="login" onclick="FBlogin();"/>
+	<input type="text" id="FBmsg"/>
+	<input type="button" value="sendMsg" onclick="sendMsg('test');"/>
+	<input type="button" value="sendMsg_normal" onclick="sendMsg_normal();"/>
+	<input type="button" value="sendMsg_popup" onclick="sendMsg_popup();"/>
+	<input type="button" value="sendMsg_youtube" onclick="sendMsg_youtube();"/> 
+</div> -->
+
+<script>
+////////////////////////////////////////////////////////////
+function FBlogin()
+{
+	FB.getLoginStatus(function(response) {
+		if (response.status === 'connected') console.log('Logged in.');	
+		else FB.login();
+	});
+}
+
+function sendMsg(message)
+{
+	var msg = (message != null)? message : document.getElementById('FBmsg').value;
+	FB.login(function(){
+	FB.api('/me/feed', 'post', {message: msg});
+	}, {scope: 'publish_actions'});
+}
+/*
+function sendMsg_normal()
+{	//강제 등록
+	console.log("sendMsg_normal");
+	FB.login(function(response){
+		if(response.authResponse){
+			var publish = {
+				metmethod:'stream.publish',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test', //제목
+				description:'rocon Facebook 테스트'
+			}
+
+			FB.api('/me/feed', 'post', publish, function(response){
+				alert('complete!');
+			});
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+
+function sendMsg_popup()
+{	//팝업 후 등록
+	console.log("sendMsg_popup");
+	FB.login(function(response){
+		if(response.authResponse){
+			FB.ui({
+				metmethod:'feed',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test_popup', //제목
+				description:'rocon Facebook 테스트'
+			)};
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+
+function sendMsg_youtube()
+{	//Youtube 연동
+	FB.login(function(response){
+		if(response.authResponse){
+			FB.ui({
+				metmethod:'feed',
+				picture:'./images/mb_back.png', //사진 URL
+				link:'', //링크주소 URL
+				name:'rocon_test_youtube', //제목
+				description:'rocon Facebook 유튜브 테스트',
+				source:''
+			});
+		}
+	}, {scope: 'publish_actions, user_likes'});
+
+}
+*/
+
+var facebook = document.querySelector("#facebook") 
+	,twitter = document.querySelector("#twitter") 
+	,thisUrl = "project.futurerobot.co.kr/ROCON" 
+	,msg = "웹 저작도구 결과물을 SNS에 공유합니다." 
+	,tag = "shkwak" 
+
+//Facebook icon click event
+facebook.addEventListener("click", function(){
+	goSns('facebook', thisUrl, msg, tag); 
+}, false); 
+
+//Twitter icon click event
+twitter.addEventListener("click", function(){
+	goSns('twitter', thisUrl, msg, tag); 
+}, false); 
+
+function goSns(site, url, msg, tag) { 
+	var goUrl; 
+	if (site == "facebook"){   
+		//Facebook
+		goUrl = "http://www.facebook.com/sharer.php?u=" + url + "&t=" + encodeURIComponent(msg); 
+		win_op(goUrl, '', '700', '500', 'no'); //새창 가운데 열기
+	}else if(site == "twitter"){    
+		//Twitter 
+		goUrl = "http://twitter.com/home?status=" + encodeURIComponent(msg) + " " + encodeURIComponent(url); 
+		win_op(goUrl, '', '700', '500', 'no'); //새창 가운데 열기
+	} 
+	//top.location.href = goUrl; 
+	//win_op(goUrl, '', '700', '500', 'no'); //새창 가운데 열기
+} 
+
+function win_op(mypage, myname, w, h, scroll){
+	var winl = (screen.width - w) / 2;
+	var wint = (screen.height - h) / 2;
+	winprops = 'height='+h+',width='+w+',top='+wint+',left='+winl+',scrollbars='+scroll+',resizable'
+	win = window.open(mypage, myname, winprops)
+	if (parseInt(navigator.appVersion) >= 4) { win.window.focus(); }
+}
+////////////////////////////////////////////////////////////
+</script>
+
+
+<!-- 폳더 선택 다이얼로그 -->
+<!-- <input type="file" webkitdirectory/> -->
+<!-- <input type="file" name="file_input[]" id="file_input" multiple webkitdirectory="">
+<input type="file" id="file_input" webkitdirectory="" directory=""> -->
+
+<!-- 도형그리기 - 정삼각형
+<!-- <div class="triangle"></div> -->
+
+<!-- Content will go here -->
+<main id="content" role="main">
+<img src="./images/mb_back.png" id="btn_back" style="position:absolute; width:74px; float:left; padding:10px; cursor:pointer; z-index=-3; display:none;" onclick="location.reload();" onMouseOver="onMouseEvent('Over_back');" onMouseOut="onMouseEvent('Out_back');"/>
+<!-- <nav>
+  <ul class="pager">
+    <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+    <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav> -->
+<span id="group_back" style="position:absolute; font-size:2.5em; float:left; margin-left:70px; padding:10px; text-align:center; font-family:'Times New Roman', Times, serif; font-weight: normal; color:#EAEFF2; display:none;" >Previous page.</span><!-- Go to the previous page. -->
+
+<div id="Title_N0_1" style="position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">ROCON 솔루션을 생성하고 구성파일을 편집할 수 있습니다.</div>
+
+<div id="div_no1" style="clear:both; background-color:#348FD4;" class="Title_N_common">  
+  <span id="Title_N1" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer; color:#FFFFFF;" onclick="resizeHeight('Page1');" onMouseOver="onMouseEvent('Over1');" onMouseOut="onMouseEvent('Out1');">Solution Manager</span><p>
+  <span id="Title_N1_1" style="position:relative; font-size:1.5em; font-family: 'trebuchet ms', sans-serif; color:#FFFFFF; float:right; padding-right:30px; cursor:default;"><span onMouseOver="onMouseEvent('Over1_sub1_x');" onMouseOut="onMouseEvent('Out1_sub_x');">Template Editor</span> + <span onMouseOver="onMouseEvent('Over1_sub2_x');" onMouseOut="onMouseEvent('Out1_sub_x');">Service Scheduler</span></span>
+</div>
+<div id="div_content1" style="display:none; padding:20px 20px 0px 20px;" class="">
+	<!-- Modal 1 -->
+	<div id="myModal" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Confirmation</h4>
+				</div>
+				<div class="modal-body">
+					<p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify(document.getElementById('PageNum').value);">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 1-1 -->
+	<div id="Modal_sSchedule" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Service Schedule Registration</h4>
+				</div>
+				<div class="modal-body">
+					<!-- <p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p> -->
+				
+					<form class="form-horizontal" style="padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="serviceName" class="control-label col-xs-3" style="text-align:left;">Service Name <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name." style="background-color: #D9EAFD;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="serviceStart" class="control-label col-xs-3" style="text-align:left;">Start Time <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="serviceStart" placeholder="ex) 2015-01-21T16:00:00" style="background-color: #9FC4F3;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="serviceEnd" class="control-label col-xs-3" style="text-align:left;">End Time <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="serviceEnd" placeholder="ex) 2015-01-21T17:00:00" style="background-color: #BFCEDC;">
+							</div>
+						</div>
+					</form>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="ServiceSchduling();">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 2 -->
+	<div id="newSolutionModal" class="modal fade">
+		<div class="modal-dialog" style="margin:10% auto;">
+			<div class="modal-content">
+				<div class="border-gradient" style="width:100%; height:10px;"></div>
+				<div class="modal-header" style="padding:30px;"> <!-- border-top:8px solid #397EBA; -->
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:-12px; font-size:36px; font-weight:400; opacity:.4;">&times;</button>
+					<h2 class="modal-title" style="text-align:center;">Create a solution!</h2>
+				</div>
+				<div class="modal-body">
+					<!-- <p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>-->
+					<!-- <div class="well">	Look, I'm in a well! </div> --> 
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="inputName" class="control-label col-xs-3" style="text-align:left;">Name <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputName" placeholder="솔루션의 이름을 만들어 주세요. ex) OFFICE SOLUTION" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputDescription" class="control-label col-xs-3" style="text-align:left;">Description <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<!-- <input type="text" class="form-control" id="inputDescription" placeholder="솔루션 내용을 설명해 주세요." style="background-color: #eee;"> -->
+								<textarea class="form-control" id="inputDescription" placeholder="솔루션의 내용을 설명해 주세요.                                          ex) The office solution package" style="background-color:#eee; col:2; resize:vertical;" spellcheck='false'></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputLicense" class="control-label col-xs-3" style="text-align:left;">License </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputLicense" value="BSD" placeholder="ex) BSD" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputVersion" class="control-label col-xs-3" style="text-align:left;">Version <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputVersion" placeholder="ex) 1.0.0" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputMaintainer" class="control-label col-xs-3" style="text-align:left;">Maintainer</label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="inputMaintainer" placeholder="ex) shkwak" style="background-color: #eee;">
+							</div>
+						</div>
+					</form>
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px; margin-top:4px;">
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Import service <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%;">									
+									<!-- <input type="text" class="form-control" id="input1" value="Local system" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick=""> -->
+									<a data-toggle="tab" href="#sectionD" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="sectionD_click();">Local system</a>
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<!-- <input type="text" class="form-control" id="input2" value="Service repository" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="alert('no service now.');"> -->
+									<a data-toggle="tab" href="#sectionE" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #fff;">Service repository</a>									
+								</div>
+							</div>							
+						</div>						
+					</form>					
+				</div>							   
+				<div class="modal-footer"><!-- packageName_check(document.getElementById('inputName').value); -->
+					<button type="button" class="btn btn-lg btn-default" data-dismiss="modal" style="width:49%; height:75px;"  onclick="alert('no service now.');">Recent solution</button>
+					<button type="button" class="btn btn-lg btn-primary" data-dismiss="modal" style="width:49%; height:75px;" onclick="NewSolution();">NEW</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 3 : Create new pull request, #PullRequestModal -->
+	<div id="PullRequestModal" class="modal fade">
+		<div class="modal-dialog" style="margin:10% auto;">
+			<div class="modal-content">
+				<!-- <div class="border-gradient-PR" style="width:100%; height:10px;"></div> -->
+				<div class="modal-header" style="padding:30px;"> <!-- border-top:8px solid #397EBA; -->
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:-12px; font-size:36px; font-weight:400; opacity:.4;">&times;</button>
+					<h2 class="modal-title" style="text-align:center;">Create new pull request!</h2>
+				</div>
+				<div class="modal-body">					
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="PR_title" class="control-label col-xs-4" style="text-align:left;">Pull Request : title <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control" id="PR_title" placeholder="ex) Amazing new feature" style="background-color: #eee;">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="PR_body" class="control-label col-xs-4" style="text-align:left;">Pull Request : body <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-8">
+								<textarea class="form-control" id="PR_body" placeholder="ex) Please pull this in!" style="background-color:#eee; col:2; resize:vertical;" spellcheck='false'></textarea>
+							</div>
+						</div>						
+					</form>					
+				</div>							   
+				<div class="modal-footer">					
+					<button type="button" class="btn btn-success" data-dismiss="modal" style="float:right;" onclick="createPullRequest44()">Create pull request</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 3-1 -->
+	<div id="PullRequestModal2" class="modal fade">
+		<div class="modal-dialog" style="margin:20% auto;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Confirmation</h4>
+				</div>
+				<div class="modal-body">
+					<p>Do you want to apply the parameters that you have modified?</p>
+					<p class="text-warning"><small>If you don't click the OK button, your modification will be not applied.</small></p>
+				</div>							   
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" style="width:14%;">Cancel</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" style="width:14%;" onclick="fileModify(document.getElementById('PageNum').value);">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tab Menu -->
+	<div class="container width-100">
+		<ul class="nav nav-tabs" id="myTab">
+			<li class="active"><a data-toggle="tab" href="#sectionA">New Solution</a></li>
+			<li><a data-toggle="tab" href="#sectionD" onclick="sectionD_click();">Solution Configurator - Local System</a></li>
+			<li><a data-toggle="tab" href="#sectionE" onclick="sectionE_click();">Solution Configurator - Service Repository</a></li>
+			<li><a data-toggle="tab" href="#sectionF" onclick="sectionF_click();">GitHub - Solution Repository</a></li>
+			<li><a data-toggle="tab" href="#sectionB" onclick="GetSolutionList();">Template Editor</a></li>
+			<li><a data-toggle="tab" href="#sectionC" onclick="sectionC_click();">Service Scheduler</a></li>
+			<!-- <li class="dropdown">
+				<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><a data-toggle="tab" href="#dropdown1">Dropdown1</a></li>
+					<li><a data-toggle="tab" href="#dropdown2">Dropdown2</a></li>
+				</ul>
+			</li> -->
+		</ul>
+		<div class="tab-content">
+			<!--■■■■■ sectionA : New Solution ■■■■-->
+			<div id="sectionA" class="tab-pane fade in active">
+				<h3>Solution Creation</h3>
+				<div class="container width-100">
+				  <div class="jumbotron">
+					<h2>Create a new solution!</h2>      
+					<p>새로운 솔루션을 생성하고, 그 구성파일들을 생성합니다.</p>   
+					<p style="color:#6E1E20; font-size:14px;">* ROS caktin_create_pkg 명령어에 의해서 생성됩니다.</p><br>   
+					<!-- <div class="form-group width-40">
+						<label for="solutionName_new">Solution Name</label>
+						<input class="form-control" id="solutionName_new" type="text" placeholder="Please enter the solution name."/>				 
+					</div>					
+					<a href="#" class="btn btn-success" onclick="SolutionCreate_new();"><span class="glyphicon glyphicon-plus"></span>&nbsp; LOCAL CREATE</a> -->
+					<a href="#newSolutionModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span>&nbsp; CATKIN_CREATE_PKG</a><!-- btn-lg -->
+					<!-- <a href="#" class="btn btn-default" onclick="ReadFileList();"><span class="glyphicon glyphicon-check"></span>&nbsp; FileList</a>
+					<a href="#" class="btn btn-info" onclick="GetLocalServiceList();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceList</a>
+					<a href="#" class="btn btn-success" onclick="GetLocalServiceLength();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceLength</a>
+					<a href="#" class="btn btn-success" onclick="GetLocalServiceContent(0);"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceContent(0)</a>
+					<a href="#" class="btn btn-success" onclick="GetLocalServiceContent(1);"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceContent(1)</a>
+					<br><br> -->
+					<!-- <a href="#" class="btn btn-warning" onclick="GetGitHubBranchTreeSHA();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubBranchTreeSHA</a>
+					<a href="#" class="btn btn-danger" onclick="GetGitHubServiceList();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubServiceList</a>
+					<a href="#" class="btn btn-danger" onclick="GetGitHubServiceContent();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubServiceContent</a>	-->
+			
+					<span id="solutionCreate_result" style="color:#cc3300;">&nbsp; &nbsp; </span>
+				  </div>
+				</div>
+
+				<h3>Created Solution Files Description</h3>							
+				<p>새로운 솔루션을 생성하면 기본 구성파일로 아래와 같은 파일들이 생성됩니다.</p>
+				<pre class="brush:plain;" style="margin: 10px 15px;"><span class="token">- package.xml : 솔루션에 대한 메타 정보 및 의존성 설정 파일</span><br><span class="token">- CMakeLists.txt : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span><br><span class="token">- solution.services : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일</span><br><span class="token">- solution.launch : 솔루션 실행 설정 파일</span></pre>
+    
+				<!-- <h3>Result Report</h3>
+				<p>솔루션 생성 결과를 보여줍니다.</p>
+				&nbsp; &nbsp; <textarea id="box_result" style="width:98%; margin-top:5px;" rows="4" title="source" spellcheck="false"></textarea> -->		
+			</div>
+
+			<!--■■■■■ sectionB : Template Editor ■■■■-->
+			<div id="sectionB" class="tab-pane fade">
+			  <h3>Step 1</h3>
+			  <div class="container width-30" style="margin-left:0px;">
+				<p>아래에서 편집하고자 하는 솔루션을 선택하세요.</p>
+				<select class="form-control" id="select_solution">
+                    <option>solution1</option>
+					<option>solution2</option>
+					<option>solution3</option>
+					<option>solution4</option>
+                </select>
+			  </div>
+
+			  <h3>Step 2</h3>
+			  <div class="container width-100">
+				<p>선택한 솔루션에서 편집하고자 하는 구성파일을 선택하세요.</p>
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn btn-default active" onclick="carouselChange('p');"><input type="radio" name="options" id="option1"> package.xml</label>
+					<label class="btn btn-default" onclick="carouselChange('c');"><input type="radio" name="options" id="option2""> CMakeLists.txt</label>
+					<label class="btn btn-default" onclick="carouselChange('s');"><input type="radio" name="options" id="option3"> solution.service</label>
+					<label class="btn btn-default" onclick="carouselChange('l');"><input type="radio" name="options" id="option4"> solution.launch</label>
+				</div>				
+			  </div>
+				
+			  <h3>Step 3</h3>
+			  <div class="container width-100">
+				<p>아래 항목을 차례차례 입력하고 Modify 버튼을 누르세요.</p>
+				
+				<!--■■ package.xml File ■■-->
+				<div id="myCarousel_p" class="carousel slide" data-interval="0" data-ride="carousel">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_p" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_p" data-slide-to="1"></li>
+						<li data-target="#myCarousel_p" data-slide-to="2"></li>		
+						<li data-target="#myCarousel_p" data-slide-to="3"></li>
+						<li data-target="#myCarousel_p" data-slide-to="4"></li>
+						<li data-target="#myCarousel_p" data-slide-to="5"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_p">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 패키지명을 입력하세요.</h4>
+							  <input class="form-control" id="packageName" type="text" placeholder="Please enter the package name."><br>
+							  <h4 style="float:left;">2. 패키지 버전을 입력하세요.</h4>
+							  <input class="form-control" id="packageVersion" type="text" placeholder="Please enter the package version. ex) 0.1.1">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">							  
+							  <h4 style="float:left;">3. 패키지에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="packageDescription" type="text" placeholder="Please enter the package description."><br>
+							  <h4 style="float:left;">4. Maintainer 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageMaintainertext" type="text" placeholder="Please enter the maintainer text.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageMaintainer" type="text" placeholder="Please enter the maintainer.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 라이센스(License)를 입력하세요.</h4>
+							  <input class="form-control" id="packageLicense" type="text" placeholder="Please enter the license." value="BSD"><br>
+							  <h4 style="float:left;">6. URL 정보를 입력하세요.</h4><br><br>
+							  <input class="form-control" style="display:inline; width:49.5%; float:left;" id="packageURLType" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" style="display:inline; width:49.5%; float:left; margin-left:1%;" id="packageURL" type="text" placeholder="Please enter the url address.">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 저작자(Author)를 입력하세요</h4>
+							  <input class="form-control" id="packageAuthor" type="text" placeholder="Please enter the package author." ><br>
+							  <h4 style="float:left;">8. Buildtool Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageBuildtoolDepend" type="text" placeholder="Please enter the package buildtool depend." value="catkin">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageRunDepend" type="text" placeholder="Please enter package run depend."><br>
+							  <h4 style="float:left;">10. Export(concert_service)를 선택하세요.</h4><br><br>
+							  <input class="form-control" id="packageExport" type="file" accept=".service" onchange="this.value = this.files[0].name;">
+							</div>
+						</div>
+						<div class="item item_p">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. Run Depend를 입력하세요.</h4>
+							  <input class="form-control" id="packageParmeters" type="text" placeholder="Please enter package run depend."><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <a href="#myModal" class="btn btn-success" style="float:left;" data-toggle="modal">Modify</a>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_p" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_p" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				
+				<!--■■ CMakeLists.txt File ■■-->
+				<div id="myCarousel_c" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_c" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_c" data-slide-to="1"></li>
+						<li data-target="#myCarousel_c" data-slide-to="2"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_c">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. cmake_minimum_required 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeVersion" type="text" placeholder="Please enter the cmake name." value="VERSION 2.8.3"><br>
+							  <h4 style="float:left;">2. 프로젝트(project)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeProject" type="text" placeholder="Please enter the cmake project.">
+							</div>
+						</div>
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. find_package 정보를 확인하세요. 필요하면 수정하세요.</h4>
+							  <input class="form-control" id="cmakeFindPkg" type="text" placeholder="Please enter the cmake find_package." value="catkin REQUIRED"><br>
+							  <h4 style="float:left;">4. catkin_package 를 확인하세요.</h4>
+							  <input class="form-control" id="cmakeCatkinPkg" type="text" placeholder="Please enter the cmake catkin_package." value="catkin_package()";>
+							</div>
+						</div>						
+						<div class="item item_c">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="cmakeParmeters" type="text" placeholder="Please enter cmake parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-default" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_c" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_c" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+
+				<!--■■ solution.service File ■■-->
+				<div id="myCarousel_s" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_s" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_s" data-slide-to="1"></li>
+						<li data-target="#myCarousel_s" data-slide-to="2"></li>
+						<li data-target="#myCarousel_s" data-slide-to="3"></li>
+						<li data-target="#myCarousel_s" data-slide-to="4"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 서비스명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceName" type="text" placeholder="Please enter the service name."><br>
+							  <h4 style="float:left;">2. 서비스에 대한 설명을 입력하세요.</h4>
+							  <input class="form-control" id="serviceDescription" type="text" placeholder="Please enter the service description.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 저작자(Author)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceAuthor" type="text" placeholder="Please enter the service author."><br>
+							  <h4 style="float:left;">4. 우선순위(Priority)를 입력하세요.</h4>
+							  <input class="form-control" id="servicePriority" type="number" placeholder="Please enter the service priority.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. 런처 타입(Launcher Type)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceLauncherType" type="text" placeholder="Please enter the service name." value="roslaunch"><br>
+							  <h4 style="float:left;">6. 런처(Launcher)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceLauncher" type="text" placeholder="Please enter the service launcher. ex) turtle_concert/turtle_pond">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">7. 아이콘(Icon)을 선책하세요.</h4>
+							  <input class="form-control" id="serviceIcon" type="file" accept=".png,.jpg,.jpeg,.gif" value=""><br>
+							  <h4 style="float:left;">8. 상호작용(Interactions)을 입력하세요.</h4>
+							  <input class="form-control" id="serviceInteractions" type="text" placeholder="Please enter the service interactions.">
+							</div>
+						</div>
+						<div class="item">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">9. 파라미터(Parmeters)를 입력하세요.</h4>
+							  <input class="form-control" id="serviceParmeters" type="text" placeholder="Please enter service parmeters. ex) turtle_concert/turtle_pond"><br>
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+				<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_s" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_s" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+
+				<!--■■ solution.launch File ■■-->
+				<div id="myCarousel_l" class="carousel slide" data-interval="0" data-ride="carousel" style="display:none;">
+					<!-- Carousel indicators -->
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel_l" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel_l" data-slide-to="1"></li>
+						<li data-target="#myCarousel_l" data-slide-to="2"></li>
+						<li data-target="#myCarousel_l" data-slide-to="3"></li>
+						<li data-target="#myCarousel_l" data-slide-to="4"></li>
+					</ol>   
+					<!-- Carousel items -->
+					<div class="carousel-inner" style="border-radius:6px;">
+						<div class="active item item_l">
+							<!-- <h2 class="h2-option">Slide 1</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">1. 노드명(Node name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchNodeName" type="text" placeholder="Please enter the launch name."><br>
+							  <h4 style="float:left;">2. 노드 패키지(pkg)와 타입(type)을 입력하세요.</h4><br><br>
+							  <input class="form-control" id="launchNodePkg" style="display:inline; width:49.5%; float:left;" type="text" placeholder="Please enter the url type.">
+							  <input class="form-control" id="launchNodeType" style="display:inline; width:49.5%; float:left; margin-left:1%;" type="text" placeholder="Please enter the url address.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 2</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">3. 파라미터명(Param name)을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamName" type="text" placeholder="Please enter the launch param name."><br>
+							  <h4 style="float:left;">4. 파라미터값을 입력하세요.</h4>
+							  <input class="form-control" id="launchParamValue" type="text" placeholder="Please enter the launch param value.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">5. Include File을 선택하세요.</h4>
+							  <input class="form-control" id="launchIncludeFile" type="file" placeholder="Please enter the launch include file."><br>
+							  <!-- <h4 style="float:left;">6. </h4>
+							  <input class="form-control" id="launchLauncher" type="text" placeholder="Please enter the launch launcher. ex) turtle_concert/turtle_pond"> -->
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <h4 style="float:left;">6. Argument명을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgName" type="text" placeholder="Please enter the launch arg name."><br>
+							  <h4 style="float:left;">7. Argument값을 입력하세요.</h4>
+							  <input class="form-control" id="launchArgValue" type="text" placeholder="Please enter the launch arg value.">
+							</div>
+						</div>
+						<div class="item item_l">
+							<!-- <h2 class="h2-option">항목 3</h2> -->
+							<div class="carousel-caption" style="top:20px;">
+							  <!-- <h4 style="float:left;">9. </h4>
+							  <input class="form-control" id="launchParmeters" type="text" placeholder="Please enter launch parmeters. ex) turtle_concert/turtle_pond"><br> -->
+							  <h4 style="float:left;">입력값이 올바른지 확인 후 Modify 버튼을 누르세요.</h4><br><br>
+							  <!-- <input type="button" class="btn btn-warning" style="float:left;" onclick="alert('modified!');" value="Modify"> -->
+							  <a href="#myModal" class="btn btn-primary" style="float:left;" data-toggle="modal">Modify</a>							  
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav ; left, right css gradient exist -->
+					<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev"> -->
+					<a class="carousel-control" style="right:auto; left:0;" href="#myCarousel_l" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</a>
+					<a class="carousel-control" style="right:0; left:auto;" href="#myCarousel_l" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+					
+				<!-- <div class="jumbotron">
+					<h2>!</h2>      
+					<p>니다.</p>   
+					<div class="form-group width-40">
+					  <label for="Name_new">Name</label>
+					  <input class="form-control" id="Name_new" type="text" placeholder="Please enter the name.">
+					</div>
+					<a href="#" class="btn btn-success" onclick=""><span class="glyphicon glyphicon-pencil"></span>&nbsp; MODIFY</a>
+				 </div> -->
+			  </div>
+
+			  <br><br>
+			  <!-- <iframe id="iframe_N1" src="TemplateEdit.html" width=100%; style="border:0px;"> </iframe> -->
+			</div>
+
+			<input type="hidden" id="PageNum" value="1"/>
+
+			<!--■■■■■ sectionC : Service Scheduler ■■■■-->
+			<div id="sectionC" class="tab-pane fade">
+				<!-- <h3>Service Schedule Calender</h3> -->
+				<!-- <p>Vestibulum nec erat eu nulla rhoncus fringilla ut non neque. Vivamus nibh urna, ornare id gravida ut, mollis a magna. Aliquam porttitor condimentum nisi, eu viverra ipsum porta ut. Nam hendrerit bibendum turpis, sed molestie mi fermentum id. Aenean volutpat velit sem. Sed consequat ante in rutrum convallis. Nunc facilisis leo at faucibus adipiscing.</p> -->
+
+				<!-- <div class="calender-body"> -->
+					<!-- <div id='calendar' ></div> -->
+				<!-- </dir> -->
+				<iframe id="iframe_N1_cal" src="fullcalender.html" width=100% height=792px style="border:0px;"> </iframe>
+				<!-- <iframe id="iframe_N1" src="Scheduler.html" width=100%; style="border:0px;"> </iframe> -->
+			</div>
+
+			
+			<!--■■■■■ sectionD : SOLUTION MANAGER (Solution Configurator) ■■■■-->
+			<!-- RE : 서비스 정보 불러오기, DP, 솔루션 생성 시 사용한 Name 적용, 2015-04-29(Wed)_shkwak -->
+			<div id="sectionD" class="tab-pane fade" style="margin-bottom: 30px;">				
+				<div class="container width-100" >			
+				<br>
+				<form>
+					<div class="row">
+						<div class="col-xs-3" style="min-width:156px;" >
+							<div class="input-group">
+								<input type="text" class="form-control" value="SERVICE LIST" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<span class="input-group-addon" style="cursor:pointer;" onclick="addElement();">Add  <span class="glyphicon glyphicon-plus"></span></span>
+								<!-- <span class="input-group-addon" style="cursor:pointer;" onclick="delElement();">Del  <span class="glyphicon glyphicon-minus"></span></span> -->
+							</div>
+							<div id="div_serviceList"> <!-- list-group -->
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">  
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#59C1E0;" title="Administrative services and tools" onclick="addService(this.innerHTML, this.style.color, this.title);">admin</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#FCB040;" title="Turtlesim service" onclick="addService(this.innerHTML, this.style.color, this.title);">turtlesim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#EF3E35;" title="Turtles on the pond" onclick="addService(this.innerHTML, this.style.color, this.title);">turtle_pond</h3>
+								</a>
+								<!-- <a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_delivery</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_delivery_sim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">cafe_database</h3>
+								</a>															
+								<a href="#" class="list-group-item height-75 list-group-item1" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addService(this.innerHTML, this.style.color, this.title);">gazebo_robot_world</h3>
+								</a> -->								
+							</div>				
+						</div>
+						<div class="col-xs-1">
+							<div class="input-group">
+								<!-- <input type="text" class="form-control" placeholder="Amount"> -->
+								<!-- <span class="glyphicon glyphicon-chevron-right"></span> --> <!-- glyphicon glyphicon-play -->
+								<img src="./images/small-triangle-right-grey.png" style="padding:184px 0px 0px 20px;"/>
+							</div>
+						</div>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<input type="text" id="created_solutionName" class="form-control" value="SOLUTION NAME : dummy_concert1" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<!-- <span class="input-group-addon" style="cursor:pointer; color:; background-color:#FCFCBD;" onclick="solutionConfigure('3');solutionConfigure('4');">CONFIGURE</span> -->
+								<span class="input-group-addon" style="cursor:pointer; color:; /*background-color:#FCFCBD;*/" onclick="javascript:console.clear();"></span>
+							</div>
+							<div id="div_serviceName"> <!-- list-group //end! -->				
+								<!-- 동적 항목 추가 위치 -->
+							</div>				
+							
+							<div style="float:right; margin-top:10px;">					
+								Local client only  &nbsp; 
+								<input id="toggle-event" type="checkbox" checked data-toggle="toggle" data-onstyle="success">&nbsp;
+								<button type="button" class="btn btn-primary" style="" onclick="">RUN SOLUTION</button>
+								<div id="console-event"></div>						
+								<script>
+								  $(function() {
+									$('#toggle-event').change(function() {
+									  $('#console-event').html('Toggle: ' + $(this).prop('checked'))
+									})
+								  })								  
+								  //******************************************//									
+								</script>
+							</div>
+							
+							<div style="float:; margin-top:10px;">													
+								<button type="button" class="btn btn-primary" style="" onclick="LocalServiceConfigure(3)">Configure Services</button>
+								<a href="#newSolutionModal" class="btn btn-info" data-toggle="modal"><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp; CATKIN_CREATE_PKG 계속하기</a>
+							</div>
+
+						</div><!-- col-xs-7 -->
+					</div><!-- row -->
+				</form>
+				
+				
+				<br>
+				<!-- //////////////////////// -->
+
+				</div><!-- container --> 	
+			</div><!-- sectionD -->
+
+
+			<!--■■■■■ sectionE : SOLUTION MANAGER (Solution Configurator) - Service Repository(GitHub) ■■■■-->
+			<div id="sectionE" class="tab-pane fade" style="margin-bottom: 30px;">				
+				<div class="container width-100" >			
+				<br>
+				<form>
+					<div class="row">
+						<div class="col-xs-3" style="min-width:156px;" >
+							<div class="input-group">
+								<input type="text" class="form-control" value="SERVICE LIST" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<span class="input-group-addon" style="cursor:pointer;" onclick="addElementE();">Add  <span class="glyphicon glyphicon-plus"></span></span>
+								<!-- <span class="input-group-addon" style="cursor:pointer;" onclick="delElementE();">Del  <span class="glyphicon glyphicon-minus"></span></span> -->
+							</div>
+							<div id="div_serviceListE"> <!-- list-group -->
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">  
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#59C1E0;" title="Administrative services and tools" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">admin</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#FCB040;" title="Turtlesim service" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">turtlesim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#EF3E35;" title="Turtles on the pond" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">turtle_pond</h3>
+								</a>
+								<!-- <a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">cafe_delivery</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">cafe_delivery_sim</h3>
+								</a>
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">cafe_database</h3>
+								</a>															
+								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
+								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
+								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">gazebo_robot_world</h3>
+								</a> -->								
+							</div>				
+						</div>
+						<div class="col-xs-1">
+							<div class="input-group">
+								<!-- <input type="text" class="form-control" placeholder="Amount"> -->
+								<!-- <span class="glyphicon glyphicon-chevron-right"></span> --> <!-- glyphicon glyphicon-play -->
+								<img src="./images/small-triangle-right-grey.png" style="padding:184px 0px 0px 20px;"/>
+							</div>
+						</div>
+						<div class="col-xs-8">
+							<div class="input-group">
+								<input type="text" id="created_solutionName" class="form-control" value="SOLUTION NAME : dummy_concert1" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<!-- <span class="input-group-addon" style="cursor:pointer; color:; background-color:#FCFCBD;" onclick="solutionConfigure('3');solutionConfigure('4');">CONFIGURE</span> -->
+								<span class="input-group-addon" style="cursor:pointer; color:; /*background-color:#FCFCBD;*/" onclick="javascript:console.clear();"></span>
+							</div>
+							<div id="div_serviceNameE"> <!-- list-group //end!   -->				
+							
+							</div>				
+							
+							<div style="float:right; margin-top:10px;">					
+								Local client only  &nbsp; 
+								<input id="toggle-eventE" type="checkbox" data-toggle="toggle" data-onstyle="success">&nbsp;
+								<button type="button" class="btn btn-primary" style="" onclick="">RUN SOLUTION</button>
+								<div id="console-eventE"></div>
+
+								<script>
+								  $(function() {
+									$('#toggle-eventE').change(function() {
+									  $('#console-eventE').html('Toggle: ' + $(this).prop('checked'))
+									})
+								  })								  
+								  //******************************************//									
+								</script>
+							</div>
+
+							<div style="float:; margin-top:10px;">
+								<button type="button" class="btn btn-primary" style="" onclick="LocalServiceConfigure(3)">Configure Services</button>
+								<a href="#newSolutionModal" class="btn btn-info" data-toggle="modal"><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp; CATKIN_CREATE_PKG 계속하기</a>
+							</div>
+
+						</div><!-- col-xs-7 -->
+					</div><!-- row -->
+
+				</form>
+				
+				
+				<br>
+				<!-- //////////////////////// -->
+
+				</div><!-- container --> 	
+			</div><!-- sectionE -->
+
+			<!--■■■■■ sectionF : SOLUTION MANAGER (Solution Configurator) - Service Repository(GitHub) Solution Repository ■■■■-->
+			<div id="sectionF" class="tab-pane fade">				
+				<div class="container width-100" >			
+				<br>
+				<form>
+
+<div class="container width-100"> <!-- Solution Repository (GitHub) -->
+	<div class="row" style="margin:0px;">
+		<!-- <h3>Solution Repository (GitHub)</h3> -->
+		<!-- <br> -->
+		<p>GitHub solution repository을 fork하여 수정 후, pull request한다.</p>
+		
+		<!-- <div style="width:33.1%; display: inline-block;">
+			<label for="ID">Owner</label>
+			<input type="text" id="ID" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
+		</div>
+		<div style="width:33.1%; display: inline-block;">
+			<label for="PW">Password</label>
+			<input type="password" id="PW" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
+		</div> -->
+	<!-- <button type="button" class="btn btn-primary" style="display: inline-block;" onclick="UserAuthorization()">UserAuthorization</button> -->
+	<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>	
+	<button type="button" class="btn btn-success" style="" onclick="repo_branch()">Create branch</button> -->
+	<!-- <br><br> -->
+	
+	<!-- ■■■■■■■■■■■■■■■■ Create a fork ■■■■■■■■■■■■■■■■ -->
+	<div class="jumbotron" style="padding: 20px; background-color: #E6F9D7;">
+		<h3 style="margin-top: 10px;">Create a fork</h3>      
+		<p style="color: #AAAAAB; font-size:14px;">Create a fork for the authenticated user.</p>
+		<div style="width:20px; display: inline-block;">
+			<img src="./images/git-fork-128.png" style="height:20px; vertical-align: middle; margin-top: -2px; margin-left: -4px;"/>
+		</div>		
+		<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/forks </div>
+		<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --> <!-- btn-lg -->	
+		<button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>		
+	</div>
+	
+	<!-- ■■■■■■■■■■■■■■■■ Create a branch ■■■■■■■■■■■■■■■■ -->
+	<div class="jumbotron" style="padding: 20px; background-color: #E9F3FF;">
+		<h3 style="margin-top: 10px;">Create a branch</h3>      
+		<p style="color: #AAAAAB; font-size:14px;">Create a branch for pull request.</p>		
+		<div style="width:20px; display: inline-block;">
+			<img src="./images/git-branch-128.png" style="height:20px; vertical-align: middle; margin-top: -2px;"/>
+		</div>
+		<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/git/refs </div>		
+		<div class="" style="display: inline-block; margin-right: 4px;">
+			<input type="text" class="form-control" id="branch_name" placeholder="branch name" style="background-color: #fff;">
+		</div>
+		<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --><!-- btn-lg -->
+		<button type="button" class="btn btn-info" style="" onclick="repo_branch44(document.getElementById('branch_name').value);">Create branch</button>
+	</div>
+
+	<!-- ■■■■■■■■■■■■■■■■ GitHub Solution Repository 가져오기, 2015-05-12(Tue)_shkwak ■■■■■■■■■■■■■■■■ -->
+	<div class="jumbotron" style="padding: 20px; /*background-color: #C5D5EF;*/">
+		<h3 style="margin-top: 10px;">Edit a Contents</h3>
+		<div style="width:33.1%; display: inline-block; margin-bottom: 5px;">
+			<label for="fork_owner">Owner</label>
+			<input type="text" id="fork_owner" class="form-control" style="display: block;" value="" placeholder="User account" spellcheck="false" readonly>
+			<script>
+			document.getElementById('fork_owner').value = localStorage.getItem("git_username");
+			</script>
+		</div> &nbsp; / &nbsp; 
+		<div style="width:30.8%; display: inline-block; margin-bottom: 5px;">
+			<label for="fork_branch">Branch</label>
+			<select class="form-control" id="fork_branch" style="display: block;" onChange="">
+				<option value="master">master</option>
+			</select>
+		</div>
+		<p style="color: #AAAAAB; font-size:14px;"> The Repo Commits API supports listing, viewing, and comparing commits in a repository. Commit directly to the <code>Branch</code>.</p>
+
+		<select class="form-control width-33" id="select_repo1" style="display: inline-block;" onChange="GetDataF(this.value);">
+			<option value="">----------------------</option>
+		</select>
+		<select class="form-control width-33" id="select_repo2" style="display: inline-block;" onChange="GetData_subF(this.value);">
+			<option value="">----------------------</option>
+		</select>	
+		<select class="form-control width-33" id="select_repo3" style="display: inline-block;" onChange="GetData_sub_subF(this.value);">
+			<option value="">----------------------</option>
+		</select>	
+		<br>
+		<textarea id="box_result" style="width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:vertical;" rows="10" spellcheck="false"></textarea>
+		<!-- <textarea id="box_result_re" style="width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:vertical;" rows="10" spellcheck="false"></textarea> -->
+		<br>
+		<button type="button" class="btn btn-warning" style="float:right;" onclick="FileUpdate_subF();">Commit changes</button>
+		<input type="text" id="updateMsg" class="form-control" id="" style="width: 40%; float: right; display: inline-block; margin-right: 4px;" placeholder="Insert update message here." spellcheck="false"><br><br>
+	</div>
+	
+	<!-- ■■■■■■■■■■■■■■■■ Create a pull request ■■■■■■■■■■■■■■■■ -->
+	<div class="jumbotron" style="padding: 20px; background-color: #CFE2F3;">
+		<h3 style="margin-top: 10px;">Create a pull request</h3>      
+		<p style="color: #AAAAAB; font-size:14px;">Compare changes across branches, commits, tags, and more below. If you need to, you can also compare across forks.</p>
+		<div style="width:20px; display: inline-block;">
+			<img src="./images/git-pull-request-128.png" style="height:18px; vertical-align: middle; margin-top: -2px;"/>
+		</div>
+		<div class="form-group width-30" style="display: inline-block; width: 33%;">
+			<label for="base_repo">base : </label>
+			<select class="form-control" id="base_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
+				<option value="">----------------------</option>
+				<option value="master">master</option>
+				<option value="base_others">사용자 입력</option>
+			</select>
+			<input class="form-control" id="base_repo2" style="width:86%; display: none;" placeholder="<branch> ex) master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="base_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('base_repo2_cancel');"></span>
+		</div>
+		<div class="form-group width-30" style="display: inline-block; width: 33%;">
+			<label for="head_repo">head : </label>
+				<select class="form-control" id="head_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
+				<option value="">----------------------</option>
+				<option value="meddugi723:master">meddugi723:master</option>
+				<option value="futurerobot:master">futurerobot:master</option>
+				<option value="head_others">사용자 입력</option>
+			</select>
+			<input class="form-control" id="head_repo2" style="width:86%; display: none;" placeholder="<user>:<branch> ex) shkwak:master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="head_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('head_repo2_cancel');"></span>
+		</div>
+		<a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a><!-- btn-lg -->	
+	</div>
+
+	<!-- <button type="button" class="btn btn-warning" style="" onclick="GetGitHubBranchList()">Get Branch List</button>
+	<button type="button" class="btn btn-warning" style="" onclick="GetGitHubMasterSHA()">Get Master SHA</button> -->
+	<!-- <button type="button" class="btn btn-warning" style="" onclick="Create_Branch('branch2')">Create_Branch</button> -->
+	<!-- <button type="button" class="btn btn-success" style="" onclick="repo_show()">repo_show</button>
+	<button type="button" class="btn btn-success" style="" onclick="repo_contents()">repo_contents</button>
+	<button type="button" class="btn btn-warning" style="" onclick="repo_fork()">repo_fork</button> -->
+	<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">create_fork</button>	
+	<button type="button" class="btn btn-success" style="" onclick="repo_branch()">repo_branch</button> -->
+	<!-- <button type="button" class="btn btn-success" style="" onclick="repo_createPullRequest()">repo_createPullRequest_same_repo</button>	 -->	
+	<br><br>
+
+	<!-- <div style="width:33.1%; display: inline-block;">
+	<label for="PR_title">Pull Request : title</label>
+	<input type="text" id="PR_title" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
+	</div>
+	<div style="width:33.1%; display: inline-block;">
+	<label for="PR_body">Pull Request : body</label>
+	    <input type="text" id="PR_body" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
+	</div>
+	<button type="button" class="btn btn-warning" style="" onclick="">repo_createPullRequest44</button>
+	<br><br> -->
+
+		</div>
+	</div>
+				</form>				
+				<br>
+				<!-- //////////////////////// -->
+				</div><!-- container --> 	
+			</div><!-- sectionE -->
+
+
+			<style type="text/css">
+				.list-group{
+					width: 200px;
+				}				
+			</style>
+
+			<div id="dropdown1" class="tab-pane fade">
+				<h3>Dropdown 1</h3>
+				<p>WInteger convallis, nulla in sollicitudin placerat, ligula enim auctor lectus, in mollis diam dolor at lorem. Sed bibendum nibh sit amet dictum feugiat. Vivamus arcu sem, cursus a feugiat ut, iaculis at erat. Donec vehicula at ligula vitae venenatis. Sed nunc nulla, vehicula non porttitor in, pharetra et dolor. Fusce nec velit velit. Pellentesque consectetur eros.</p>
+			</div>
+			<div id="dropdown2" class="tab-pane fade">
+				<h3>Dropdown 2</h3>
+				<p>Donec vel placerat quam, ut euismod risus. Sed a mi suscipit, elementum sem a, hendrerit velit. Donec at erat magna. Sed dignissim orci nec eleifend egestas. Donec eget mi consequat massa vestibulum laoreet. Mauris et ultrices nulla, malesuada volutpat ante. Fusce ut orci lorem. Donec molestie libero in tempus imperdiet. Cum sociis natoque penatibus et magnis dis parturient.</p>
+			</div>
+		</div>	
+	</div>
+</div>
+
+
+
+<!--■■■■■■■■■■ Data Visualizer ■■■■■■■■■■-->
+<div id="Title_N0_2" style="clear:both; position:absolute; display:none; font-size:2.5em; float:left; padding-top:40px; width:100%; text-align:center; font-family:'Times New Roman', Times, serif;">dotgraph 데이터와 운영정보 Log를 시각화하는 도구입니다.</div>
+<div id="div_no2" style="clear:both; background-color:#FFF8C9;" class="Title_N_common">  
+<!-- <div id="div_no2" style="clear:both; background-color:#CCC;" class="Title_N_common"> -->
+  <span id="Title_N2" style="position:relative; font-size:3.4em; font-family: 'trebuchet ms', sans-serif; cursor:pointer;" onclick="resizeHeight('Page2');" onMouseOver="onMouseEvent('Over2');" onMouseOut="onMouseEvent('Out2');">Data Visualizer</span>      
+</div>
+
+<div id="div_content2" style="display:none; padding:20px;" class="">
+ <!-- <h4 id="HTTP_File_Upload" name="HTTP_File_Upload">Launch File</h4>
+<p>Some web sites allow one to upload a file. This is done by using an HTML &lt;input&gt; element using the <code>file</code> type from within a form. When the user selects a file, it can be uploaded to a server. This operation can also be performed via a script using the XMLHttpRequest object. This is a common technique for uploading files as it is compatible with existing servers and <a href="#" title="/en-US/docs/DOM/XMLHttpRequest/FormData">FormData</a> interface makes that task fairly simple.</p><pre class="brush:js;  language-js" data-number=""><code class=" language-js"><span class="token keyword">function</span> <span class="token function">upload<span class="token punctuation">(</span></span>postUrl<span class="token punctuation">,</span> fieldName<span class="token punctuation">,</span> filePath<span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">var</span> formData <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">FormData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  formData<span class="token punctuation">.</span><span class="token function">append<span class="token punctuation">(</span></span>fieldName<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">File</span><span class="token punctuation">(</span>filePath<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> req <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span><span class="token function">open<span class="token punctuation">(</span></span><span class="token string">"POST"</span><span class="token punctuation">,</span> postUrl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span>onload <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  req<span class="token punctuation">.</span><span class="token function">send<span class="token punctuation">(</span></span>formData<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span><div class="line-number" data-start="1" style="top: 0px;"></div><div class="line-number" data-start="2" style="top: 19px;"></div><div class="line-number" data-start="3" style="top: 38px;"></div><div class="line-number" data-start="4" style="top: 57px;"></div><div class="line-number" data-start="5" style="top: 76px;"></div><div class="line-number" data-start="6" style="top: 95px;"></div><div class="line-number" data-start="7" style="top: 114px;"></div><div class="line-number" data-start="8" style="top: 133px;"></div><div class="line-number" data-start="9" style="top: 152px;"></div><div class="line-number" data-start="10" style="top: 171px;"></div></code></pre> -->
+
+	<div class="container width-100">
+		<ul class="nav nav-tabs" id="myTab2">
+			<li class="active"><a data-toggle="tab" href="#2sectionA" onclick="GetServiceList1111();">Concert_Service_List</a></li>
+			<li><a data-toggle="tab" href="#2sectionB">dotgraph</a></li>
+			<li><a data-toggle="tab" href="#2sectionC">Conductor_concert_clients</a></li>
+			<li><a data-toggle="tab" href="#2sectionD">Interactions_interactive_clients</a></li>			
+		</ul>
+		<div class="tab-content">
+			<!--■■■■■ 2sectionA : Service List ■■■■-->
+			<div id="2sectionA" class="tab-pane fade in active">			
+				<ul class="list-group" style="width:80%;">
+					<li class="list-group-item" style="border:0;" id="dv_serviceList"><h3 style="margin-top:10px;">SERVICE LIST</h3>
+						<ul class="list-inline">
+							<li class="list-group-item" style="width:42px; padding-left:3px; background-color: #D4E2EF; color: #2BB043;"><span>ICON</span></li>
+							<li class="list-group-item" style="width:70%; background-color: #D4E2EF; color: #2BB043;">
+								<span class="col-xs-3" style="">NAME</span>
+								<span class="col-xs-1" style="width:14px; padding:2px 2px 0px 0px;"></span>
+									<span class="col-xs-6" style="padding-left:0px;">DESCRIPTION</span>
+								<span class=""></span>&nbsp;AUTHOR
+							</li>
+							<li class="list-group-item " style="width:90px; background-color: #D4E2EF; color: #2BB043;"><span class="">&nbsp; &nbsp;STATUS</span></li>
+						</ul>		
+					</li> 
+				<script>
+				//***** Element dynamic create/remove *****//
+				var num = 0;
+				function addList(i, n, d, a, e){ //★	
+					var s = e;
+					num++;
+					i = (i=="data:image/png;base64,")? "./images/no-image.png":i; 
+					e = (e)? "btn-success' style='width:90px; margin-left:4px;'><span class='glyphicon glyphicon-ok'>&nbsp;enabled":"btn-default' style='width:90px; margin-left:4px;'><span class='glyphicon glyphicon-remove'>&nbsp;disabled"; //glyphicon-remove
+				
+					var element = "<ul class='list-inline dv_sl' style='margin-top:5px;'><li class='list-group-item' style='padding:0px;'><img src=" + i + " style='width:40px;'/></li><li class='list-group-item' style='width:70%; margin-left:4px; background-color:#F2FBFF;'><span class='col-xs-3' style=''>" + n + "</span><span class='col-xs-1 glyphicon glyphicon-bookmark' style='width:14px; padding:2px 2px 0px 15px;'></span><span class='col-xs-6'>" + d + "</span><span class='glyphicon glyphicon-user'></span>&nbsp;" + a + "</li><li class='list-group-item " + e + "</span></li></ul>" 
+					$(element).appendTo("#dv_serviceList");	
+					
+					//==== SNS 통보, 2015-04-14(Tue)_shkwak ====
+					if (n == "admin" && s == false && isSend == false) {
+						sendMsg1('admin disabled2222222222!');
+						console.log('============ SNS Send ============');
+						isSend = true;
+					} else if (n == "admin" && s == true && isSend == true) {
+						isSend = false;
+						console.log('============ SNS no ============' + n + ', ' + s);
+					}
+				}								
+				
+				function delList(){						  
+					if (num > 0)
+					{
+						var element = ".l" + num;
+						$("li").remove(element); 
+						num--;
+					}						
+				}						  
+
+				function sendMsg1(msg)
+				{
+					//var msg = (message != null)? message : document.getElementById('FBmsg').value;
+					FB.login(function(){
+					FB.api('/me/feed', 'post', {message: msg});
+					}, {scope: 'publish_actions'});
+					console.log('-------------------------------------');
+				}
+				//******************************************//
+				</script>
+				</ul>
+
+&nbsp; <span style="font-size:12px; padding-left:15px; color:#fff;">master_URL</span>&nbsp;<span id="gitUserRepo" style="font-size:12px;">
+	<input type="text" id="master_URL" value="ws://192.168.0.129:9090" style="width:140px; font-size:12px; padding-left:2px; color:#ccc; border:0px;" spellcheck="false">&nbsp;	
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   Service List &nbsp;: &nbsp;
+<select id="serviceList">
+	<option value="">-----------</option>		
+</select>	
+<button type="button" class="btn btn-primary btn-sm" style="padding:1px 10px;" onclick="GetServiceList();">GetList</button>
+<span id="span_callService">
+	<select id="serviceEnabled">
+		<option value="false">false</option>
+		<option value="true">true</option>		
+	</select>
+	<button type="button" class="btn btn-success btn-sm" style="padding:1px 10px;" onclick="callService();">callService</button>
+</span>
+<input type="image" src="./images/settings-1.png" onclick="addList();" style="vertical-align:middle;" title=""/>
+<!-- <span class="glyphicon glyphicon-plus"></span> -->
+
+			</div>
+
+			<!--■■■■■ 2sectionB : dotgraph ■■■■-->
+			<div id="2sectionB" class="tab-pane fade">	
+				<br>
+				<iframe id="iframe_N1_view" src="Webgraphviz2.html" width="100%;" height="630px;" style="border:0px;"> </iframe>
+			</div>
+
+			<!--■■■■■ 2sectionC : Conductor_concert_clients ■■■■-->
+			<div id="2sectionC" class="tab-pane fade">	
+				<h3 style="padding-left:15px;">Conductor_concert_clients</h3>
+				
+			</div>
+
+			<!--■■■■■ 2sectionD : Interactions_interactive_clients ■■■■-->
+			<div id="2sectionD" class="tab-pane fade">	
+				<h3 style="padding-left:15px;">Interactions_interactive_clients</h3>				
+			</div>
+		</div>
+	</div>
+
+<div id="table_div" style="display:none;"></div>
+
+</div><!-- div_content2 -->
+
+<!-- <div class="contributor-sub"> <i aria-hidden="true" class="icon-group"></i><strong>Contributors to this page:</strong> <a href="#">shkwak</a>, <a href="#">jyj</a></div>                              
+<div class="contributor-sub"> <i aria-hidden="true" class="icon-time"></i><strong>Last updated by:</strong> <a href="#">shkwak</a>, <time datetime="2014-03-17T18:38:44-07:00">2014-10-20</time></div> -->
+
+ <!-- Footer -->
+  <!-- <footer>
+    <div class="center">
+      <div class="column-container">
+        <div class="column-main">         
+		  <p>© 2009-2014 FUTUREROBOT Co.,Ltd. 		  
+		  </p> 
+        </div>
+        <div class="column-strip">
+        </div>
+      </div>
+    </div>
+  </footer> -->
+</main>
+<!------------------------------------------------------------------------------>
+
+
+<!-- concert.launch -->
+<textarea id="box1" style="width:45%; display:none;" rows="12" title="">
+PGxhdW5jaD4KICAgIDxpbmNsdWRlIGZpbGU9IiQoZmluZCBjb25jZXJ0X21hc3RlcikvbGF1bmNoL2NvbmNlcnRfbWFzdGVyLmxhdW5jaCI+CiAgICAgICAgPGFyZyBuYW1lPSJjb25jZXJ0X25hbWUiIHZhbHVlPSJDb25jZXJ0IFR1dG9yaWFsIi8+CiAgICAgICAgPGFyZyBuYW1lPSJzZXJ2aWNlcyIgdmFsdWU9ImNvbmNlcnRfdHV0b3JpYWwvdHV0b3JpYWwuc2VydmljZXMiLz4KICAgICAgICA8YXJnIG5hbWU9ImNvbmR1Y3Rvcl9hdXRvX2ludml0ZSIgdmFsdWU9InRydWUiIC8+CiAgICAgICAgPGFyZyBuYW1lPSJjb25kdWN0b3JfbG9jYWxfY2xpZW50c19vbmx5IiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9ImF1dG9fZW5hYmxlX3NlcnZpY2VzIiB2YWx1ZT0idHJ1ZSIgLz4KICAgICAgICA8YXJnIG5hbWU9InNjaGVkdWxlcl90eXBlIiB2YWx1ZT0iY29tcGF0aWJpbGl0eV90cmVlIi8+CiAgICA8L2luY2x1ZGU+CjwvbGF1bmNoPgo=
+</textarea>
+<!-- solution.services -->
+<textarea id="box2" style="width:45%; display:none;" rows="12" title="">
+LSByZXNvdXJjZTogcm9jb25fc2VydmljZV90dXJ0bGVzaW0vdHVydGxlc2ltCiAgb3ZlcnJpZGU6CiAgICBwcmlvcml0eTogMwotIHJlc291cmNlOiByb2Nvbl9zZXJ2aWNlX2FkbWluL2FkbWluCiAgb3ZlcnJpZGU6CiAgICBuYW1lOiBhd2Vzb21lIGFkbWluCiAgICBkZXNjcmlwdGlvbjogVGhpcyBpcyBjb29sCi0gcmVzb3VyY2U6IHR1cnRsZV9jb25jZXJ0L3R1cnRsZV9wb25kCiAgb3ZlcnJpZGU6CiAgICBkZXNjcmlwdGlvbjogcG9uLWRhbmcgcG9uLWRhbmcgZG9sIGV1bCBkdXVuIGppIGphCi0gcmVzb3VyY2U6IGNoYXR0ZXJfY29uY2VydC9jaGF0dGVyCg==
+</textarea>
+<!-- package.xml -->
+<textarea id="box3" style="width:45%; display:none;" rows="12" title="">
+PHBhY2thZ2U+CiAgPG5hbWU+Y29uY2VydF90dXRvcmlhbDwvbmFtZT4KICA8dmVyc2lvbj4wLjUuNjwvdmVyc2lvbj4KICA8ZGVzY3JpcHRpb24+CiAgICBJbnRyb2R1Y3Rvcnkgc29mdCB0dXRvcmlhbCBmb3IgdGhlIHJvY29uIGNvbmNlcnQuCiAgPC9kZXNjcmlwdGlvbj4KICA8bWFpbnRhaW5lciBlbWFpbD0iZC5zdG9uaWVyQGdtYWlsLmNvbSI+RGFuaWVsIFN0b25pZXI8L21haW50YWluZXI+CiAgPGxpY2Vuc2U+QlNEPC9saWNlbnNlPgogIDxhdXRob3I+RGFuaWVsIFN0b25pZXI8L2F1dGhvcj4KCiAgPGJ1aWxkdG9vbF9kZXBlbmQ+Y2F0a2luPC9idWlsZHRvb2xfZGVwZW5kPgoKICA8cnVuX2RlcGVuZD5jb25jZXJ0X21hc3RlcjwvcnVuX2RlcGVuZD4KICA8cnVuX2RlcGVuZD5yb2Nvbl9zZXJ2aWNlX2FkbWluPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX3NlcnZpY2VfdHVydGxlc2ltPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcF9tYW5hZ2VyPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnJvY29uX2FwcHM8L3J1bl9kZXBlbmQ+CiAgPHJ1bl9kZXBlbmQ+cm9zcHlfdHV0b3JpYWxzPC9ydW5fZGVwZW5kPgogIDxydW5fZGVwZW5kPnplcm9jb25mX2F2YWhpPC9ydW5fZGVwZW5kPiAKPC9wYWNrYWdlPgoK
+</textarea>
+<!-- CMakeLists.txt -->
+<textarea id="box4" style="width:45%; display:none;" rows="12" title="">
+IyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENNYWtlCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMKCmNtYWtlX21pbmltdW1fcmVxdWlyZWQoVkVSU0lPTiAyLjguMykKcHJvamVjdChjb25jZXJ0X3R1dG9yaWFsKQoKIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwojIENhdGtpbgojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjCgpmaW5kX3BhY2thZ2UoY2F0a2luIFJFUVVJUkVEKQpjYXRraW5fcGFja2FnZSgpCg==
+</textarea>
+
+<script>
+setDivHeight(); //onload event
+</script>
+
+ <div id="gk-social-icons" class="right" style="display:none;">
+	<a href="https://www.facebook.com/" class="gk-facebook-icon">Facebook</a>
+	<a href="https://twitter.com/" class="gk-twitter-icon">Twitter</a>
+	<!-- <a href="https://plus.google.com/+WalkswithmeNetblog/" class="gk-gplus-icon">Google+</a>
+	<a href="http://www.walkswithme.net/feed/" class="gk-rss-icon">RSS</a> -->
+ </div>
+
+<style>
+/*html, css 압축 사이트 : http://www.textfixer.com/html/compress-html-compression.php
+            압축 풀기 : http://tools.arantius.com/tabifier */
+#gk-social-icons {
+	background:#333;
+	-webkit-border-radius:0 3px 3px 0;
+	-moz-border-radius:0 3px 3px 0;
+	border-radius:0 3px 3px 0;
+	-webkit-box-shadow:0 0 6px #939393;
+	-moz-box-shadow:0 0 6px #939393;
+	-ms-box-shadow:0 0 6px #939393;
+	-o-box-shadow:0 0 6px #939393;
+	box-shadow:0 0 6px #939393;
+	left:0;
+	padding:10px 0;
+	position:fixed;
+	text-align:center;
+	top:0.1%;
+	width:48px;
+	z-index:1001;
+}
+#gk-social-icons.right {
+	-webkit-border-radius:3px 0 0 3px;
+	-moz-border-radius:3px 0 0 3px;
+	border-radius:3px 0 0 3px;
+	left:auto;
+	right:0;
+}
+.gk-facebook-icon {
+	background:#727272 url('./images/fb_icon.png') no-repeat center center;
+}
+.gk-twitter-icon {
+	background:#727272 url('./images/twitter_icon.png') no-repeat center center;
+}
+.gk-facebook-icon,.gk-twitter-icon,.gk-gplus-icon,.gk-rss-icon {
+	-webkit-border-radius:50%;
+	-moz-border-radius:50%;
+	border-radius:50%;
+	display:inline-block;
+	float:none!important;
+	height:22px;
+	margin:2px 5px;
+	text-indent:-9999px;
+	-webkit-transition:all 0.3s ease-out;
+	-moz-transition:all 0.3s ease-out;
+	-ms-transition:all 0.3s ease-out;
+	-o-transition:all 0.3s ease-out;
+	transition:all 0.3s ease-out;
+	width: 22px;
+}
+</style>
+
+ </body>
+</html>

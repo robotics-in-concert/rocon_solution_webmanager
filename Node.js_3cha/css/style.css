@@ -1,0 +1,109 @@
+/*! ========================================================================
+ * Solution Manager : style.css v1.0.0
+ * by : shkwak
+ * ========================================================================
+ * Copyright 2015 shkwak, futurerobot
+ * Licensed BSD
+ * ======================================================================== */
+
+ /*@import url("http://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.min.css")*/
+
+.Title_N_common{text-align:center;/*vertical-align:middle;*/}
+.logo{	width:400px;; /*350px;*/height:60px;font-size:3.8em;font-weight:bold;	color:#00a3ef; /*#00a3ef;*/	overflow:hidden;padding:12px;}
+@media all and (max-width:1024px){}
+@media all and (max-width:970px){}
+@media all and (max-width: 670px){.logo{width:400px; /*350px;*/ height:60px; font-size:3.6em; font-weight:bold; color:#00a3ef; overflow:hidden; padding:14px 0px 0px 0px;}}
+@media screen and (max-width: 460px){/* body {background-color:lightblue;} */.logo{width:400px; /*350px;*/ height:60px; font-size:3.0em; font-weight:bold; color:#00a3ef; overflow:hidden; padding:0px;}}
+
+.width-100{width:100%}
+.width-40 {width:40%}
+.width-30 {width:30%}
+.width-10 {width:10%}
+.width-33 {width:33.05%}
+
+.height-75{height:75px} 
+.height-150{height:150px}
+.height-225{height:223px} /*225px*/
+
+.h2-option{margin: 0; color: #666;padding-top: 50px;font-size: 44px;font-family: "trebuchet ms", sans-serif;    }
+.item{background: #348FC0;/*#333;*/text-align: center;height: 300px !important;}
+.item_p{background: #5DAA5F;/*#333;*/}
+.item_c1{background: #5A6776;/*#333;*/}
+.item_s1{background: #3F86C3;/*#333;*/}
+.item_l1{background: #3F86C3;/*#333;*/}
+
+.carousel-{margin-top: 20px;}
+.calender-body {margin: 40px 10px;padding: 0;font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;font-size: 14px;}
+#calendar {max-width: 900px;margin: 0 auto;}
+.form-horizontal .control-label{padding-top: 7px;}
+
+.border-gradient{
+	background-image: -webkit-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image:    -moz-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image:      -o-linear-gradient(left, #00ADED 0%, #0B4577 100%);
+	background-image: -webkit-gradient(linear, left top, right bottom, from(#00ADED), to(#0B4577));
+	background-image:         linear-gradient(to right, #00ADED 0%, #0B4577 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff00ADED', endColorstr='#ff0B4577', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	background-repeat: repeat-x;
+}
+
+.border-gradient-PR{ /*Create new pull request Modal*/
+	background-image: -webkit-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image:    -moz-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image:      -o-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image: -webkit-gradient(linear, left top, right bottom, from(#83D666), to(#2BB043));
+	background-image:         linear-gradient(to right, #83D666 0%, #2BB043 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff83D666', endColorstr='#ff2BB043', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	background-repeat: repeat-x;
+}
+
+.border-gradient-settings{ /*Settings Modal*/
+	background-image: -webkit-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image:    -moz-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image:      -o-linear-gradient(left, #83D666 0%, #2BB043 100%);
+	background-image: -webkit-gradient(linear, left top, right bottom, from(#83D666), to(#2BB043));
+	background-image:         linear-gradient(to right, #83D666 0%, #2BB043 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff83D666', endColorstr='#ff2BB043', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	background-repeat: repeat-x;
+}
+
+/* bootstrap treeview css */
+.tree, .tree ul {margin:0;padding:0;list-style:none}
+.tree ul {margin-left:1em;position:relative}
+.tree ul ul {margin-left:.5em}
+.tree ul:before {content:"";display:block;width:0;position:absolute;top:0;bottom:0;left:0;border-left:1px solid}
+.tree li {margin:0;padding:0 1em;line-height:2em;color:#369;font-weight:700;position:relative}
+.tree ul li:before {content:"";display:block;width:10px;height:0;border-top:1px solid;margin-top:-1px;position:absolute;top:1em;left:0}
+.tree ul li:last-child:before {background:#fff;height:auto;top:1em;bottom:0}
+.indicator {margin-right:5px;}
+.tree li a {text-decoration: none;color:#369;}
+.tree li button, .tree li button:active, .tree li button:focus {text-decoration: none;color:#369;border:none;background:transparent;margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;outline: 0;}
+
+
+/* bootstrap tooltip css - custom, 2015-05-27(Wed)_shkwak */
+.red-tooltip + .tooltip > .tooltip-inner {background-color: #E06666;}
+.red-tooltip + .tooltip > .tooltip-arrow {border-top-color: #E06666;} 
+/*.red-tooltip + .tooltip > .tooltip-arrow {border-bottom-color: #E06666;}*/
+/*.red-tooltip + .tooltip > .tooltip-arrow {border-left-color: #E06666;}*/
+/*.red-tooltip + .tooltip > .tooltip-arrow {border-right-color: #E06666;}*/
+
+.blue-tooltip + .tooltip > .tooltip-inner {background-color: #6D9EEB;}
+.blue-tooltip + .tooltip > .tooltip-arrow {border-top-color: #6D9EEB;} 
+/*.blue-tooltip + .tooltip > .tooltip-arrow {border-bottom-color: #6D9EEB;} */
+/*.blue-tooltip + .tooltip > .tooltip-arrow {border-left-color: #6D9EEB;} */
+/*.blue-tooltip + .tooltip > .tooltip-arrow {border-right-color: #6D9EEB;} */
+
+.green-tooltip + .tooltip > .tooltip-inner {background-color: #93C47D;}
+.green-tooltip + .tooltip > .tooltip-arrow {border-top-color: #93C47D;}
+/*.green-tooltip + .tooltip > .tooltip-arrow {border-bottom-color: #93C47D;}*/
+/*.green-tooltip + .tooltip > .tooltip-arrow {border-left-color: #93C47D;}*/
+/*.green-tooltip + .tooltip > .tooltip-arrow {border-right-color: #93C47D;}*/
+
+.gray-tooltip + .tooltip > .tooltip-inner {background-color: #999999;}
+.gray-tooltip + .tooltip > .tooltip-arrow {border-top-color: #999999;}
+/*.gray-tooltip + .tooltip > .tooltip-arrow {border-bottom-color: #999999;}*/
+/*.gray-tooltip + .tooltip > .tooltip-arrow {border-left-color: #999999;}*/
+/*.gray-tooltip + .tooltip > .tooltip-arrow {border-right-color: #999999;}*/
