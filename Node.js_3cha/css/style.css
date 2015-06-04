@@ -70,6 +70,17 @@
 	background-repeat: repeat-x;
 }
 
+.border-gradient-green{ /*Create a Solution to forked repo, 2015-06-01(Mon)_shkwak*/
+	background-image: -webkit-linear-gradient(left, #8FD588 0%, #315F30 100%);
+	background-image:    -moz-linear-gradient(left, #8FD588 0%, #315F30 100%);
+	background-image:      -o-linear-gradient(left, #8FD588 0%, #315F30 100%);
+	background-image: -webkit-gradient(linear, left top, right bottom, from(#8FD588), to(#315F30));
+	background-image:         linear-gradient(to right, #8FD588 0%, #315F30 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8FD588', endColorstr='#ff315F30', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+	background-repeat: repeat-x;
+}
+
 /* bootstrap treeview css */
 .tree, .tree ul {margin:0;padding:0;list-style:none}
 .tree ul {margin-left:1em;position:relative}

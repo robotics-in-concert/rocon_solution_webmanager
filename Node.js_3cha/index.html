@@ -20,8 +20,10 @@
   <script src="socket.io/socket.io.js"></script>
   <script src="./node_modules/github-api/github.js"></script>
   <!-- SweetAlert Plugin -->
-  <script src="./sweetalert/lib/sweet-alert.min.js"></script> 
-  <link rel="stylesheet" type="text/css" href="./sweetalert/lib/sweet-alert.css">
+  <!-- <script src="./sweetalert/lib/sweet-alert.min.js"></script> 
+  <link rel="stylesheet" type="text/css" href="./sweetalert/lib/sweet-alert.css"> -->
+  <script src="./sweetalert-master/dist/sweetalert.min.js"></script> 
+  <link rel="stylesheet" type="text/css" href="./sweetalert-master/dist/sweetalert.css">
   <!-- base64 library -->
   <script language="JavaScript" type="text/javascript" src="./js/base64.js"></script>
   <!-- Bootstrap Toggle -->	
@@ -493,7 +495,7 @@ function DeleteFile()
 
 
 //==== Solution Configurator Func, 2015-02-04(Wed)_shkwak (imsi)
-var solutionConfigure = function(fileID){ //RE : 설정 UI에서 선택한 값을 적용해야 함. 2015-04-28(Tue)
+var solutionConfigure = function(fileID){ //RE : 설정 UI에서 선택한 값을 적용해야 함. 2015-04-28(Tue) xxxxxxxx
 	var solutionName = created_solutionName; //"dummy_concert1";
 	var serviceContent = ""; //Init!		
 	var fileName = "";	
@@ -572,16 +574,16 @@ function LocalServiceConfigure(fileID)
 			break;
 		case '4': 
 			fileName = created_solutionName + ".launch"; 
-/*			serviceContent += "<!-- <launch>n";
-			serviceContent += "  <node name="" + document.getElementById('launchNodeName').value + "" pkg="" + document.getElementById('launchNodePkg').value + "" type="" + document.getElementById("launchNodeType").value + "">n";
-			serviceContent += "    <param name="" + document.getElementById('launchParamName').value + "" value="" + document.getElementById('launchParamValue').value + ""/>n";
-			serviceContent += "  </node>n";
-			serviceContent += "  <include file="" + document.getElementById('launchIncludeFile').value + "">n";
-			serviceContent += "    <arg name="" + document.getElementById('launchArgName').value + "" value="" + document.getElementById('launchArgValue').value + ""/>n";
-			serviceContent += "  </include>n";
-			serviceContent += "</launch>n";
-*/			//serviceContent = "<launch>n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>n  <arg name='concert_name' default='dummy concert'/>n  <arg name='scheduler_type' default='compatibility_tree'/>nn  <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='$(arg concert_name)'/>n      <arg name='services' value='$(arg dummy_services)'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
-			serviceContent = "<launch>n    <include file='$(find concert_master)/launch/concert_master.launch'>n      <arg name='concert_name' value='" + created_solutionName + "'/>n      <arg name='services' value='" + created_solutionName + ".services'/>n      <arg name='conductor_auto_invite' value='true' />n      <arg name='conductor_local_clients_only' value='true' />n      <arg name='auto_enable_services' value='true' />n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>n  </include>n</launch>";
+/*			serviceContent += "<!-- <launch>\n";
+			serviceContent += "  <node name="" + document.getElementById('launchNodeName').value + "" pkg="" + document.getElementById('launchNodePkg').value + "" type="" + document.getElementById("launchNodeType").value + "">\n";
+			serviceContent += "    <param name="" + document.getElementById('launchParamName').value + "" value="" + document.getElementById('launchParamValue').value + ""/>\n";
+			serviceContent += "  </node>\n";
+			serviceContent += "  <include file="" + document.getElementById('launchIncludeFile').value + "">\n";
+			serviceContent += "    <arg name="" + document.getElementById('launchArgName').value + "" value="" + document.getElementById('launchArgValue').value + ""/>\n";
+			serviceContent += "  </include>\n";
+			serviceContent += "</launch>\n";
+*/			//serviceContent = "<launch>\n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>\n  <arg name='concert_name' default='dummy concert'/>\n  <arg name='scheduler_type' default='compatibility_tree'/>\n  <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='$(arg concert_name)'/>\n      <arg name='services' value='$(arg dummy_services)'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
+			serviceContent = "<launch>\n    <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='" + created_solutionName + "'/>\n      <arg name='services' value='" + created_solutionName + ".services'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
 			break;
 	};	
 
@@ -607,7 +609,7 @@ function LocalServiceConfigure(fileID)
 
 
 
-function packageName_check(name)
+function packageName_check(name) //★
 {	//기술적인 이슈 처리 : Name 정보는 (*)영문으로 하고, (1)소문자로 변환하고 (2)공백은 “_” 밑첨자로 변경_2015-04-29(Wed)
 	console.log(name); //제거 전
 	var pName = name.trim(); //좌우 공백제거
@@ -678,7 +680,11 @@ var base64IDPW = "";
 
 function GetGitHubBranchTreeSHA()
 {	//2015-05-10(Sun)_shkwak, Get Branch - tree sha 값 가져오기
-	var branch = 'concert_common_services';
+	var service_branch = localStorage.getItem('service_branch'); //add, 2015-06-01
+	var branch = (service_branch)? service_branch : 'concert_common_services';
+
+	owner2 = localStorage.getItem("git_username");
+	repo2 = localStorage.getItem('solution_repo');
 	
 	jQuery.support.cors = true;
 	$.ajax({
@@ -688,7 +694,7 @@ function GetGitHubBranchTreeSHA()
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
 			console.log(data);
-			console.log(data.length); //x 안나옴!
+			//console.log(data.length); //x 안나옴!
 			console.log("brach name : " + data.name);
 			console.log("tree sha : " + data.commit.commit.tree.sha); //성공
 			tree_sha = data.commit.commit.tree.sha; //sha 저장!
@@ -751,7 +757,8 @@ function GetGitHubServiceList() //(owner, repo, branch) next time~
 {	//2015-05-11(Mon)_shkwak, Get GitHub Service List
 	//var owner = 'robotics-in-concert'; 
 	//var repo = 'rocon_demos';		   
-	var branch = 'concert_common_services';
+	var service_branch = localStorage.getItem('service_branch'); //add, 2015-06-01
+	var branch = (service_branch)? service_branch : 'concert_common_services';
 		
 	if (tree_sha == "" || owner == "" || repo == "")
 	{
@@ -799,33 +806,51 @@ function GetGitHubServiceList() //(owner, repo, branch) next time~
 
 function show_GitHubServiceList() //use this!
 {	//socket message가 수신된 후(데이터가 저장된 후) 데이터를 확인한다. 순차 실행을 위함.
-	console.log(name_GitHubServiceList);
+	console.log(name_GitHubServiceList); //["pickup_delivery", "vm_delivery", "welcome"]
+	console.log(path_GitHubServiceList); //["concert_common_services/services/pickup_delivery/pickup_delivery.service", ]
 
 	//***** Element dynamic create/remove *****//
 	$('.list-group-item2').remove(); //기존 sample 리스트 삭제
 
 	var an = 0;
 	name_GitHubServiceList.forEach(function(file){		
-		var element = "<div class='list-group-item sl" + an + " list-group-item2' style='height:75px; cursor: pointer;'><p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p><h3 class='list-group-item-heading' style='color:" + color_sample[an] + ";' onclick='addServiceE(this.innerHTML, this.style.color);GetGitHubServiceContent(" + an + ");'>" + file + "</h3></div>"
+		var element = "<div class='list-group-item sl" + an + " list-group-item2' style='height:75px; cursor: pointer;'>"
+			+ "<p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p>"
+			+ "<h3 class='list-group-item-heading' style='color:" + color_sample[an] + ";' "
+			+ "onclick='addServiceE(this.innerHTML, this.style.color, " + an + "); GetGitHubServiceContent(" + an + ");'>" + file + "</h3></div>";
 
-		$(element).appendTo("#div_serviceListE"); //획득한 service 리스트 추가
+		$(element).appendTo("#div_serviceListE"); //획득한 service 리스트 추가		
+
+		//SelectedServiceE_JSON 초기화, 2015-06-03(Wed)_shkwak
+		SelectedServiceE_JSON[an] = {name: '', selected: 'false', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
+
 		an++;
 	});		
 		
+	console.log(SelectedServiceE_JSON); //초기화 확인 : OK
+
 	var solutionName = document.getElementById('created_solutionName').value;
 	if (solutionName == "SOLUTION NAME : dummy_concert1")
 	{
 		console.info("솔루션 생성을 먼저 하세요!");
 		//alert("솔루션 생성을 먼저 하세요!");
 	}
+	
+	//service file full path!!를 파싱, 2015-06-03(We)_shkwak
+	GitHubService_resource_name_Create();	
 }
 
-function GetGitHubServiceContent(url_num) //or sha, use this!
-{	//2015-05-11(Mon)_shkwak, Get service content
-	//var branch = 'concert_common_services';
-	var url = url_GitHubServiceList[url_num]; //
+
+// ServiceRepoContent - JSON type으로 저장! 2015-05-27(Wed)_shkwak
+var ServiceRepoContent_JSON = new Array(); 
+var ServiceRepoContent_Array = new Array(); 
+var ServiceRepoContent = new Array(); 
+
+function GetGitHubServiceContent(sNum) //or sha, use this! ★★★★
+{	//2015-05-11(Mon)_shkwak, Get service content, 2015-06-02(Tue)_re, JSON -> Array로 저장방식 변경!
+	var url = url_GitHubServiceList[sNum]; //
 	console.log(url_GitHubServiceList[0]);
-	var textarea_id = 'textarea' + url_num;
+	var textarea_id = 'git-box_advanced' + sNum; //'git-textarea' + sNum;
 	console.log('textarea_id : ' + textarea_id);
 	jQuery.support.cors = true;
 	$.ajax({
@@ -834,10 +859,70 @@ function GetGitHubServiceContent(url_num) //or sha, use this!
 		dataType: "json",
 		success: function (data) {
 			//jsonData = eval(data); //eval() : json 타입으로 변환해줌
-			console.log(data);
-			console.log(data.content);
-			console.log(Base64.decode(data.content)); //성공
+			//console.log(data);
+			//console.log(data.content);
+			//console.log(Base64.decode(data.content)); //성공
+			
 			document.getElementById(textarea_id).innerHTML = Base64.decode(data.content);
+			document.getElementById(textarea_id).value = Base64.decode(data.content);
+
+			// 2015-06-02(Tue), 주석(#블라블라) 때문에 JSON 타입으로 저장하지 않고, Array로 저장하여 해당항목 Search하는 방식으로 대체
+			var data_content = Base64.decode(data.content);		
+			ServiceRepoContent[sNum] = data_content; //원본 data 저장!
+			data_content = data_content.replaceAll('\n', ':'); //Uncaught TypeError: Cannot read property 'replaceAll' of undefined 이슈
+			//console.log(data_content);
+			//var rServiceContent = data_content.split(':');
+			ServiceRepoContent_Array[sNum] = data_content.split(':');
+			//console.log(ServiceRepoContent_Array[sNum].length-1);			
+//			ServiceRepoContent_Array[sNum].forEach(function(file){
+//				console.log(file.trim()); //trim() 사용하여 좌우 공백 제거, trim() : 별도로 정의된 메소드							
+//			});	
+			
+			// Selected Service의 Description 표시!
+			var name_pos = 0; //name이 있는 Array 위치!
+			for (var i = 0; i < ServiceRepoContent_Array[sNum].length-1; i++) { //20
+				//console.log(ServiceRepoContent_Array[sNum][i].trim());
+				if (ServiceRepoContent_Array[sNum][i].trim() == "name")
+				{	//Selected Service의 name 위치 찾기!, 2015-06-02(Tue)
+					console.log('name positon : ' + i);
+					name_pos = i; //4
+					continue;
+				}
+				if (ServiceRepoContent_Array[sNum][i].trim() == "description")
+				{	//Selected Service의 description 실제 내용 적용!, 2015-06-02(Tue)
+					document.getElementById('git-desc' + sNum).innerHTML = ServiceRepoContent_Array[sNum][i+1].trim();
+					console.log('-----------------------------------');
+					break;
+				}
+			}
+			
+			// Selected Service의 Contents 다시 저장하기 : Array -> JSON 타입으로, 2015-06-02(Tue)
+			var jData = ""; //string
+			for (var i = name_pos; i < ServiceRepoContent_Array[sNum].length-1;) { //20
+				console.log(ServiceRepoContent_Array[sNum][i].trim());
+				var end = (i+2 == ServiceRepoContent_Array[sNum].length-1)? '"' : '", ';
+				var contents_value = ServiceRepoContent_Array[sNum][i+1].trim();
+				contents_value = contents_value.replaceAll('"', '');
+				contents_value = contents_value.replaceAll('\'', '');
+				jData += ServiceRepoContent_Array[sNum][i] + ': "' + contents_value + end;
+				i = i+2;
+			}	// json type으로 변경하고 싶은데.. ; 2015-05-27(Wed)_RE, string 생성 후, JSON.parse() 이용하여 json object 변환! -> 주석(#)문제 발생!
+			console.log('-----------------------------------');
+			//console.log(jData);
+			jData = '{' + jData + '}';
+			//console.log(jData);
+			//ServiceRepoContent_JSON[sNum] = JSON.parse(jData); //object, JSON.parse() ; x
+			ServiceRepoContent_JSON[sNum] = eval("(" + jData + ")"); //object
+			console.log('sNum : ' + sNum);
+			console.log(ServiceRepoContent_JSON[sNum]); //성공~!, 2015-06-02(Tue)_shkwak
+		
+			// 실제 ServiceRepoContent(sNum) data 적용, 2015-06-02(Tue)_shkwak ★, 선택한 서비스의 contents 항목을 채운다.
+			editViewE_SetValue(sNum);
+
+			// 선택된 service 정보 저장 변수! 2015-06-03(Wed)_shkwak ★★★
+			SelectedServiceE_JSON[sNum] = {name: ServiceRepoContent_JSON[sNum].name, selected: 'true', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
+			console.log(SelectedServiceE_JSON);
+			console.log(SelectedServiceE_JSON[sNum]);
 		},
 		error: function (x, y, z) {
 			alert(x + "\n" + y + "\n" + z);
@@ -1169,7 +1254,8 @@ function FileUpdate_subF() //to master update!
 	else
 	{
 		if (select1 == '------ Select 1st ------') {
-			alert('Please select options!');
+			console.log('Please select options!');
+			SweetAlert_Group('basicA', 'Please select options!');
 		} else {
 			var owner2 = document.getElementById("git_username").value; //'meddugi723';
 			var repo2 = document.getElementById("solution_repo").value; //'concert_common_solutions';
@@ -1404,8 +1490,7 @@ function repo_createPullRequest44(tt, bd, bs, hd) //use this!
 		SweetAlert_Group('basicA', 'Please check GitHub username and password!');
 	}
 	else
-	{
-		console.log(userID + ', ' + userPW);
+	{		
 		console.log(tt + ', ' + bd + ', ' + bs + ', ' + hd);
 
 		var github = new Github({
@@ -1477,6 +1562,19 @@ function sectionE_click()
 {
 	GetGitHubBranchTreeSHA();			
 	console.log('sectionE_click - GetGitHubBranchTreeSHA();');
+
+	var forked_repo_solutionE = document.getElementById('forked_repo_solution').value;
+	var created_solutionNameE = document.getElementById('created_solutionNameE');
+
+	if (forked_repo_solutionE != "")
+	{
+		created_solutionNameE.value = "SOLUTION NAME : " + forked_repo_solutionE;
+		console.info(created_solutionNameE.value);
+	}
+	else
+	{
+		SweetAlert_Group('basicA', 'Please insert solution name!');
+	}	
 }
 
 function sectionF_click() 
@@ -1505,7 +1603,7 @@ function sectionF_click()
   <a href="#SettingsModal" data-toggle="modal"><img id="settings" src="./images/settings-0.png" style="width:40px; float:right; margin:20px 2px 0px 2px; cursor:pointer;" data-toggle="tooltip" data-placement="bottom" title="GitHub settings" onMouseOver="javascript:$('#settings').tooltip('show');"/></a>
   <!-- <img id="settings" src="./images/settings-0.png" style="width:40px; float:right; margin:20px 2px 0px 2px;" data-toggle="tooltip" data-placement="bottom" title="GitHub settings" onMouseOver="javascript:$('#settings').tooltip('show');"/> -->
 
-	<!-- Modal 4 ; settings modal, 2015-05-20(Wed)_shkwak, #SettingsModal -->
+	<!-- Modal 4 ; Settings modal, 2015-05-20(Wed)_shkwak, #SettingsModal -->
 	<div id="SettingsModal" class="modal fade">
 		<div class="settings-modal-dialog" style="margin:7% auto;">
 			<div class="modal-content">
@@ -1536,10 +1634,13 @@ function sectionF_click()
 							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Service Repository <span style="color: #00AEEF;">*</span></label>
 							<div class="col-xs-9 form-inline">
 								<div class="form-group" style="margin-left:0px; width:49.5%;">									
-									<input type="text" class="form-control blue-tooltip" id="service_owner" value="robotics-in-concert" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_owner').tooltip('show');" data-original-title="service_owner">
+									<input type="text" class="form-control blue-tooltip" id="service_owner" value="robotics-in-concert" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" placeholder="ex) robotics-in-concert" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_owner').tooltip('show');" data-original-title="service_owner">
 								</div>
 								<div class="form-group" style="margin-left:15px; width:49.5%;">
-									<input type="text" class="form-control blue-tooltip" id="service_repo" value="rocon_demos" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_repo').tooltip('show');" data-original-title="service_repository">				
+									<input type="text" class="form-control blue-tooltip" id="service_repo" value="rocon_demos" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" placeholder="ex) rocon_demos" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_repo').tooltip('show');" data-original-title="service_repository">				
+								</div>
+								<div class="form-group" style="margin-left: 0px; width: 100%; display: block; margin-top: 5px;">
+									<input type="text" class="form-control blue-tooltip" id="service_branch" value="concert_common_services" style="width:100%; text-align:center;  background-color: #fff; color: #4183CF;" spellcheck="false" placeholder="ex) concert_common_services" data-toggle="tooltip" data-placement="top" title="" onmouseover="javascript:$('#service_branch').tooltip('show');" data-original-title="service_branch">				
 								</div>
 							</div>
 						</div>
@@ -1885,9 +1986,9 @@ function win_op(mypage, myname, w, h, scroll){
 									<!-- <input type="text" class="form-control" id="input1" value="Local system" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick=""> -->
 									<a data-toggle="tab" href="#sectionD" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="sectionD_click();">Local system</a>
 								</div>
-								<div class="form-group" style="margin-left:15px; width:49.5%;">
+								<div class="form-group" style="margin-left:15px; width:49.5%; cursor: not-allowed;">
 									<!-- <input type="text" class="form-control" id="input2" value="Service repository" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="alert('no service now.');"> -->
-									<a data-toggle="tab" href="#sectionE" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #fff;">Service repository</a>									
+									<a data-toggle="tab" href="#sectionE" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #fff; pointer-events: none;" onclick="sectionE_click();">Service repository</a>									
 								</div>
 							</div>							
 						</div>						
@@ -1896,6 +1997,80 @@ function win_op(mypage, myname, w, h, scroll){
 				<div class="modal-footer"><!-- packageName_check(document.getElementById('inputName').value); -->
 					<button type="button" class="btn btn-lg btn-default" data-dismiss="modal" style="width:49%; height:75px;"  onclick="alert('no service now.');">Recent solution</button>
 					<button type="button" class="btn btn-lg btn-primary" data-dismiss="modal" style="width:49%; height:75px;" onclick="NewSolution();">NEW</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 2-1 : Create a Solution to forked repo, 2015-06-01(Mon)_shkwak -->
+	<div id="newSolutionModal_forked_repo" class="modal fade">
+		<div class="modal-dialog" style="margin:10% auto;">
+			<div class="modal-content">
+				<div class="border-gradient-green" style="width:100%; height:10px;"></div>
+				<div class="modal-header" style="padding:30px;"> <!-- border-top:8px solid #397EBA; -->
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:-12px; font-size:36px; font-weight:400; opacity:.4;">&times;</button>
+					<h2 class="modal-title" style="text-align:center;">Create a solution! (to forked repo)</h2>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px;">
+						<div class="form-group">
+							<label for="forked_repo_solution" class="control-label col-xs-3" style="text-align:left;">Name <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="forked_repo_solution" placeholder="ex) Office_Solution" style="background-color: #E6F9D7;" spellcheck="false">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="forked_repo_description" class="control-label col-xs-3" style="text-align:left;">Description <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<!-- <input type="text" class="form-control" id="forked_repo_description" placeholder="솔루션 내용을 설명해 주세요." style="background-color: #E6F9D7;"> -->
+								<textarea class="form-control" id="forked_repo_description" placeholder="솔루션의 내용을 설명해 주세요.                                          ex) The office solution package" style="background-color:#E6F9D7; col:2; resize:vertical;" spellcheck='false'></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="forked_repo_license" class="control-label col-xs-3" style="text-align:left;">License </label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="forked_repo_license" value="BSD" placeholder="ex) BSD" style="background-color: #E6F9D7;" spellcheck="false">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="forked_repo_version" class="control-label col-xs-3" style="text-align:left;">Version <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="forked_repo_version" placeholder="ex) 1.0.0" style="background-color: #E6F9D7;" spellcheck="false">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="forked_repo_maintainer" class="control-label col-xs-3" style="text-align:left;">Maintainer</label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="forked_repo_maintainer" placeholder="ex) shkwak" style="background-color: #E6F9D7;" spellcheck="false">
+							</div>
+						</div>
+					</form>
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px; margin-top:4px;">
+						<div class="form-group">
+							<label for="inputtext" class="control-label col-xs-3" style="text-align:left;">Import service <span style="color:#00AEEF;">*</span></label>
+							<div class="col-xs-9 form-inline">
+								<div class="form-group" style="margin-left:0px; width:49.5%; cursor: not-allowed;">									
+									<!-- <input type="text" class="form-control" id="input1" value="Local system" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick=""> -->
+									<a data-toggle="tab" href="#sectionD" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; background-color: #fff;  pointer-events: none;" onclick="sectionD_click();">Local system</a>
+								</div>
+								<div class="form-group" style="margin-left:15px; width:49.5%;">
+									<!-- <input type="text" class="form-control" id="input2" value="Service repository" readonly style="width:100%; text-align:center; cursor:pointer; background-color: #fff;" onclick="alert('no service now.');"> -->
+									<a data-toggle="tab" href="#sectionE" class='form-control' data-dismiss="modal" style="width:100%; text-align:center; cursor:pointer; background-color: #D2FCBE;" onclick="sectionE_click();">Service repository</a>									
+								</div>
+							</div>							
+						</div>						
+					</form>
+					<form class="form-horizontal" style="border:1px solid #A8A9AC; padding:10px 15px 0px 15px; margin-top:4px; background-color:;">
+						<div class="form-group">
+							<label for="forked_repo_msg" class="control-label col-xs-3" style="text-align:left;">Message <!-- <span style="color:#00AEEF;">*</span> --></label>
+							<div class="col-xs-9">
+								<input type="text" class="form-control" id="forked_repo_msg" placeholder="ex) Create new solution to forked repo!" style="background-color: #E6F9D7;" spellcheck="false">
+							</div>
+						</div>						
+					</form>
+				</div>							   
+				<div class="modal-footer"><!-- packageName_check(document.getElementById('inputName').value); -->
+					<button type="button" class="btn btn-lg btn-default" data-dismiss="modal" style="width:49%; height:75px; cursor: not-allowed;" onclick="alert('no service now.');" disabled>Recent solution</button>
+					<button type="button" class="btn btn-lg btn-success" data-dismiss="modal" style="width:49%; height:75px;" onclick="SolutionCreate_forked_repo();">NEW</button>
 				</div>
 			</div>
 		</div>
@@ -1914,19 +2089,19 @@ function win_op(mypage, myname, w, h, scroll){
 						<div class="form-group">
 							<label for="PR_title" class="control-label col-xs-4" style="text-align:left;">Pull Request : title <span style="color:#00AEEF;">*</span></label>
 							<div class="col-xs-8">
-								<input type="text" class="form-control" id="PR_title" placeholder="ex) Amazing new feature" style="background-color: #eee;">
+								<input type="text" class="form-control" id="PR_title" placeholder="ex) Amazing new feature" style="background-color: #E6F9D7;">
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="PR_body" class="control-label col-xs-4" style="text-align:left;">Pull Request : body <span style="color:#00AEEF;">*</span></label>
 							<div class="col-xs-8">
-								<textarea class="form-control" id="PR_body" placeholder="ex) Please pull this in!" style="background-color:#eee; col:2; resize:vertical;" spellcheck='false'></textarea>
+								<textarea class="form-control" id="PR_body" placeholder="ex) Please pull this in!" style="background-color:#E6F9D7; col:2; resize:vertical;" spellcheck='false'></textarea>
 							</div>
 						</div>						
 					</form>					
 				</div>							   
 				<div class="modal-footer">					
-					<button type="button" class="btn btn-success" data-dismiss="modal" style="float:right;" onclick="createPullRequest44()">Create pull request</button>
+					<button type="button" class="btn btn-success" data-dismiss="modal" style="float:right;" onclick="show_createPullRequest44()">Create pull request</button>
 				</div>
 			</div>
 		</div>
@@ -1955,9 +2130,9 @@ function win_op(mypage, myname, w, h, scroll){
 	<div class="container width-100">
 		<ul class="nav nav-tabs" id="myTab">
 			<li class="active"><a data-toggle="tab" href="#sectionA">New Solution</a></li>
-			<li><a data-toggle="tab" href="#sectionD" onclick="sectionD_click();">Solution Configurator - Local System</a></li>
-			<li><a data-toggle="tab" href="#sectionE" onclick="sectionE_click();">Solution Configurator - Service Repository</a></li>
-			<li><a data-toggle="tab" href="#sectionF" onclick="sectionF_click();">GitHub - Solution Repository</a></li>
+			<li><a data-toggle="tab" href="#sectionF" onclick="sectionF_click();">GitHub - Solution Repository</a></li>			
+			<li><a data-toggle="tab" href="#sectionE" onclick="sectionE_click();" style="display:;">Solution Configurator - Service Repository</a></li>
+			<li><a data-toggle="tab" href="#sectionD" onclick="sectionD_click();" style="display: none;">Solution Configurator - Local System</a></li>
 			<li><a data-toggle="tab" href="#sectionB" onclick="GetSolutionList();">Template Editor</a></li>
 			<li><a data-toggle="tab" href="#sectionC" onclick="sectionC_click();">Service Scheduler</a></li>
 			<!-- <li class="dropdown">
@@ -1971,18 +2146,20 @@ function win_op(mypage, myname, w, h, scroll){
 		<div class="tab-content">
 			<!--■■■■■ sectionA : New Solution ■■■■-->
 			<div id="sectionA" class="tab-pane fade in active">
-				<h3>Solution Creation</h3>
+				<h3>Create a new solution!</h3>
 				<div class="container width-100">
-				  <div class="jumbotron">
-					<h2>Create a new solution!</h2>      
-					<p>새로운 솔루션을 생성하고, 그 구성파일들을 생성합니다.</p>   
-					<p style="color:#6E1E20; font-size:14px;">* ROS caktin_create_pkg 명령어에 의해서 생성됩니다.</p><br>   
+				  <p>2가지 방법으로 새로운 솔루션을 생성하고, 그 구성파일들을 생성합니다.</p> 
+				  <div class="jumbotron col-xs-6" style="/*height: 277px;*/ width: 49.5%;">
+					<!-- <h2>Create a new solution!</h2> -->
+					<!-- <p>2가지 방법으로 새로운 솔루션을 생성하고, 그 구성파일들을 생성합니다.</p>  -->  
+					<p style="font-size:18px; margin-bottom: 0px;">1. Ubuntu ROS 환경에서 생성하기</p><br>   
+					<p style="color: #A55A1E; font-size:14px; margin-bottom: 0px;">* ROS caktin_create_pkg 명령어에 의해서 생성됩니다.</p><br>
 					<!-- <div class="form-group width-40">
 						<label for="solutionName_new">Solution Name</label>
 						<input class="form-control" id="solutionName_new" type="text" placeholder="Please enter the solution name."/>				 
 					</div>					
-					<a href="#" class="btn btn-success" onclick="SolutionCreate_new();"><span class="glyphicon glyphicon-plus"></span>&nbsp; LOCAL CREATE</a> -->
-					<a href="#newSolutionModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span>&nbsp; CATKIN_CREATE_PKG</a><!-- btn-lg -->
+					<a href="#" class="btn btn-success" onclick="SolutionCreate_new();"><span class="glyphicon glyphicon-plus"></span>&nbsp; LOCAL CREATE</a> -->				
+					<a href="#newSolutionModal" class="btn btn-lg btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span>&nbsp; CATKIN_CREATE_PKG</a><!-- btn-lg -->
 					<!-- <a href="#" class="btn btn-default" onclick="ReadFileList();"><span class="glyphicon glyphicon-check"></span>&nbsp; FileList</a>
 					<a href="#" class="btn btn-info" onclick="GetLocalServiceList();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceList</a>
 					<a href="#" class="btn btn-success" onclick="GetLocalServiceLength();"><span class="glyphicon glyphicon-check"></span>&nbsp; ServiceLength</a>
@@ -1991,13 +2168,26 @@ function win_op(mypage, myname, w, h, scroll){
 					<br><br> -->
 					<!-- <a href="#" class="btn btn-warning" onclick="GetGitHubBranchTreeSHA();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubBranchTreeSHA</a>
 					<a href="#" class="btn btn-danger" onclick="GetGitHubServiceList();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubServiceList</a>
-					<a href="#" class="btn btn-danger" onclick="GetGitHubServiceContent();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubServiceContent</a>	-->
-			
+					<a href="#" class="btn btn-danger" onclick="GetGitHubServiceContent();"><span class="glyphicon glyphicon-check"></span>&nbsp; GetGitHubServiceContent</a>	-->					
 					<span id="solutionCreate_result" style="color:#cc3300;">&nbsp; &nbsp; </span>
+				  </div>
+				  <div class="jumbotron col-xs-6" style="margin-left: 10px; width: 49.5%;">
+					<!-- <p style="font-size:18px; margin-bottom: 0px;">2. Fork된 Solution Repository에 생성하기</p><br>   
+					<p style="color: #A55A1E; font-size:14px; margin-bottom: 0px;">* ROS caktin_create_pkg 명령어에 의해서 생성됩니다.</p><br> -->
+					<p style="font-size:18px; margin-bottom: 0px;">2. Fork된 Solution Repository에 생성하기</p><br>
+					<p style="color: #A55A1E; font-size:14px; margin-bottom: 0px;">* Solution Repository를 먼저 <a href="#" class="green-tooltip" id="fork_repo" onclick="CreateFork();" style="border: 1px solid #ccc; padding: 2px; border-radius: 6px;" data-toggle="tooltip" data-placement="top" onmouseover="javascript:$('#fork_repo').tooltip('show');" data-original-title="Solution Repository를 fork합니다.">fork</a> 하셔야 합니다.</p><br>
+					<!-- <div> -->
+						<!-- <div class="form-group">
+							<label for="solutionName_new">Solution Name</label>
+							<input class="form-control" id="solutionName_forked_repo" type="text" placeholder="Please enter the solution name."/>				 
+						</div> -->
+						<a href="#newSolutionModal_forked_repo" class="btn btn-lg btn-success" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span>&nbsp; CREATE to Forked Repo</a>
+					<!-- </div> -->
+					<span id="solutionCreate_result_forked_repo" style="color:#cc3300;">&nbsp; &nbsp; </span>
 				  </div>
 				</div>
 
-				<h3>Created Solution Files Description</h3>							
+				<h3>Description of Created Solution Files</h3>							
 				<p>새로운 솔루션을 생성하면 기본 구성파일로 아래와 같은 파일들이 생성됩니다.</p>
 				<pre class="brush:plain;" style="margin: 10px 15px;"><span class="token">- package.xml : 솔루션에 대한 메타 정보 및 의존성 설정 파일</span><br><span class="token">- CMakeLists.txt : 설치 시 필요한 의존성 정보 검색을 위한 설정 파일</span><br><span class="token">- solution.services : 솔루션 내에서 사용되는 서비스 목록 및 Custom 설정 파일</span><br><span class="token">- solution.launch : 솔루션 실행 설정 파일</span></pre>
     
@@ -2332,7 +2522,7 @@ function win_op(mypage, myname, w, h, scroll){
 			</div>
 
 			
-			<!--■■■■■ sectionD : SOLUTION MANAGER (Solution Configurator) ■■■■-->
+			<!--■■■■■ sectionD : SOLUTION MANAGER (Solution Configurator) : Local ■■■■-->
 			<!-- RE : 서비스 정보 불러오기, DP, 솔루션 생성 시 사용한 Name 적용, 2015-04-29(Wed)_shkwak -->
 			<div id="sectionD" class="tab-pane fade" style="margin-bottom: 30px;">				
 				<div class="container width-100" >			
@@ -2419,13 +2609,13 @@ function win_op(mypage, myname, w, h, scroll){
 				
 				
 				<br>
-				<!-- //////////////////////// -->
+				<!-- //////////////////////// sectionD : SOLUTION MANAGER (Solution Configurator) -->
 
 				</div><!-- container --> 	
 			</div><!-- sectionD -->
 
 
-			<!--■■■■■ sectionE : SOLUTION MANAGER (Solution Configurator) - Service Repository(GitHub) ■■■■-->
+			<!--■■■■■ sectionE : SOLUTION MANAGER - Service Repository(GitHub) ■■■■-->
 			<div id="sectionE" class="tab-pane fade" style="margin-bottom: 30px;">				
 				<div class="container width-100" >			
 				<br>
@@ -2440,15 +2630,15 @@ function win_op(mypage, myname, w, h, scroll){
 							<div id="div_serviceListE"> <!-- list-group -->
 								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">  
 								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
-								  <h3 id="" class="list-group-item-heading" style="color:#59C1E0;" title="Administrative services and tools" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">admin</h3>
+								  <h3 id="" class="list-group-item-heading" style="color:#59C1E0;" title="Administrative services and tools" onclick="addServiceE(this.innerHTML, this.style.color, 0);">admin</h3>
 								</a>
 								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
 								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
-								  <h3 id="" class="list-group-item-heading" style="color:#FCB040;" title="Turtlesim service" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">turtlesim</h3>
+								  <h3 id="" class="list-group-item-heading" style="color:#FCB040;" title="Turtlesim service" onclick="addServiceE(this.innerHTML, this.style.color, 1);">turtlesim</h3>
 								</a>
 								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
 								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
-								  <h3 id="" class="list-group-item-heading" style="color:#EF3E35;" title="Turtles on the pond" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">turtle_pond</h3>
+								  <h3 id="" class="list-group-item-heading" style="color:#EF3E35;" title="Turtles on the pond" onclick="addServiceE(this.innerHTML, this.style.color, 2);">turtle_pond</h3>
 								</a>
 								<!-- <a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
 								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
@@ -2465,7 +2655,7 @@ function win_op(mypage, myname, w, h, scroll){
 								<a href="#" class="list-group-item height-75 list-group-item2" style="min-width:156px;" onclick="">
 								  <p class="list-group-item-text" style="color:#A8A9AC;">service name : </p>
 								  <h3 id="" class="list-group-item-heading" style="color:#4D4B45;" title="" onclick="addServiceE(this.innerHTML, this.style.color, this.title);">gazebo_robot_world</h3>
-								</a> -->								
+								</a> -->
 							</div>				
 						</div>
 						<div class="col-xs-1">
@@ -2477,7 +2667,7 @@ function win_op(mypage, myname, w, h, scroll){
 						</div>
 						<div class="col-xs-8">
 							<div class="input-group">
-								<input type="text" id="created_solutionName" class="form-control" value="SOLUTION NAME : dummy_concert1" readonly style="text-align:left; cursor:default; background-color: #fff;">
+								<input type="text" id="created_solutionNameE" class="form-control" value="SOLUTION NAME : dummy_concert1" readonly style="text-align:left; cursor:default; background-color: #fff;">
 								<!-- <span class="input-group-addon" style="cursor:pointer; color:; background-color:#FCFCBD;" onclick="solutionConfigure('3');solutionConfigure('4');">CONFIGURE</span> -->
 								<span class="input-group-addon" style="cursor:pointer; color:; /*background-color:#FCFCBD;*/" onclick="javascript:console.clear();"></span>
 							</div>
@@ -2488,7 +2678,8 @@ function win_op(mypage, myname, w, h, scroll){
 							<div style="float:right; margin-top:10px;">					
 								Local client only  &nbsp; 
 								<input id="toggle-eventE" type="checkbox" data-toggle="toggle" data-onstyle="success">&nbsp;
-								<button type="button" class="btn btn-primary" style="" onclick="">RUN SOLUTION</button>
+								<!-- <button type="button" class="btn btn-primary" style="" onclick="imsi_test()">TEST IMSI</button> -->
+								<a href="#newSolutionModal_forked_repo" class="btn btn-success" data-toggle="modal"><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp; CREATE to Forked Repo 계속하기</a>
 								<div id="console-eventE"></div>
 
 								<script>
@@ -2502,162 +2693,225 @@ function win_op(mypage, myname, w, h, scroll){
 							</div>
 
 							<div style="float:; margin-top:10px;">
-								<button type="button" class="btn btn-primary" style="" onclick="LocalServiceConfigure(3)">Configure Services</button>
-								<a href="#newSolutionModal" class="btn btn-info" data-toggle="modal"><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp; CATKIN_CREATE_PKG 계속하기</a>
+								<button type="button" class="btn btn-primary" style="" onclick="GitHubServiceConfigure();">Configure Services</button>
+								<!-- <a href="#newSolutionModal_forked_repo" class="btn btn-success" data-toggle="modal"><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp; CREATE to Forked Repo 계속하기</a> -->
 							</div>
 
 						</div><!-- col-xs-7 -->
 					</div><!-- row -->
-
 				</form>
-				
-				
 				<br>
-				<!-- //////////////////////// -->
+				<!-- //////////////////////// sectionE : SOLUTION MANAGER - Service Repository(GitHub) -->
 
 				</div><!-- container --> 	
 			</div><!-- sectionE -->
 
-			<!--■■■■■ sectionF : SOLUTION MANAGER (Solution Configurator) - Service Repository(GitHub) Solution Repository ■■■■-->
+			<!--■■■■■ sectionF : SOLUTION MANAGER (Solution Configurator) - Solution Repository(GitHub)  ■■■■-->
 			<div id="sectionF" class="tab-pane fade">				
 				<div class="container width-100" >			
 				<br>
 				<form>
+					<div class="container width-100"> <!-- Solution Repository (GitHub) -->
+						<div class="row" style="margin:0px;">
+							<!-- <h3>Solution Repository (GitHub)</h3> -->
+							<!-- <br> -->
+							<p>GitHub solution repository을 fork하여 수정 후, pull request한다.</p>
+							
+							<!-- <div style="width:33.1%; display: inline-block;">
+								<label for="ID">Owner</label>
+								<input type="text" id="ID" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
+							</div>
+							<div style="width:33.1%; display: inline-block;">
+								<label for="PW">Password</label>
+								<input type="password" id="PW" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
+							</div> -->
+						<!-- <button type="button" class="btn btn-primary" style="display: inline-block;" onclick="UserAuthorization()">UserAuthorization</button> -->
+						<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>	
+						<button type="button" class="btn btn-success" style="" onclick="repo_branch()">Create branch</button> -->
+						<!-- <br><br> -->
+						
+						<!-- ■■■■■■■■■■■■■■■■ Create a fork ■■■■■■■■■■■■■■■■ -->
+						<div class="jumbotron" style="padding: 20px; background-color: #E6F9D7;">
+							<h3 style="margin-top: 10px;">Create a fork</h3>      
+							<p style="color: #AAAAAB; font-size:14px;">Create a fork for the authenticated user.</p>
+							<div style="width:20px; display: inline-block;">
+								<img src="./images/git-fork-128.png" style="height:20px; vertical-align: middle; margin-top: -2px; margin-left: -4px;"/>
+							</div>		
+							<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/forks </div>
+							<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --> <!-- btn-lg -->	
+							<button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>		
+						</div>
+						
+						<!-- ■■■■■■■■■■■■■■■■ Create a branch ■■■■■■■■■■■■■■■■ -->
+						<div class="jumbotron" style="padding: 20px; background-color: #E9F3FF;">
+							<h3 style="margin-top: 10px;">Create a branch</h3>      
+							<p style="color: #AAAAAB; font-size:14px;">Create a branch for pull request.</p>		
+							<div style="width:20px; display: inline-block;">
+								<img src="./images/git-branch-128.png" style="height:20px; vertical-align: middle; margin-top: -2px;"/>
+							</div>
+							<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/git/refs </div>		
+							<div class="" style="display: inline-block; margin-right: 4px;">
+								<input type="text" class="form-control" id="branch_name" placeholder="branch name" style="background-color: #fff;">
+							</div>
+							<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --><!-- btn-lg -->
+							<button type="button" class="btn btn-info" style="" onclick="repo_branch44(document.getElementById('branch_name').value);">Create branch</button>
+						</div>
 
-<div class="container width-100"> <!-- Solution Repository (GitHub) -->
-	<div class="row" style="margin:0px;">
-		<!-- <h3>Solution Repository (GitHub)</h3> -->
-		<!-- <br> -->
-		<p>GitHub solution repository을 fork하여 수정 후, pull request한다.</p>
-		
-		<!-- <div style="width:33.1%; display: inline-block;">
-			<label for="ID">Owner</label>
-			<input type="text" id="ID" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
-		</div>
-		<div style="width:33.1%; display: inline-block;">
-			<label for="PW">Password</label>
-			<input type="password" id="PW" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
-		</div> -->
-	<!-- <button type="button" class="btn btn-primary" style="display: inline-block;" onclick="UserAuthorization()">UserAuthorization</button> -->
-	<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>	
-	<button type="button" class="btn btn-success" style="" onclick="repo_branch()">Create branch</button> -->
-	<!-- <br><br> -->
-	
-	<!-- ■■■■■■■■■■■■■■■■ Create a fork ■■■■■■■■■■■■■■■■ -->
-	<div class="jumbotron" style="padding: 20px; background-color: #E6F9D7;">
-		<h3 style="margin-top: 10px;">Create a fork</h3>      
-		<p style="color: #AAAAAB; font-size:14px;">Create a fork for the authenticated user.</p>
-		<div style="width:20px; display: inline-block;">
-			<img src="./images/git-fork-128.png" style="height:20px; vertical-align: middle; margin-top: -2px; margin-left: -4px;"/>
-		</div>		
-		<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/forks </div>
-		<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --> <!-- btn-lg -->	
-		<button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>		
-	</div>
-	
-	<!-- ■■■■■■■■■■■■■■■■ Create a branch ■■■■■■■■■■■■■■■■ -->
-	<div class="jumbotron" style="padding: 20px; background-color: #E9F3FF;">
-		<h3 style="margin-top: 10px;">Create a branch</h3>      
-		<p style="color: #AAAAAB; font-size:14px;">Create a branch for pull request.</p>		
-		<div style="width:20px; display: inline-block;">
-			<img src="./images/git-branch-128.png" style="height:20px; vertical-align: middle; margin-top: -2px;"/>
-		</div>
-		<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/git/refs </div>		
-		<div class="" style="display: inline-block; margin-right: 4px;">
-			<input type="text" class="form-control" id="branch_name" placeholder="branch name" style="background-color: #fff;">
-		</div>
-		<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --><!-- btn-lg -->
-		<button type="button" class="btn btn-info" style="" onclick="repo_branch44(document.getElementById('branch_name').value);">Create branch</button>
-	</div>
+						<!-- ■■■■■■■■■■■■■■■■ GitHub Solution Repository 가져오기, 2015-05-12(Tue)_shkwak ■■■■■■■■■■■■■■■■ -->
+						<div class="jumbotron" style="padding: 20px; /*background-color: #C5D5EF;*/">
+							<h3 style="margin-top: 10px;">Edit a Contents</h3>
+							<div style="width:33.1%; display: inline-block; margin-bottom: 5px;">
+								<label for="fork_owner">Owner</label>
+								<input type="text" id="fork_owner" class="form-control" style="display: block;" value="" placeholder="User account" spellcheck="false" readonly>
+								<script>
+								document.getElementById('fork_owner').value = localStorage.getItem("git_username");
+								</script>
+							</div> &nbsp; / &nbsp; 
+							<div style="width:30.8%; display: inline-block; margin-bottom: 5px;">
+								<label for="fork_branch">Branch</label>
+								<select class="form-control" id="fork_branch" style="display: block;" onChange="">
+									<option value="master">master</option>
+								</select>
+							</div>
+							<p style="color: #AAAAAB; font-size:14px;"> The Repo Commits API supports listing, viewing, and comparing commits in a repository. Commit directly to the <code>Branch</code>.</p>
 
-	<!-- ■■■■■■■■■■■■■■■■ GitHub Solution Repository 가져오기, 2015-05-12(Tue)_shkwak ■■■■■■■■■■■■■■■■ -->
-	<div class="jumbotron" style="padding: 20px; /*background-color: #C5D5EF;*/">
-		<h3 style="margin-top: 10px;">Edit a Contents</h3>
-		<div style="width:33.1%; display: inline-block; margin-bottom: 5px;">
-			<label for="fork_owner">Owner</label>
-			<input type="text" id="fork_owner" class="form-control" style="display: block;" value="" placeholder="User account" spellcheck="false" readonly>
-			<script>
-			document.getElementById('fork_owner').value = localStorage.getItem("git_username");
-			</script>
-		</div> &nbsp; / &nbsp; 
-		<div style="width:30.8%; display: inline-block; margin-bottom: 5px;">
-			<label for="fork_branch">Branch</label>
-			<select class="form-control" id="fork_branch" style="display: block;" onChange="">
-				<option value="master">master</option>
-			</select>
-		</div>
-		<p style="color: #AAAAAB; font-size:14px;"> The Repo Commits API supports listing, viewing, and comparing commits in a repository. Commit directly to the <code>Branch</code>.</p>
+							<select class="form-control width-33" id="select_repo1" style="display: inline-block;" onChange="GetDataF(this.value);">
+								<option value="">----------------------</option>
+							</select>
+							<select class="form-control width-33" id="select_repo2" style="display: inline-block;" onChange="GetData_subF(this.value);">
+								<option value="">----------------------</option>
+							</select>	
+							<select class="form-control width-33" id="select_repo3" style="display: inline-block;" onChange="GetData_sub_subF(this.value);">
+								<option value="">----------------------</option>
+							</select>	
+							<br>
+							<textarea id="box_result" style="width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:vertical;" rows="10" spellcheck="false"></textarea>
 
-		<select class="form-control width-33" id="select_repo1" style="display: inline-block;" onChange="GetDataF(this.value);">
-			<option value="">----------------------</option>
-		</select>
-		<select class="form-control width-33" id="select_repo2" style="display: inline-block;" onChange="GetData_subF(this.value);">
-			<option value="">----------------------</option>
-		</select>	
-		<select class="form-control width-33" id="select_repo3" style="display: inline-block;" onChange="GetData_sub_subF(this.value);">
-			<option value="">----------------------</option>
-		</select>	
-		<br>
-		<textarea id="box_result" style="width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:vertical;" rows="10" spellcheck="false"></textarea>
-		<!-- <textarea id="box_result_re" style="width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:vertical;" rows="10" spellcheck="false"></textarea> -->
-		<br>
-		<button type="button" class="btn btn-warning" style="float:right;" onclick="FileUpdate_subF();">Commit changes</button>
-		<input type="text" id="updateMsg" class="form-control" id="" style="width: 40%; float: right; display: inline-block; margin-right: 4px;" placeholder="Insert update message here." spellcheck="false"><br><br>
-	</div>
-	
-	<!-- ■■■■■■■■■■■■■■■■ Create a pull request ■■■■■■■■■■■■■■■■ -->
-	<div class="jumbotron" style="padding: 20px; background-color: #CFE2F3;">
-		<h3 style="margin-top: 10px;">Create a pull request</h3>      
-		<p style="color: #AAAAAB; font-size:14px;">Compare changes across branches, commits, tags, and more below. If you need to, you can also compare across forks.</p>
-		<div style="width:20px; display: inline-block;">
-			<img src="./images/git-pull-request-128.png" style="height:18px; vertical-align: middle; margin-top: -2px;"/>
-		</div>
-		<div class="form-group width-30" style="display: inline-block; width: 33%;">
-			<label for="base_repo">base : </label>
-			<select class="form-control" id="base_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
-				<option value="">----------------------</option>
-				<option value="master">master</option>
-				<option value="base_others">사용자 입력</option>
-			</select>
-			<input class="form-control" id="base_repo2" style="width:86%; display: none;" placeholder="<branch> ex) master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="base_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('base_repo2_cancel');"></span>
-		</div>
-		<div class="form-group width-30" style="display: inline-block; width: 33%;">
-			<label for="head_repo">head : </label>
-				<select class="form-control" id="head_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
-				<option value="">----------------------</option>
-				<option value="meddugi723:master">meddugi723:master</option>
-				<option value="futurerobot:master">futurerobot:master</option>
-				<option value="head_others">사용자 입력</option>
-			</select>
-			<input class="form-control" id="head_repo2" style="width:86%; display: none;" placeholder="<user>:<branch> ex) shkwak:master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="head_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('head_repo2_cancel');"></span>
-		</div>
-		<a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a><!-- btn-lg -->	
-	</div>
+							<!-- edit UI for package.xml -->
+							<div class="list-group-item height-225" id="solution-edit0" style="display: block; background-color: #fff; margin-bottom: 5px;">
+							  <div class="table-responsive" style="font-size:12px;">
+							  <button type="button" id="solution-overrideBtn_0" class="btn btn-info" style="position: absolute; right: 25px; height: 30px; font-size: 12px;" onclick="">Preview</button>
+								<table class="table">
+									<thead>
+										<tr>
+											<th>package.xml</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr style="height:28px;">
+											<td class="col-xs-3" style="padding:5px 8px">Description</td><td style="padding:2px 8px;"><input type="text" id="solution-description0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">Icon</td><td style="padding:2px 8px;"><input type="text" id="solution-icon0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">Priority</td><td style="padding:2px 8px;"><input type="text" id="solution-priority0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">Interactions</td><td style="padding:2px 8px;"><input type="text" id="solution-interactions0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">Parameters</td><td style="padding:2px 8px;"><input type="text" id="solution-parameters0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+									</tbody>
+								</table>
+							  </div>
+							  <!-- <div id="git-advancedBtn_0" style="float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;" onclick="advancedViewE(0);">Advanced</div> -->
+							</div>
 
-	<!-- <button type="button" class="btn btn-warning" style="" onclick="GetGitHubBranchList()">Get Branch List</button>
-	<button type="button" class="btn btn-warning" style="" onclick="GetGitHubMasterSHA()">Get Master SHA</button> -->
-	<!-- <button type="button" class="btn btn-warning" style="" onclick="Create_Branch('branch2')">Create_Branch</button> -->
-	<!-- <button type="button" class="btn btn-success" style="" onclick="repo_show()">repo_show</button>
-	<button type="button" class="btn btn-success" style="" onclick="repo_contents()">repo_contents</button>
-	<button type="button" class="btn btn-warning" style="" onclick="repo_fork()">repo_fork</button> -->
-	<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">create_fork</button>	
-	<button type="button" class="btn btn-success" style="" onclick="repo_branch()">repo_branch</button> -->
-	<!-- <button type="button" class="btn btn-success" style="" onclick="repo_createPullRequest()">repo_createPullRequest_same_repo</button>	 -->	
-	<br><br>
+							<!-- edit UI for CMakeLists.txt -->
+							<div class="list-group-item height-225" id="solution-edit0" style="display: block; background-color:  #fff; margin-bottom: 5px; height: 200px;">
+							  <div class="table-responsive" style="font-size:12px;">
+							  <button type="button" id="solution-overrideBtn_0" class="btn btn-info" style="position: absolute; right: 25px; height: 30px; font-size: 12px;" onclick="">Preview</button>
+								<table class="table">
+									<thead>
+										<tr>
+											<th>CMakeLists.txt</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr style="height:28px;">
+											<td class="col-xs-3" style="padding:5px 8px">cmake_minimum_required</td><td style="padding:2px 8px;"><input type="text" id="solution-cmake_minimum_required" class="form-control" value="VERSION 2.8.3" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">project</td><td style="padding:2px 8px;"><input type="text" id="solution-project" class="form-control" value="test_solution_1" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">find_package</td><td style="padding:2px 8px;"><input type="text" id="solution-find_package" class="form-control" value="catkin REQUIRED" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+										<tr style="height:28px;">
+											<td style="padding:5px 8px">catkin_package</td><td style="padding:2px 8px;"><input type="text" id="solution-interactions0" class="form-control" value="" style="padding:2px 8px; height:24px;"></td>
+										</tr>
+									</tbody>
+								</table>
+							  </div>
+							  <!-- <div id="git-advancedBtn_0" style="float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;" onclick="advancedViewE(0);">Advanced</div> -->
+							</div>
 
-	<!-- <div style="width:33.1%; display: inline-block;">
-	<label for="PR_title">Pull Request : title</label>
-	<input type="text" id="PR_title" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
-	</div>
-	<div style="width:33.1%; display: inline-block;">
-	<label for="PR_body">Pull Request : body</label>
-	    <input type="text" id="PR_body" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
-	</div>
-	<button type="button" class="btn btn-warning" style="" onclick="">repo_createPullRequest44</button>
-	<br><br> -->
 
-		</div>
-	</div>
+				
+							
+
+							<br>
+							<button type="button" class="btn btn-warning" style="float:right;" onclick="FileUpdate_subF();">Commit changes</button>
+							<input type="text" id="updateMsg" class="form-control" id="" style="width: 40%; float: right; display: inline-block; margin-right: 4px;" placeholder="Insert update message here." spellcheck="false"><br><br>
+						</div>
+						
+						<!-- ■■■■■■■■■■■■■■■■ Create a pull request ■■■■■■■■■■■■■■■■ -->
+						<div class="jumbotron" style="padding: 20px; background-color: #CFE2F3;">
+							<h3 style="margin-top: 10px;">Create a pull request</h3>      
+							<p style="color: #AAAAAB; font-size:14px;">Compare changes across branches, commits, tags, and more below. If you need to, you can also compare across forks.</p>
+							<div style="width:20px; display: inline-block;">
+								<img src="./images/git-pull-request-128.png" style="height:18px; vertical-align: middle; margin-top: -2px;"/>
+							</div>
+							<div class="form-group width-30" style="display: inline-block; width: 33%;">
+								<label for="base_repo">base : </label>
+								<select class="form-control" id="base_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
+									<option value="">----------------------</option>
+									<option value="master">master</option>
+									<option value="base_others">사용자 입력</option>
+								</select>
+								<input class="form-control" id="base_repo2" style="width:86%; display: none;" placeholder="<branch> ex) master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="base_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('base_repo2_cancel');"></span>
+							</div>
+							<div class="form-group width-30" style="display: inline-block; width: 33%;">
+								<label for="head_repo">head : </label>
+									<select class="form-control" id="head_repo" style="width:86%; display: inline-block;" onChange="PR_base_head_change(this.value);">
+									<option value="">----------------------</option>
+									<option value="meddugi723:master">meddugi723:master</option>
+									<option value="futurerobot:master">futurerobot:master</option>
+									<option value="head_others">사용자 입력</option>
+								</select>
+								<input class="form-control" id="head_repo2" style="width:86%; display: none;" placeholder="<user>:<branch> ex) shkwak:master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="head_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('head_repo2_cancel');"></span>
+							</div>
+							<a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a><!-- btn-lg -->	
+						</div>
+
+						<!-- <button type="button" class="btn btn-warning" style="" onclick="GetGitHubBranchList()">Get Branch List</button>
+						<button type="button" class="btn btn-warning" style="" onclick="GetGitHubMasterSHA()">Get Master SHA</button> -->
+						<!-- <button type="button" class="btn btn-warning" style="" onclick="Create_Branch('branch2')">Create_Branch</button> -->
+						<!-- <button type="button" class="btn btn-success" style="" onclick="repo_show()">repo_show</button>
+						<button type="button" class="btn btn-success" style="" onclick="repo_contents()">repo_contents</button>
+						<button type="button" class="btn btn-warning" style="" onclick="repo_fork()">repo_fork</button> -->
+						<!-- <button type="button" class="btn btn-success" style="" onclick="CreateFork()">create_fork</button>	
+						<button type="button" class="btn btn-success" style="" onclick="repo_branch()">repo_branch</button> -->
+						<!-- <button type="button" class="btn btn-success" style="" onclick="repo_createPullRequest()">repo_createPullRequest_same_repo</button>	 -->	
+						<br><br>
+
+						<!-- <div style="width:33.1%; display: inline-block;">
+						<label for="PR_title">Pull Request : title</label>
+						<input type="text" id="PR_title" class="form-control" style="display: block;" value="meddugi723" placeholder="User account">
+						</div>
+						<div style="width:33.1%; display: inline-block;">
+						<label for="PR_body">Pull Request : body</label>
+							<input type="text" id="PR_body" class="form-control" style="display: block;" value="shkwak7918" placeholder="Password">	
+						</div>
+						<button type="button" class="btn btn-warning" style="" onclick="">repo_createPullRequest44</button>
+						<br><br> -->
+
+						</div>
+					</div>
 				</form>				
 				<br>
 				<!-- //////////////////////// -->

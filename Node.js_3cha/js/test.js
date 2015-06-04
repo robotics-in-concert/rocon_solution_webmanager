@@ -318,3 +318,22 @@ function AuthorizationDelete(id)
 		}
 	});	
 }
+
+function classOverrideChangeE_x(id) //no use!
+{	//overrided - check class 변경 함수, 2015-05-07(Thu)_shkwak
+	var sID = id.split('_');
+	var chk_id = "#git-check_override" + sID[1];
+	var this_class = $(chk_id).attr('class');
+	console.log(sID[1] + ', ' + chk_id + ', ' + this_class);
+
+	if (this_class == "glyphicon glyphicon-remove")
+	{
+		$(chk_id).removeClass();
+		$(chk_id).attr("class", "glyphicon glyphicon-ok");
+	}
+	else
+	{
+		$(chk_id).removeClass();
+		$(chk_id).attr("class", "glyphicon glyphicon-remove");
+	}
+}

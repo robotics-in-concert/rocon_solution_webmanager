@@ -67,10 +67,10 @@ function show_servicelist() //ing!
 
 	var sNum = 0;
 	data_servicelist.forEach(function(file){		
-		var element = "<div class='list-group-item service" + sNum + 
-			" list-group-item1' style='height:75px; cursor: pointer;'><p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p>" 
-			+ "<h3 class='list-group-item-heading' style='color:" + color_sample[sNum] 
-			+ ";' onclick='addService(this.innerHTML, this.style.color, " + sNum + ");GetLocalServiceContent(" + sNum + ");'>" + file + "</h3></div>"
+		var element = "<div class='list-group-item service" + sNum + " list-group-item1' style='height:75px; cursor: pointer;'>"
+			+ "<p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p>" 
+			+ "<h3 class='list-group-item-heading' style='color:" + color_sample[sNum] + ";' "
+			+ "onclick='addService(this.innerHTML, this.style.color, " + sNum + ");GetLocalServiceContent(" + sNum + ");'>" + file + "</h3></div>"
 
 		$(element).appendTo("#div_serviceList"); //획득한 service 리스트 추가
 		sNum++;
@@ -183,7 +183,7 @@ function addService(sName, tColor, sNum) //★★★
 		
 		+ "<div class='list-group-item height-225 add-service" + sNum + "' id='local_edit" + sNum 
 		+ "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'> <table class='table'><button type='button' id='overrideBtn_" + sNum 
-		+ "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChange(this.id);editView(this.id);'>Override</button><thead><tr><th>Service Name</th><th>" + sName 
+		+ "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChange(this.id); editView(this.id);'>Override</button><thead><tr><th>Service Name</th><th>" + sName 
 		+ "</th></tr></thead><tbody><tr style='height:28px;'><td style='padding:5px 8px'>Description</td><td style='padding:2px 8px;'><input type='text' id='description_" + sNum 
 		+ "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Icon</td><td style='padding:2px 8px;'><input type='text' id='icon_" + sNum 
 		+ "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Priority</td><td style='padding:2px 8px;'><input type='text' id='priority_" + sNum 
@@ -193,8 +193,7 @@ function addService(sName, tColor, sNum) //★★★
 		
 		+ "<div id='advancedBtn_" + sNum + "' style='float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;' onclick='advancedView(this.id);'>Advanced</div></div>"
 
-		+ "<div class='list-group-item height-225 add-service" + sNum + "' id='advanced" + sNum 
-		+ "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'>"
+		+ "<div class='list-group-item height-225 add-service" + sNum + "' id='advanced" + sNum + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'>"
 		+ "<textarea id='box_advanced" + sNum + "' style='width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:none;' rows='11' spellcheck='false'></textarea></div></div>"
 
 	$(element).appendTo("#div_serviceName"); //<span style='float:right;'>edit</span>	
@@ -239,6 +238,7 @@ function editView(id)
 {	//추가한 Service의 요소값을 수정하기 위한 영역을 보이게 한다.
 	var sID = id.split('_'); //console.log(id); //editBtn_1 ; OK
 	var eID = 'local_edit' + sID[1]; //console.log(sID[1]); //1 ; OK, sNum을 바로 받아도 됨!_2015-05-27
+	var aID = 'advanced' + sID[1];
 	var sNum = sID[1];
 	console.log(eID); //edit1 ; OK
 
@@ -247,6 +247,7 @@ function editView(id)
 		editView_SetValue(sNum); //imsi, ==========================================================================================위치 이동 필요!
 	} else {
 		document.getElementById(eID).style.display = 'none';
+		document.getElementById(aID).style.display = 'none';
 	}
 }
 
@@ -421,4 +422,3 @@ var fileModify = function(fileID){
 		});
 	}
 }
-

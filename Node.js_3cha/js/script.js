@@ -365,7 +365,7 @@ function PR_base_head_change(value)
 	}	
 }
 
-function createPullRequest44()
+function show_createPullRequest44()
 {	//2015-05-19(Tue)_shkwak, create pull request 하기 전에 parameters 확인!
 	var title = document.getElementById('PR_title').value;
 	var body = document.getElementById('PR_body').value;
@@ -395,7 +395,7 @@ function createPullRequest44()
 	}
 	else
 	{
-		repo_createPullRequest44(title, body, base, head);
+		repo_createPullRequest44(title, body, base, head); //실제 동작 코드
 		console.log('title : ' + title + ', body : ' + body + ', base : ' + base + ', head : ' + head);
 	}
 }
@@ -413,7 +413,7 @@ function SettingsValueSave_SweetAlert()
 	var solution_owner = document.getElementById('solution_owner').value;
 	var solution_repo  = document.getElementById('solution_repo').value;
 
-	if (git_username == "" || git_password == "" || service_owner == "" || service_repo == "" || solution_owner == "" || solution_repo == "")
+	if (git_username == "" || git_password == "" || service_owner == "" || service_repo == "" || service_branch == "" || solution_owner == "" || solution_repo == "")
 	{
 		SweetAlert_Group('no');
 	}
@@ -429,22 +429,24 @@ function SettingsValueSave()
 	var git_password   = document.getElementById('git_password').value;
 	var service_owner  = document.getElementById('service_owner').value;
 	var service_repo   = document.getElementById('service_repo').value;
+	var service_branch = document.getElementById('service_branch').value; //add, 2015-06-01(Mon)_shkwak
 	var solution_owner = document.getElementById('solution_owner').value;
 	var solution_repo  = document.getElementById('solution_repo').value;
 
 	/*--GitHub User Info--*/
 	localStorage.setItem("git_username", document.getElementById('git_username').value); 
 	localStorage.setItem("git_password", document.getElementById('git_password').value); 
-	/*--GitHub User Info--*/
-	localStorage.setItem("service_owner", document.getElementById('service_owner').value); 
-	localStorage.setItem("service_repo", document.getElementById('service_repo').value); 
-	/*--GitHub User Info--*/
+	/*--GitHub Service Repo Info--*/
+	localStorage.setItem("service_owner", document.getElementById('service_owner').value);
+	localStorage.setItem("service_repo", document.getElementById('service_repo').value);
+	localStorage.setItem("service_branch", document.getElementById('service_branch').value); //add
+	/*--GitHub Solution Repo Info--*/
 	localStorage.setItem("solution_owner", document.getElementById('solution_owner').value); 
 	localStorage.setItem("solution_repo", document.getElementById('solution_repo').value);
 
 	console.log('SettingsValueSave() - Saved!');
-	console.log('git_username : ' + git_username + '\ngit_password : ' +  git_password + '\nservice_owner : ' +  service_owner 
-		+ '\nservice_repo : ' +  service_repo + '\nsolution_owner : ' +  solution_owner + '\nsolution_repo : ' +  solution_repo);
+	console.log('git_username : ' + git_username + '\ngit_password : ' +  '********' + '\nservice_owner : ' +  service_owner 
+		+ '\nservice_repo : ' +  service_repo + '\nservice_branch : ' +  service_branch + '\nsolution_owner : ' +  solution_owner + '\nsolution_repo : ' +  solution_repo);
 }
 
 function SettingsValueRead()
@@ -453,18 +455,20 @@ function SettingsValueRead()
 	var git_password   = localStorage.getItem('git_password');
 	var service_owner  = localStorage.getItem('service_owner');
 	var service_repo   = localStorage.getItem('service_repo');
+	var service_branch = localStorage.getItem('service_branch');
 	var solution_owner = localStorage.getItem('solution_owner');
 	var solution_repo  = localStorage.getItem('solution_repo');
 
 	console.log('SettingsValueRead() - Read!');
-	console.log('git_username : ' + git_username + '\ngit_password : ' +  '**********' + '\nservice_owner : ' +  service_owner 
-		+ '\nservice_repo : ' +  service_repo + '\nsolution_owner : ' +  solution_owner + '\nsolution_repo : ' +  solution_repo);
+	console.log('git_username : ' + git_username + '\ngit_password : ' +  '********' + '\nservice_owner : ' +  service_owner 
+		+ '\nservice_repo : ' +  service_repo + '\nservice_branch : ' +  service_branch + '\nsolution_owner : ' +  solution_owner + '\nsolution_repo : ' +  solution_repo);
 
 	// localStorage value DP to Settings UI
 	document.getElementById('git_username').value	= git_username;
 	document.getElementById('git_password').value	= git_password;
 	document.getElementById('service_owner').value	= service_owner;
 	document.getElementById('service_repo').value	= service_repo;
+	document.getElementById('service_branch').value	= service_branch;
 	document.getElementById('solution_owner').value	= solution_owner;
 	document.getElementById('solution_repo').value	= solution_repo;
 }
@@ -557,6 +561,24 @@ function SweetAlert_Group(type, msg, comment, status)
 				imageUrl: "images/thumbs-up.jpg"
 			});
 			break;
+		case 'advancedA':
+			swal({ //add, 2015-06-03(Wed)_shkwak for Service Scheduler
+				title: "An input!",   
+				text: "Write something interesting:",   
+				type: "input",   
+				showCancelButton: true,   
+				closeOnConfirm: false,   
+				animation: "slide-from-top",   
+				inputPlaceholder: "Write something" 
+			}, function(inputValue){   
+				if (inputValue === false) return false;      
+				if (inputValue === "") {     
+					swal.showInputError("You need to write something!");     
+					return false   
+				}      
+				swal("Nice!", "You wrote: " + inputValue, "success"); 
+			});
+			break;
 	}	
 }
 
@@ -566,7 +588,7 @@ function localStorage_Clear(key)
 }
 
 function escapeHTML (unsafe_str) 
-{	//2015-05-21(Thu)_shkwak, innetHTML 이슈
+{	//2015-05-21(Thu)_shkwak, innetHTML 이슈, use yet!
     return unsafe_str
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
