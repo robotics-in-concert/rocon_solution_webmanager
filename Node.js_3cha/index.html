@@ -920,7 +920,7 @@ function GetGitHubServiceContent(sNum) //or sha, use this! ★★★★
 			editViewE_SetValue(sNum);
 
 			// 선택된 service 정보 저장 변수! 2015-06-03(Wed)_shkwak ★★★
-			SelectedServiceE_JSON[sNum] = {name: ServiceRepoContent_JSON[sNum].name, selected: 'true', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
+			SelectedServiceE_JSON[sNum] = {name: name_GitHubServiceList[sNum], selected: 'true', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
 			console.log(SelectedServiceE_JSON);
 			console.log(SelectedServiceE_JSON[sNum]);
 		},

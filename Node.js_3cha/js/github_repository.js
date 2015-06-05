@@ -81,7 +81,7 @@ function addServiceE(sName, tColor, sNum) //★★★
 	
 	var element = "<div class='list-group-item height-75 git-add-service" + sNum + "' style='cursor: pointer;'>"
 		+ "<div><p id='git-add-service" + sNum + "' class='list-group-item-text col-xs-9' style='color:" + tColor + "; padding-left:0px;' "
-		+ "onclick='delServiceE(this.id, " + sNum + ");'>" + sName + " (<span id='git-icon" + sNum + "' class='glyphicon glyphicon-minus'></span>)</p></div>"
+		+ "onclick='delServiceE(this.id, " + sNum + ");'>" + sName + " (<span class='glyphicon glyphicon-minus'></span>)</p></div>"
 		+ "<div class='col-xs-9' style='padding:0px;'>"
 		+ "<h6 id='git-desc" + sNum + "' style='cursor: default;'>" + description + "</h6></div>"
 		+ "<div class='col-xs-3' style='padding:0px; margin-top:-24px;'>"
@@ -183,6 +183,7 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 {	//overrided - check, 2015-06-02(Tue)_shkwak
 	var chk_id = "#git-check_override" + sNum;
 	var this_class = $(chk_id).attr('class'); //glyphicon glyphicon-remove
+	console.log('classOverrideChangeE(sNum)-------------------------------------------');
 	console.log('sNum : ' + sNum + ', chk_id : ' + chk_id + ', class : ' + this_class);
 	
 	//원본 데이터, undefined 문제 해결, undefind 시 -> ""로 대체, 2015-05-27
@@ -202,7 +203,7 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 	if (icon != (document.getElementById('git-icon' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_icon = (document.getElementById('git-icon' + sNum).value).trim();
-		overrided = true;
+		overrided = true;		
 	}
 	if (priority != (document.getElementById('git-priority' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
@@ -220,11 +221,6 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 		overrided = true;
 	}
 		
-	//	if (description != (document.getElementById('git-description' + sNum).value).trim()) {
-	//		|| icon != (document.getElementById('git-icon' + sNum).value).trim() 
-	//		|| priority != (document.getElementById('git-priority' + sNum).value).trim()
-	//		|| interactions != (document.getElementById('git-interactions' + sNum).value).trim()
-	//		|| parameters != (document.getElementById('git-parameters' + sNum).value).trim()) 
 	if (overrided)
 	{
 		console.info('달라');
@@ -240,7 +236,7 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 		$(chk_id).attr("class", "glyphicon glyphicon-remove");
 
 		console.log(SelectedServiceE_JSON[sNum]);
-	}	
+	}
 }
 
 //==== Service Configurator Function, 2015-06-03(Wed)_shkwak
@@ -433,7 +429,7 @@ function GitHubService_serviceContent_Create(sNum) //use this!!!!
 			serviceContent += "  override:\n"; //초기 한번만 추가!
 			overrided = true;
 		}
-		serviceContent += "    priority: " + SelectedServiceE_JSON[sNum].overrided_priority;
+		serviceContent += "    priority: " + SelectedServiceE_JSON[sNum].overrided_priority + "\n";
 	}
 	//console.log(serviceContent); //ok
 }

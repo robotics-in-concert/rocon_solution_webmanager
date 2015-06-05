@@ -1,9 +1,9 @@
 var app = require('http').createServer(handler), 
-    io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
-	//io = require('socket.io').listen(app),
+    //io = require(process.env.APPDATA + '/npm/node_modules/socket.io').listen(app), 
+	io = require('socket.io').listen(app),
     fs = require('fs'),
-	ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
-	//ROSLIB = require('roslib'),
+	//ROSLIB = require(process.env.APPDATA + '/npm/node_modules/roslib'),	
+	ROSLIB = require('roslib'),
     ros = new ROSLIB.Ros();
 	
 var param = process.argv.slice(2);
