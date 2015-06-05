@@ -21,6 +21,8 @@ rocon_solution_webmanager
 >
 > npm install fs-readdir-recursive
 >
+> npm install github-api
+>
 ```
 
 *Start ```Node.js server```.
