@@ -574,7 +574,7 @@ function LocalServiceConfigure(fileID)
 			break;
 		case '4': 
 			fileName = created_solutionName + ".launch"; 
-/*			serviceContent += "<!-- <launch>\n";
+    /*		serviceContent += "<!-- <launch>\n";
 			serviceContent += "  <node name="" + document.getElementById('launchNodeName').value + "" pkg="" + document.getElementById('launchNodePkg').value + "" type="" + document.getElementById("launchNodeType").value + "">\n";
 			serviceContent += "    <param name="" + document.getElementById('launchParamName').value + "" value="" + document.getElementById('launchParamValue').value + ""/>\n";
 			serviceContent += "  </node>\n";
@@ -582,7 +582,7 @@ function LocalServiceConfigure(fileID)
 			serviceContent += "    <arg name="" + document.getElementById('launchArgName').value + "" value="" + document.getElementById('launchArgValue').value + ""/>\n";
 			serviceContent += "  </include>\n";
 			serviceContent += "</launch>\n";
-*/			//serviceContent = "<launch>\n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>\n  <arg name='concert_name' default='dummy concert'/>\n  <arg name='scheduler_type' default='compatibility_tree'/>\n  <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='$(arg concert_name)'/>\n      <arg name='services' value='$(arg dummy_services)'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
+	*/			//serviceContent = "<launch>\n  <arg name='dummy_services' default='dummy_concert1/dummy_concert1.services'/>\n  <arg name='concert_name' default='dummy concert'/>\n  <arg name='scheduler_type' default='compatibility_tree'/>\n  <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='$(arg concert_name)'/>\n      <arg name='services' value='$(arg dummy_services)'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
 			serviceContent = "<launch>\n    <include file='$(find concert_master)/launch/concert_master.launch'>\n      <arg name='concert_name' value='" + created_solutionName + "'/>\n      <arg name='services' value='" + created_solutionName + ".services'/>\n      <arg name='conductor_auto_invite' value='true' />\n      <arg name='conductor_local_clients_only' value='true' />\n      <arg name='auto_enable_services' value='true' />\n      <arg name='scheduler_type' value='$(arg scheduler_type)'/>\n  </include>\n</launch>";
 			break;
 	};	
@@ -605,9 +605,6 @@ function LocalServiceConfigure(fileID)
 		});
 	}	
 }
-
-
-
 
 function packageName_check(name) //★
 {	//기술적인 이슈 처리 : Name 정보는 (*)영문으로 하고, (1)소문자로 변환하고 (2)공백은 “_” 밑첨자로 변경_2015-04-29(Wed)
@@ -682,10 +679,9 @@ function GetGitHubBranchTreeSHA()
 {	//2015-05-10(Sun)_shkwak, Get Branch - tree sha 값 가져오기
 	var service_branch = localStorage.getItem('service_branch'); //add, 2015-06-01
 	var branch = (service_branch)? service_branch : 'concert_common_services';
+	owner = (localStorage.getItem("service_owner"))? localStorage.getItem("service_owner") : 'robotics-in-concert';
+	repo = (localStorage.getItem('service_repo'))? localStorage.getItem('service_repo') : 'rocon_demos';
 
-	owner2 = localStorage.getItem("git_username");
-	repo2 = localStorage.getItem('solution_repo');
-	
 	jQuery.support.cors = true;
 	$.ajax({
 		url: "https://api.github.com/repos/" + owner + "/" + repo + "/branches/" + branch,
@@ -2850,10 +2846,6 @@ function win_op(mypage, myname, w, h, scroll){
 							  <!-- <div id="git-advancedBtn_0" style="float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;" onclick="advancedViewE(0);">Advanced</div> -->
 							</div>
 
-
-				
-							
-
 							<br>
 							<button type="button" class="btn btn-warning" style="float:right;" onclick="FileUpdate_subF();">Commit changes</button>
 							<input type="text" id="updateMsg" class="form-control" id="" style="width: 40%; float: right; display: inline-block; margin-right: 4px;" placeholder="Insert update message here." spellcheck="false"><br><br>
@@ -2993,7 +2985,7 @@ function win_op(mypage, myname, w, h, scroll){
 					
 					//==== SNS 통보, 2015-04-14(Tue)_shkwak ====
 					if (n == "admin" && s == false && isSend == false) {
-						sendMsg1('admin disabled2222222222!');
+						sendMsg1('admin disabled!');
 						console.log('============ SNS Send ============');
 						isSend = true;
 					} else if (n == "admin" && s == true && isSend == true) {
