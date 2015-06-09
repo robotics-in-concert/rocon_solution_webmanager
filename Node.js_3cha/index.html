@@ -812,7 +812,7 @@ function show_GitHubServiceList() //use this!
 	name_GitHubServiceList.forEach(function(file){		
 		var element = "<div class='list-group-item sl" + an + " list-group-item2' style='height:75px; cursor: pointer;'>"
 			+ "<p class='list-group-item-text' style='color:#A8A9AC;'>service name : </p>"
-			+ "<h3 class='list-group-item-heading' style='color:" + color_sample[an] + ";' "
+			+ "<h3 class='list-group-item-heading' style='color:" + color_sample[an] + "; overflow: auto;' "
 			+ "onclick='addServiceE(this.innerHTML, this.style.color, " + an + "); GetGitHubServiceContent(" + an + ");'>" + file + "</h3></div>";
 
 		$(element).appendTo("#div_serviceListE"); //획득한 service 리스트 추가		
@@ -915,10 +915,11 @@ function GetGitHubServiceContent(sNum) //or sha, use this! ★★★★
 			// 실제 ServiceRepoContent(sNum) data 적용, 2015-06-02(Tue)_shkwak ★, 선택한 서비스의 contents 항목을 채운다.
 			editViewE_SetValue(sNum);
 
-			// 선택된 service 정보 저장 변수! 2015-06-03(Wed)_shkwak ★★★
+			// 선택된 service 정보 저장 변수! 2015-06-03(Wed)_shkwak ★★★ : name_GitHubServiceList[sNum] 중요!
 			SelectedServiceE_JSON[sNum] = {name: name_GitHubServiceList[sNum], selected: 'true', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
 			console.log(SelectedServiceE_JSON);
-			console.log(SelectedServiceE_JSON[sNum]);
+			console.log(SelectedServiceE_JSON[sNum]); //GOOD
+			console.log('-----------------------------------');
 		},
 		error: function (x, y, z) {
 			alert(x + "\n" + y + "\n" + z);
@@ -1485,7 +1486,7 @@ function repo_createPullRequest44(tt, bd, bs, hd) //use this!
 		console.log('Please check GitHub username and password');
 		SweetAlert_Group('basicA', 'Please check GitHub username and password!');
 	}
-	else
+	else 
 	{		
 		console.log(tt + ', ' + bd + ', ' + bs + ', ' + hd);
 

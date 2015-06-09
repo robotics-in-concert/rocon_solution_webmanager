@@ -10,9 +10,12 @@
 /*== 2015-06-03(Wed)_shkwak		 ==*/
 /*---------------------------------*/
 var SelectedServiceE_JSON = new Array(); //2015-06-03(Wed), 선택된 service 정보와 override항목 정보 등..
-var GitHub_resource_name = new Array(); //2015-06-03
+var GitHub_resource_name = new Array(); //2015-06-03(Wed), service의 resource name을 저장
+var GitHub_ros_package_name = new Array(); //2015-06-09(Tue), for package.xml <run_depend> 항목 처리
 var serviceContent = "", launchContent = ""; //Init!, 구성 결과 저장! 2015-06-03
 var packageContent = "", cmakelistsContent = ""; //2015-06-04
+var serviceContent_created = false, launchContent_created = false; //2015-06-09(Tue), 구성 content 생성 여부 판단
+var packageContent_created = false, cmakelistsContent_created = false;
 /*=================================*/
 
 //**** edit_sectionE : Solution Configurator - Service Repository (GitHub) ****//
@@ -70,50 +73,62 @@ function delElementE(){	//no use!
 var anr = 0;
 function addServiceE(sName, tColor, sNum) //★★★
 {	//Solution에 Service 추가, 2015-05-11(Mon)_RE_shkwak, sNum 추가, 2015-06-02(Tue)	
-	console.log("anr : " + anr);
-	var description = "";
+	console.log('-----------------------------------');
+	console.log("addServiceE_anr : " + anr);
+	if (SelectedServiceE_JSON[sNum].selected == 'true')
+	{	//2015-06-09(Tue)_shkwak, service 중복 추가 이슈 처리!
+		SweetAlert_Group('basicA', 'The same service already exists!');
+	}
+	else
+	{
+		var description = "";
 
-	//if (tTitle == ""){
-		description = 'Robot deliveries what you order through your application. You can choose delivery robots as your needs. e.g.beverage,...';
-	//}else{
-	//	description = tTitle;
-	//}
-	
-	var element = "<div class='list-group-item height-75 git-add-service" + sNum + "' style='cursor: pointer;'>"
-		+ "<div><p id='git-add-service" + sNum + "' class='list-group-item-text col-xs-9' style='color:" + tColor + "; padding-left:0px;' "
-		+ "onclick='delServiceE(this.id, " + sNum + ");'>" + sName + " (<span class='glyphicon glyphicon-minus'></span>)</p></div>"
-		+ "<div class='col-xs-9' style='padding:0px;'>"
-		+ "<h6 id='git-desc" + sNum + "' style='cursor: default;'>" + description + "</h6></div>"
-		+ "<div class='col-xs-3' style='padding:0px; margin-top:-24px;'>"
-		+ "<h6 id='h6_nf" + sNum + "' style='color:#FCB040; float:right; margin:8px 0px 0px 0px;' onclick='classChangeE(this.id, " + sNum + ");'>Auto enabled service "
-		+ "<span id='git-check_h6_nf" + sNum + "' class='glyphicon glyphicon-unchecked'></span></h6>"
-		+ "<div><span style='float:right; padding-right:63px; color:#ccc; font-size:12px; cursor: default;'>overrided "
-		+ "<span id='git-check_override" + sNum + "' class='glyphicon glyphicon-remove'></span></span></div>"
-		+ "<strong><div id='git-editBtn_" + sNum + "' style='float:right; padding-right:108px; color:; font-size:12px;' onclick='editViewE(" + sNum + ");'>edit</div></strong></div></div>"
+		//if (tTitle == ""){
+			description = 'Robot deliveries what you order through your application. You can choose delivery robots as your needs. e.g.beverage,...';
+		//}else{
+		//	description = tTitle;
+		//}
 		
-		//+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-edit" + sNum + "' style='display:none; background-color:#FFFFFF;'>"
-		//+ "<textarea id='git-textarea" + sNum + "' style='width: 100%; height:82%; border:1px solid #ccc; border-radius:4px; resize:none;' spellcheck='false'></textarea>"
-		//+ "<button type='button' id='git-saveBtn_" + sNum + "' class='btn btn-info' style='float: right; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChangeE(this.id);editViewE(this.id);'>Save</button></div>"
+		var element = "<div class='list-group-item height-75 git-add-service" + sNum + "' style='cursor: pointer;'>"
+			+ "<div><p id='git-add-service" + sNum + "' class='list-group-item-text col-xs-9' style='color:" + tColor + "; padding-left:0px;' "
+			+ "onclick='delServiceE(this.id, " + sNum + ");'>" + sName + " (<span class='glyphicon glyphicon-minus'></span>)</p></div>"
+			+ "<div class='col-xs-9' style='padding:0px;'>"
+			+ "<h6 id='git-desc" + sNum + "' style='cursor: default;'>" + description + "</h6></div>"
+			+ "<div class='col-xs-3' style='padding:0px; margin-top:-24px;'>"
+			+ "<h6 id='h6_nf" + sNum + "' style='color:#FCB040; float:right; margin:8px 0px 0px 0px;' onclick='classChangeE(this.id, " + sNum + ");'>Auto enabled service "
+			+ "<span id='git-check_h6_nf" + sNum + "' class='glyphicon glyphicon-unchecked'></span></h6>"
+			+ "<div><span style='float:right; padding-right:63px; color:#ccc; font-size:12px; cursor: default;'>overrided "
+			+ "<span id='git-check_override" + sNum + "' class='glyphicon glyphicon-remove'></span></span></div>"
+			+ "<strong><div id='git-editBtn_" + sNum + "' style='float:right; padding-right:108px; color:; font-size:12px;' onclick='editViewE(" + sNum + ");'>edit</div></strong></div></div>"
+			
+			//+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-edit" + sNum + "' style='display:none; background-color:#FFFFFF;'>"
+			//+ "<textarea id='git-textarea" + sNum + "' style='width: 100%; height:82%; border:1px solid #ccc; border-radius:4px; resize:none;' spellcheck='false'></textarea>"
+			//+ "<button type='button' id='git-saveBtn_" + sNum + "' class='btn btn-info' style='float: right; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChangeE(this.id);editViewE(this.id);'>Save</button></div>"
 
-		+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-edit" + sNum + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'>"
-		+ "<table class='table'><button type='button' id='git-overrideBtn_" + sNum + "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' "
-		+ "onclick='classOverrideChangeE(" + sNum + "); editViewE(" + sNum + ");'>Override</button>"
-		+ "<thead><tr><th>Service Name</th><th>" + sName + "</th></tr></thead>"
-		+ "<tbody><tr style='height:28px;'><td style='padding:5px 8px'>Description</td><td style='padding:2px 8px;'>"
-		+ "<input type='text' id='git-description" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Icon</td><td style='padding:2px 8px;'>"
-		+ "<input type='text' id='git-icon" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Priority</td><td style='padding:2px 8px;'>"
-		+ "<input type='text' id='git-priority" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Interactions</td><td style='padding:2px 8px;'>"
-		+ "<input type='text' id='git-interactions" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Parameters</td><td style='padding:2px 8px;'>"
-		+ "<input type='text' id='git-parameters" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr></tbody></table></div>"
-		
-		+ "<div id='git-advancedBtn_" + sNum + "' style='float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;' "
-		+ "onclick='advancedViewE(" + sNum + ");'>Advanced</div></div>"
+			+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-edit" + sNum + "' style='display:none; background-color:#FFFFFF;'>"
+			+ "<div class='table-responsive' style='font-size:12px;'><table class='table'>"
+			+ "<button type='button' id='git-overrideBtn_" + sNum + "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' "
+			+ "onclick='classOverrideChangeE(" + sNum + "); editViewE(" + sNum + ");'>Override</button>"
+			+ "<thead><tr><th>Service Name</th>" 
+			+ "<th style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-name" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px; width: 83%; color: " + tColor + ";' spellcheck='false'></th>"
+			+ "</tr></thead>"
+			+ "<tbody><tr style='height:28px;'><td style='padding:5px 8px'>Description</td><td style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-description" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;' spellcheck='false'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Icon</td><td style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-icon" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;' spellcheck='false'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Priority</td><td style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-priority" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;' spellcheck='false'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Interactions</td><td style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-interactions" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;' spellcheck='false'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Parameters</td><td style='padding:2px 8px;'>"
+			+ "<input type='text' id='git-parameters" + sNum + "' class='form-control' value='' style='padding:2px 8px; height:24px;' spellcheck='false'></td></tr></tbody></table></div>"
+			
+			+ "<div id='git-advancedBtn_" + sNum + "' style='float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;' "
+			+ "onclick='advancedViewE(" + sNum + ");'>Advanced</div></div>"
 
-		+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-advanced" + sNum + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'>"
-		+ "<textarea id='git-box_advanced" + sNum + "' style='width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:none;' rows='11' spellcheck='false'></textarea></div></div>"
+			+ "<div class='list-group-item height-225 git-add-service" + sNum + "' id='git-advanced" + sNum + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'>"
+			+ "<textarea id='git-box_advanced" + sNum + "' style='width:100%; margin-top:5px; border:1px solid #ccc; border-radius: 4px; resize:none;' rows='11' spellcheck='false'></textarea></div></div>"
 
-	$(element).appendTo("#div_serviceNameE"); //<span style='float:right;'>edit</span>						
-	anr++;
+		$(element).appendTo("#div_serviceNameE"); //<span style='float:right;'>edit</span>						
+		anr++;
+	}
 }									
   /*
   <a href='#' class='list-group-item height-225 git-add-service" + anr + "' id='edit" + anr + "' style='display:none; background-color:#FFFFFF;'><div class='table-responsive' style='font-size:12px;'> <table class='table'><button type='button' id='saveBtn_" + anr + "' class='btn btn-info' style='position: absolute; right: 25px; height: 30px; font-size: 12px;' onclick='classOverrideChangeE(this.id);editViewE(this.id);'>Save</button><thead><tr><th>Service Name</th><th>" + sName + "</th></tr></thead><tbody><tr style='height:28px;'><td style='padding:5px 8px'>Description</td><td style='padding:2px 8px;'><input type='text' id='description_" + anr +"' class='form-control' value='" + description + "' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Icon</td><td style='padding:2px 8px;'><input type='text' id='icon_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Priority</td><td style='padding:2px 8px;'><input type='text' id='priority_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Interactions</td><td style='padding:2px 8px;'><input type='text' id='interactions_" + anr + "' class='form-control' value='' style='padding:2px 8px; height:24px;'></td></tr><tr style='height:28px;'><td style='padding:5px 8px'>Parameters</td><td style='padding:2px 8px;'><input type='text' id='parameters_" + anr + "' class='form-control' value='concert_service_make_a_map/make_a_map' style='padding:2px 8px; height:24px;'></td></tr></tbody></table></div></a>"
@@ -129,7 +144,7 @@ function delServiceE(sID, sNum) //use this!
 	}	
 
 	//Selected Service 항목 초기화, 2015-06-03(Wed)_shkwak
-	SelectedServiceE_JSON[sNum] = { //GOOD
+	SelectedServiceE_JSON[sNum] = { //GOOD, name 초기화 값 추가 검토 필요!
 		name: ServiceRepoContent_JSON[sNum].name, 
 		selected: 'false', 
 		auto_enabled: 'false', 
@@ -183,10 +198,12 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 {	//overrided - check, 2015-06-02(Tue)_shkwak
 	var chk_id = "#git-check_override" + sNum;
 	var this_class = $(chk_id).attr('class'); //glyphicon glyphicon-remove
-	console.log('classOverrideChangeE(sNum)-------------------------------------------');
+	console.log('--------------------------');
+	console.log('classOverrideChangeE(sNum)');
 	console.log('sNum : ' + sNum + ', chk_id : ' + chk_id + ', class : ' + this_class);
 	
 	//원본 데이터, undefined 문제 해결, undefind 시 -> ""로 대체, 2015-05-27
+	var name = (ServiceRepoContent_JSON[sNum].name)? ServiceRepoContent_JSON[sNum].name : "";
 	var description = (ServiceRepoContent_JSON[sNum].description)? ServiceRepoContent_JSON[sNum].description : "";
 	var icon = (ServiceRepoContent_JSON[sNum].icon)? ServiceRepoContent_JSON[sNum].icon : "";
 	var priority = (ServiceRepoContent_JSON[sNum].priority)? ServiceRepoContent_JSON[sNum].priority : "";
@@ -195,30 +212,47 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 	
 	//데이터 수정여부 판단, 2015-05-27(Wed)_shkwak / undefined, "" 비교 문제, trim() 적용 -> 스페이스 입력 제거 / 
 	var overrided = false;
+	if (name != (document.getElementById('git-name' + sNum).value).trim()) {
+		//overrided_name 항목 추가, 2015-06-09(Wed)_shkwak
+		SelectedServiceE_JSON[sNum].overrided_name = document.getElementById('git-name' + sNum).value.trim();
+		overrided = true;
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_name = "";
+	}
 	if (description != (document.getElementById('git-description' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_description = document.getElementById('git-description' + sNum).value.trim();
 		overrided = true;
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_description = "";
 	}
 	if (icon != (document.getElementById('git-icon' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_icon = (document.getElementById('git-icon' + sNum).value).trim();
 		overrided = true;		
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_icon = "";
 	}
 	if (priority != (document.getElementById('git-priority' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_priority = (document.getElementById('git-priority' + sNum).value).trim();
 		overrided = true;
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_priority = "";
 	}
 	if (interactions != (document.getElementById('git-interactions' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_interactions = (document.getElementById('git-interactions' + sNum).value).trim();
 		overrided = true;
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_interactions = "";
 	}
 	if (parameters != (document.getElementById('git-parameters' + sNum).value).trim()) {
 		//Selected Service 항목 변경, 2015-06-03(Wed)_shkwak
 		SelectedServiceE_JSON[sNum].overrided_parameters = (document.getElementById('git-parameters' + sNum).value).trim();
 		overrided = true;
+	} else {
+		SelectedServiceE_JSON[sNum].overrided_parameters = "";
 	}
 		
 	if (overrided)
@@ -261,26 +295,27 @@ function GitHubServiceConfigure() //top func
 		{
 			if (SelectedServiceE_JSON[i].selected == 'true')
 			{
-				GitHubService_serviceContent_Create(i); //★★★★
+				serviceContent_created = GitHubService_serviceContent_Create(i); //★★★★
 			}
 		}
 		console.log(serviceContent); //ok? : 간혈적으로 값이 안나오는 경우 발생 - 원인 불명 ===============================================!!
 
 		//solution.launch content 작성,
 		launchContent = ""; //Reset! 이전 content 삭제
-		GitHubService_launchContent_Create(); //
+		launchContent_created = GitHubService_launchContent_Create();
 
 		//package.xml content 작성, //생성되는 타이밍 조절 필요, 현재위치 : 서비스 구성 시, 같이 생성됨 ->  ================================!!!!!!!!!!!!!!!
 		packageContent = ""; //Reset! 이전 content 삭제
-		GitHubService_packageContent_Create(); //
+		packageContent_created = GitHubService_packageContent_Create();
 		
 		//CMcakeKists.txt content 작성
 		cmakelistsContent = ""; //Reset! 이전 content 삭제
-		GitHubService_cmakelistsContent_Create(); //		
+		cmakelistsContent_created = GitHubService_cmakelistsContent_Create();
 	}	
 }
 
-function GitHubService_packageContent_Create(sNum) //use this!!
+/*----package.xml content----*/
+function GitHubService_packageContent_Create() //use this!!
 {	//Selected service의 packageContent 작성, 2015-06-04(Thu)_shkwak
 	/*--생성될 솔루션 파일명(임시)--*///solution은 생성할 솔루션명이랑 같아야 할듯
 	var solutionName = document.getElementById('forked_repo_solution').value; //solutionName_check(name)!!	
@@ -296,6 +331,7 @@ function GitHubService_packageContent_Create(sNum) //use this!!
 	}
 	else
 	{
+		var saved_ros_package = ""; //각 서비스 별 ros_package name 중복 방지를 위한 임시 저장 변수! 2015-06-09(Tue)
 		solutionName = solutionName_check(solutionName); //solutionName_check(name)!!★
 		packageContent += "<?xml version='1.0' encoding='UTF-8'?>\n";
 		packageContent += "<package>\n";
@@ -310,14 +346,28 @@ function GitHubService_packageContent_Create(sNum) //use this!!
 		packageContent += "\n";
 		packageContent += "  <buildtool_depend>catkin</buildtool_depend>\n"; //catkin fix! (imsi)
 		packageContent += "\n";
-		packageContent += "  <run_depend>concert_master</run_depend>\n";
-		packageContent += "  <run_depend>concert_common_services</run_depend>\n";
-		//packageContent += "  <run_depend></run_depend>\n";
+
+		//console.log(GitHub_ros_package_name); //OK
+		for (var sNum = 0; sNum < SelectedServiceE_JSON.length; sNum++)
+		{	
+			//console.log(saved_ros_package + ', ' + GitHub_ros_package_name[sNum]);
+			if (SelectedServiceE_JSON[sNum].selected == 'true' && saved_ros_package != GitHub_ros_package_name[sNum]) //중복검사, 2015-06-09
+			{				
+				//ros_package name 반영
+				packageContent += "  <run_depend>" + GitHub_ros_package_name[sNum] + "</run_depend>\n";				
+				saved_ros_package = GitHub_ros_package_name[sNum];
+			}
+		}
+
+		//packageContent += "  <run_depend>concert_master</run_depend>\n";
+		//packageContent += "  <run_depend>concert_common_services</run_depend>\n";		
 		packageContent += "</package>";	
 	}	
 	console.log(packageContent); //ok
+	return true;
 }
 
+/*----cmakelists.txt content----*/
 function GitHubService_cmakelistsContent_Create() //use this!!!!
 {	//Selected service의 cmakelistsContent 작성, 2015-06-04(Thu)_shkwak
 	var solutionName = document.getElementById('forked_repo_solution').value; //"dummy_concert1";
@@ -331,8 +381,10 @@ function GitHubService_cmakelistsContent_Create() //use this!!!!
 	cmakelistsContent += "catkin_package()";
 
 	console.log(cmakelistsContent); //ok
+	return true;
 }
 
+/*----solution.launch content----*/
 function GitHubService_launchContent_Create() //use this!!
 {	//Selected service의 launchContent 작성, 2015-06-04(Thu)_shkwak
 	var solutionName = document.getElementById('forked_repo_solution').value; //"dummy_concert1";
@@ -363,39 +415,21 @@ function GitHubService_launchContent_Create() //use this!!
 	launchContent += "</launch>";
 	
 	console.log(launchContent); //ok
-	/*
-	<!-- 샘플1 -->
-	<launch>
-		<arg name="concert_client_name" default="dude"/>
-		<arg name="concert_name" default="$(env CONCERT_NAME)"/> 
-
-		<include file="$(find rocon_app_manager)/launch/concert_client.launch">
-			<arg name="robot_name" value="$(arg concert_client_name)"/>
-			<arg name="concert_whitelist" value="$(arg concert_name)"/>
-			<arg name="robot_type" value="pc"/>
-			<arg name="rapp_package_whitelist" value="[rocon_apps, concert_common_rapps, robosem_bridge, rocon_hue, rocon_ninja_block]"/>
-			<arg name="concert_watch_period" value="1"/>
-		</include>
-	</launch>
-
-	<!-- 샘플2 -->
-	<launch>
-		<include file="$(find concert_master)/launch/concert_master.launch">
-			<arg name="concert_name" value="Concert Tutorial"/>
-			<arg name="services" value="concert_tutorial/tutorial.services"/>
-			<arg name="conductor_auto_invite" value="true" />
-			<arg name="conductor_local_clients_only" value="true" />
-			<arg name="auto_enable_services" value="true" />
-			<arg name="scheduler_type" value="compatibility_tree"/>
-		</include>
-	</launch>
-	*/
+	return true;
 }
 
+/*----solution.services content----*/
 function GitHubService_serviceContent_Create(sNum) //use this!!!!
 {	//Selected service의 serviceContent 작성, 2015-06-03(Wed)_shkwak
 	var overrided = false;
 	serviceContent += "- resource_name: " + GitHub_resource_name[sNum] + "\n";
+	if (SelectedServiceE_JSON[sNum].overrided_name != ""){
+		if (!overrided){ //overrided_name 항목 추가, 2015-06-09(Tue)_shkwak
+			serviceContent += "  override:\n"; //초기 한번만 추가!
+			overrided = true;
+		}
+		serviceContent += "    name: " + SelectedServiceE_JSON[sNum].overrided_name + "\n";
+	}
 	if (SelectedServiceE_JSON[sNum].overrided_description != ""){
 		if (!overrided){ //override 상태로 들어왔는데, 이전 상태가 false 인 경우.
 			serviceContent += "  override:\n"; //초기 한번만 추가!
@@ -432,6 +466,7 @@ function GitHubService_serviceContent_Create(sNum) //use this!!!!
 		serviceContent += "    priority: " + SelectedServiceE_JSON[sNum].overrided_priority + "\n";
 	}
 	//console.log(serviceContent); //ok
+	return true;
 }
 
 function GitHubService_resource_name_Create() //use this!
@@ -443,15 +478,16 @@ function GitHubService_resource_name_Create() //use this!
 
 		var sep_path = path.split("/");
 		//console.log(sep_path);
-		console.log(sep_path.length);
+		//console.log('sep_path.length : ' + sep_path.length);
 
 		var services_pos = 0;
-		for (var i = 0; i < sep_path.length; i++)
+		for (var i = 0; i < sep_path.length; i++) //sNum, i 같이 사용해도 됨!
 		{
 			if (sep_path[i] == 'services') {
-				console.log('services positon : ' + i);
+				//console.log('services positon : ' + i);
 				services_pos = i; //services 위치 찾기
-				GitHub_resource_name[sNum++] = sep_path[i-1] + '/' + sep_path[i+1];
+				GitHub_resource_name[sNum] = sep_path[i-1] + '/' + sep_path[i+1];
+				GitHub_ros_package_name[sNum++] = sep_path[i-1]; //2015-06-09(Tue), ros package 명 저장
 				break;
 			}		
 		}		
@@ -504,76 +540,86 @@ function SolutionCreate_forked_repo()
 			SweetAlert_Group('basicA', 'Please insert values!');
 		}
 		else {
-			solutionName = solutionName_check(solutionName); //solutionName_check(name)!!
-			var fileName = [solutionName + ".launch", solutionName + ".services", "package.xml", "CMakeLists.txt"];		
+			if (serviceContent_created == false || launchContent_created == false || packageContent_created == false || cmakelistsContent_created == false)
+			{
+				SweetAlert_Group('basicA', 'Please configure service contents!');
+			}
+			else
+			{
+				solutionName = solutionName_check(solutionName); //solutionName_check(name)!!
+				var fileName = [solutionName + ".launch", solutionName + ".services", "package.xml", "CMakeLists.txt"];		
 
-			//launchContent = (launchContent != "")? Base64.encode(launchContent) : document.getElementById('box1').value;
-			//serviceContent = (serviceContent != "")? Base64.encode(serviceContent) : document.getElementById('box2').value;
-			//packageContent = (packageContent != "")? Base64.encode(packageContent) : document.getElementById('box3').value;
-			//cmakelistsContent = (cmakelistsContent != "")? Base64.encode(cmakelistsContent) : document.getElementById('box4').value;
-			
-			//var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
-			var box = [Base64.encode(launchContent), Base64.encode(serviceContent), Base64.encode(packageContent), Base64.encode(cmakelistsContent)];
+				//launchContent = (launchContent != "")? Base64.encode(launchContent) : document.getElementById('box1').value;
+				//serviceContent = (serviceContent != "")? Base64.encode(serviceContent) : document.getElementById('box2').value;
+				//packageContent = (packageContent != "")? Base64.encode(packageContent) : document.getElementById('box3').value;
+				//cmakelistsContent = (cmakelistsContent != "")? Base64.encode(cmakelistsContent) : document.getElementById('box4').value;
+				
+				//var box = [document.getElementById('box1').value, document.getElementById('box2').value, document.getElementById('box3').value, document.getElementById('box4').value];
+				var box = [Base64.encode(launchContent), Base64.encode(serviceContent), Base64.encode(packageContent), Base64.encode(cmakelistsContent)];
 
-			var data = userID + ":" + userPW;
-			var base64IDPW_user = Base64.encode(data)
+				var data = userID + ":" + userPW;
+				var base64IDPW_user = Base64.encode(data)
 
-			var msg = (document.getElementById('forked_repo_msg').value)? document.getElementById('forked_repo_msg').value : "Create new solution to forked repo!"; 
-			var content = box[created_num]; 
-			var cmds = {message : msg, content : content};
-			var url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[created_num];
-			if (created_num == 0) url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/launch/" + fileName[created_num];
-			if (created_num == 1) url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/solution/" + fileName[created_num];
+				var msg = (document.getElementById('forked_repo_msg').value)? document.getElementById('forked_repo_msg').value : "Create new solution to forked repo!"; 
+				var content = box[created_num]; 
+				var cmds = {message : msg, content : content};
+				var url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[created_num];
+				if (created_num == 0) url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/launch/" + fileName[created_num];
+				if (created_num == 1) url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/solution/" + fileName[created_num];
 
-			jQuery.support.cors = true;
-			$.ajax({
-				beforeSend: function (request) { 
-					request.setRequestHeader("Authorization", "basic " + base64IDPW_user);
-				},
-				url: url, //"https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[created_num], // + "?access_token=" + access_token,
-				type: "PUT",
-				data: JSON.stringify(cmds),
-				contentType: "application/json;charset=utf-8",
-				success: function (data) {
-					console.log("fileName : " + fileName[created_num]);
-					console.log("created_num : " + created_num);
-					created_num++;
-					
-					if (created_num == 4)
-					{	
+				jQuery.support.cors = true;
+				$.ajax({
+					beforeSend: function (request) { 
+						request.setRequestHeader("Authorization", "basic " + base64IDPW_user);
+					},
+					url: url, //"https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + solutionName + "/" + fileName[created_num], // + "?access_token=" + access_token,
+					type: "PUT",
+					data: JSON.stringify(cmds),
+					contentType: "application/json;charset=utf-8",
+					success: function (data) {
+						console.log("fileName : " + fileName[created_num]);
+						console.log("created_num : " + created_num);
+						created_num++;
+						
+						if (created_num == 4)
+						{	
+							created_num = 0;
+							var created_solution_url = "https://github.com/" + owner + "/" + repo + "/tree/master/" + solutionName; //api, repos, contents 항목 삭제!, tree/master/ 추가★
+							console.log(created_solution_url);
+							clearTimeout(timer);
+							
+							//솔루션 생성 완료 시, Alert! 2015-06-09(Tue)_shkwak
+							SweetAlert_Group('basicA', solutionName + " is successfully created!");
+						}
+						else
+						{
+							timer = setTimeout('SolutionCreate_forked_repo()',500);
+						}			
+
+						console.log(timer);
+					},
+					error: function (x, y, z) {
+						console.log(x + " " + y + " : " + z + ", created_num : " + created_num + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
+						if (z == "Unprocessable Entity")
+						{
+							console.log("이미 동일한 솔루션이 존재합니다.");
+							SweetAlert_Group('basicA', "The same solution already exists!");
+						}
+						else if (z == "Unauthorized")
+						{	//add, 2015-06-01(Mon)_shkwak
+							console.log("Unauthorized!");
+							SweetAlert_Group('basicA', "Unauthorized!");
+						}
+						else if (z == "Not Found")
+						{
+							console.log("gitInfo(git_username, git_repo) 값이 올바르지 않습니다. 다시 확인해 주세요.");					
+						}
+						
 						created_num = 0;
-						var text = "https://github.com/" + owner + "/" + repo + "/tree/master/" + solutionName; //api, repos, contents 항목 삭제!, tree/master/ 추가★
-						console.log(text);
 						clearTimeout(timer);
 					}
-					else
-					{
-						timer = setTimeout('SolutionCreate_forked_repo()',500);
-					}			
-
-					console.log(timer);
-				},
-				error: function (x, y, z) {
-					console.log(x + " " + y + " : " + z + ", created_num : " + created_num + "\n\n솔루션 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
-					if (z == "Unprocessable Entity")
-					{
-						console.log("이미 동일한 솔루션이 존재합니다.");
-						SweetAlert_Group('basicA', "The same solution already exists!");
-					}
-					else if (z == "Unauthorized")
-					{	//add, 2015-06-01(Mon)_shkwak
-						console.log("Unauthorized!");
-						SweetAlert_Group('basicA', "Unauthorized!");
-					}
-					else if (z == "Not Found")
-					{
-						console.log("gitInfo(gitUser, gitRepo) 값이 올바르지 않습니다. 다시 확인해 주세요.");					
-					}
-					
-					created_num = 0;
-					clearTimeout(timer);
-				}
-			});		
+				});		
+			}
 		}
 	}
 }
@@ -583,7 +629,9 @@ function editViewE_SetValue(sNum)
 	console.log('sNum : ' + sNum);
 	console.log(ServiceRepoContent_JSON[sNum].description);
 	console.log(ServiceRepoContent_JSON);
-
+	
+	if (ServiceRepoContent_JSON[sNum].name) document.getElementById('git-name' + sNum).value = ServiceRepoContent_JSON[sNum].name;
+	else document.getElementById('git-name' + sNum).value = ""; //add name 항목, 2015-06-09(Tue)
 	if (ServiceRepoContent_JSON[sNum].description) document.getElementById('git-description' + sNum).value = ServiceRepoContent_JSON[sNum].description;
 	else document.getElementById('git-description' + sNum).value = "";
 	if (ServiceRepoContent_JSON[sNum].icon) document.getElementById('git-icon' + sNum).value = ServiceRepoContent_JSON[sNum].icon;
