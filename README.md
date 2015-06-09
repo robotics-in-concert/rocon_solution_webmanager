@@ -6,6 +6,7 @@ rocon_solution_webmanager
 
 - npm version : 1.4.28
 
+- 최종소스 : ```Node.js_3cha``` 를 다운로드 받으세요.
 
 ##Solution Manager Get Started
 
@@ -19,6 +20,8 @@ rocon_solution_webmanager
 > npm install roslib
 >
 > npm install fs-readdir-recursive
+>
+> npm install github-api
 >
 ```
 
