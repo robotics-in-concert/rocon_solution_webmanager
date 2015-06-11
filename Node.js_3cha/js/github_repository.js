@@ -141,6 +141,7 @@ function delServiceE(sID, sNum) //use this!
 		var element = "." + sID;
 		$("div").remove(element); 
 		anr--;
+		console.log('delServiceE_anr : ' + anr); //현재 선택된 service 개수 판단에 사용, 2015-06-09(Tue)
 	}	
 
 	//Selected Service 항목 초기화, 2015-06-03(Wed)_shkwak
@@ -276,41 +277,49 @@ function classOverrideChangeE(sNum) //_forked_repo //use this!
 //==== Service Configurator Function, 2015-06-03(Wed)_shkwak
 function GitHubServiceConfigure() //top func
 {	//Edit UI에서 선택한 값을 적용, 2015-06-03(Wed)	
-	var solutionName = document.getElementById('forked_repo_solution').value; //"dummy_concert1";
-	if (solutionName == "") //service 선택이 0 인 경우 조건 필요!! ==========================================================!!!!!!!!!
+	var solutionName = document.getElementById('forked_repo_solution').value; //solutionName_check(name)!!	
+	var Description  = document.getElementById('forked_repo_description').value;
+	var License		 = document.getElementById('forked_repo_license').value;
+	var Version		 = document.getElementById('forked_repo_version').value;
+	var Maintainer	 = document.getElementById('forked_repo_maintainer').value;	
+
+	if (solutionName == "" || Description == "" || License == "" || Version == "" || Maintainer == "")
 	{
-		console.log("Please insert Solution name!");
-		SweetAlert_Group('basicA', "Please insert Solution name!");		
+		console.log("Please insert values!");
+		SweetAlert_Group('basicA', "Please insert values!");		
 		//SweetAlert_Group('advancedA'); //input 창 있는 alert
 	}
 	else
-	{
-		//var fileName = "";	
-		//solutionName = solutionName_check(solutionName); //solutionName_check(name)!!★
-		//fileName = solutionName + ".services"; 			
-
-		//solution.services content 작성, services 파일 구성, 2015-06-03(Wed)_shkwak
-		serviceContent = ""; //Reset! 이전 content 삭제
-		for (var i = 0; i < SelectedServiceE_JSON.length; i++)
-		{
-			if (SelectedServiceE_JSON[i].selected == 'true')
-			{
-				serviceContent_created = GitHubService_serviceContent_Create(i); //★★★★
-			}
+	{		
+		if (anr == 0)
+		{	//service 선택이 0 인 경우 조건 필요!! ===> 조건식 추가, 2015-06-09(Tue)_shkwak
+			SweetAlert_Group('basicA', "Please select services!");	
 		}
-		console.log(serviceContent); //ok? : 간혈적으로 값이 안나오는 경우 발생 - 원인 불명 ===============================================!!
+		else
+		{
+			//solution.services content 작성, services 파일 구성, 2015-06-03(Wed)_shkwak
+			serviceContent = ""; //Reset! 이전 content 삭제
+			for (var i = 0; i < SelectedServiceE_JSON.length; i++)
+			{
+				if (SelectedServiceE_JSON[i].selected == 'true')
+				{
+					serviceContent_created = GitHubService_serviceContent_Create(i); //★★★★
+				}
+			}
+			console.log(serviceContent); //ok? : 간혈적으로 값이 안나오는 경우 발생 - 원인 불명 ==> 서비스 구성 -> CREATE modal -> 서비스 구성 이동 시 발생 확인! 2015-06-09(Tue)
 
-		//solution.launch content 작성,
-		launchContent = ""; //Reset! 이전 content 삭제
-		launchContent_created = GitHubService_launchContent_Create();
+			//solution.launch content 작성,
+			launchContent = ""; //Reset! 이전 content 삭제
+			launchContent_created = GitHubService_launchContent_Create();
 
-		//package.xml content 작성, //생성되는 타이밍 조절 필요, 현재위치 : 서비스 구성 시, 같이 생성됨 ->  ================================!!!!!!!!!!!!!!!
-		packageContent = ""; //Reset! 이전 content 삭제
-		packageContent_created = GitHubService_packageContent_Create();
-		
-		//CMcakeKists.txt content 작성
-		cmakelistsContent = ""; //Reset! 이전 content 삭제
-		cmakelistsContent_created = GitHubService_cmakelistsContent_Create();
+			//package.xml content 작성, //생성되는 타이밍 조절 필요, 현재위치 : 서비스 구성 시, 같이 생성됨 ->  ================================!!!!!!!!!!!!!!!
+			packageContent = ""; //Reset! 이전 content 삭제
+			packageContent_created = GitHubService_packageContent_Create();
+			
+			//CMcakeKists.txt content 작성
+			cmakelistsContent = ""; //Reset! 이전 content 삭제
+			cmakelistsContent_created = GitHubService_cmakelistsContent_Create();
+		}
 	}	
 }
 
@@ -540,7 +549,7 @@ function SolutionCreate_forked_repo()
 			SweetAlert_Group('basicA', 'Please insert values!');
 		}
 		else {
-			if (serviceContent_created == false || launchContent_created == false || packageContent_created == false || cmakelistsContent_created == false)
+			if (serviceContent_created == false || launchContent_created == false || packageContent_created == false || cmakelistsContent_created == false || anr == 0)
 			{
 				SweetAlert_Group('basicA', 'Please configure service contents!');
 			}
@@ -666,9 +675,100 @@ function solutionName_check(name) //use this!
 	return checked_solutionName;
 }
 
+function select_repo_change(select_num, option_value)
+{	//2015-06-10(Wed), select_repo onChange 이벤트 함수 통합, 이전 select 항목 선택 시, 나중 항목 초기화 처리
+	console.log('select_num : ' + select_num + ', option_value : ' + option_value);
+	switch (select_num)
+	{
+		case 1:
+			GetDataF(option_value);
+			break;
+		case 2:
+			GetData_subF(option_value);
+			break;
+		case 3:
+			GetData_sub_subF(option_value);
+			break;
+	}
+}
 
+var module_fork_opened = false; //2015-06-11
+var module_branch_opened = false; 
+var module_contents_opened = true;
+var module_pr_opened = true;
 
+function module_ShowHide(module)
+{	//기능 항목 접기/펼치기, 2015-06-11(Thu)_shkwak
+	switch (module)
+	{
+		case 'fork':
+			if (!module_fork_opened)
+			{
+				$('#module_fork_icon').removeClass();
+				$('#module_fork_icon').attr('class', 'glyphicon glyphicon-chevron-up');
+				$('#module_fork').attr('style', 'display: block;');
+				module_fork_opened = true;
+			}
+			else
+			{
+				$('#module_fork_icon').removeClass();
+				$('#module_fork_icon').attr('class', 'glyphicon glyphicon-chevron-down');
+				$('#module_fork').attr('style', 'display: none;');
+				module_fork_opened = false;
+			}			
+			break;
+		case 'branch':
+			if (!module_branch_opened)
+			{
+				$('#module_branch_icon').removeClass();
+				$('#module_branch_icon').attr('class', 'glyphicon glyphicon-chevron-up');
+				$('#module_branch').attr('style', 'display: block;');
+				module_branch_opened = true;
+			}
+			else
+			{
+				$('#module_branch_icon').removeClass();
+				$('#module_branch_icon').attr('class', 'glyphicon glyphicon-chevron-down');
+				$('#module_branch').attr('style', 'display: none;');
+				module_branch_opened = false;
+			}
+			break;
+		case 'contents':
+			if (!module_contents_opened)
+			{
+				$('#module_contents_icon').removeClass();
+				$('#module_contents_icon').attr('class', 'glyphicon glyphicon-chevron-up');
+				$('#module_contents').attr('style', 'display: block;');
+				module_contents_opened = true;
+			}
+			else
+			{
+				$('#module_contents_icon').removeClass();
+				$('#module_contents_icon').attr('class', 'glyphicon glyphicon-chevron-down');
+				$('#module_contents').attr('style', 'display: none;');
+				module_contents_opened = false;
+			}
+			break;
+		case 'pr': //pull request
+			if (!module_pr_opened)
+			{
+				$('#module_pr_icon').removeClass();
+				$('#module_pr_icon').attr('class', 'glyphicon glyphicon-chevron-up');
+				$('#module_pr').attr('style', 'display: block;');
+				module_pr_opened = true;
+			}
+			else
+			{
+				$('#module_pr_icon').removeClass();
+				$('#module_pr_icon').attr('class', 'glyphicon glyphicon-chevron-down');
+				$('#module_pr').attr('style', 'display: none;');
+				module_pr_opened = false;
+			}
+			break;
+	}
+}
 
+//=====================================================================================================================
 function imsi_test()
 {	//for test func, 2015-06-02
 	console.log(document.getElementById('git-box_advanced0').value); //o

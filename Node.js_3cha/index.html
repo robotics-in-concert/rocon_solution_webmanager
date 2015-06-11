@@ -817,7 +817,7 @@ function show_GitHubServiceList() //use this!
 
 		$(element).appendTo("#div_serviceListE"); //획득한 service 리스트 추가		
 
-		//SelectedServiceE_JSON 초기화, 2015-06-03(Wed)_shkwak
+		//SelectedServiceE_JSON 초기화, 2015-06-03(Wed)_shkwak / ============================!!!!!!!! 10. 간혈적으로 serviceContent가 undefined인 경우 발생 : 원인 불명!
 		SelectedServiceE_JSON[an] = {name: '', selected: 'false', auto_enabled: 'false', overrided_name: '', overrided_description: '', overrided_icon: '', overrided_priority: '', overrided_interactions: '', overrided_parameters: ''};
 
 		an++;
@@ -1111,8 +1111,22 @@ function GetDataF(name) //(2)
 		}
 		else if (data_typeF[select.selectedIndex] == "file")
 		{
+			//하위 select_repo 초기화, 2015-06-10(Wed)			
+			var select_sub = document.getElementById('select_repo2');
+			var select_sub_sub = document.getElementById('select_repo3');
+
+			select_sub.options.length = 0; //option 전체삭제
+			var option_line = document.createElement('option');
+			option_line.value = option_line.text = "------ Select 2nd ------";
+			select_sub.add(option_line);
+
+			select_sub_sub.options.length = 0; //option 전체삭제
+			var option_line = document.createElement('option');
+			option_line.value = option_line.text = "------ Select final ------";
+			select_sub_sub.add(option_line);
+
 			// save editing file name, 2015-05-26_shkwak
-			commit_changes_file = name;
+			commit_changes_file = name; //용도가??? 2015-06-10(Wed)
 
 			jQuery.support.cors = true;
 			$.ajax({
@@ -1163,8 +1177,16 @@ function GetData_subF(name) //(4)
 		}
 		else if (data_type_subF[select.selectedIndex] == "file")
 		{
+			//하위 select_repo 초기화, 2015-06-10(Wed)			
+			var select_sub_sub = document.getElementById('select_repo3');
+
+			select_sub_sub.options.length = 0; //option 전체삭제
+			var option_line = document.createElement('option');
+			option_line.value = option_line.text = "------ Select final ------";
+			select_sub_sub.add(option_line);
+
 			// save editing file name, 2015-05-26_shkwak
-			commit_changes_file = name;
+			commit_changes_file = name; //넌 용도가 머니? 2015-06-10
 
 			jQuery.support.cors = true;
 			$.ajax({
@@ -1173,7 +1195,7 @@ function GetData_subF(name) //(4)
 				dataType: "json",
 				success: function (data) {
 					document.getElementById('box_result').value = Base64.decode(data.content); //innerHTML -> value
-					//console.log(document.getElementById('box_result').innerHTML); //이상 확인! ; '<' -> '&lt;'
+					//console.log(document.getElementById('box_result').innerHTML); //이상 확인! ; '<' -> '&lt;' : 개선 전!
 					pre_contentF = Base64.decode(data.content);					
 					data_shaF = data.sha;
 				},
@@ -2729,34 +2751,39 @@ function win_op(mypage, myname, w, h, scroll){
 						
 						<!-- ■■■■■■■■■■■■■■■■ Create a fork ■■■■■■■■■■■■■■■■ -->
 						<div class="jumbotron" style="padding: 20px; background-color: #E6F9D7;">
-							<h3 style="margin-top: 10px;">Create a fork</h3>      
-							<p style="color: #AAAAAB; font-size:14px;">Create a fork for the authenticated user.</p>
-							<div style="width:20px; display: inline-block;">
-								<img src="./images/git-fork-128.png" style="height:20px; vertical-align: middle; margin-top: -2px; margin-left: -4px;"/>
-							</div>		
-							<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/forks </div>
-							<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --> <!-- btn-lg -->	
-							<button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>		
+							<h3 style="margin-top: 10px;">Create a fork <span id="module_fork_icon" class="glyphicon glyphicon-chevron-down" style="float: right; cursor: pointer;" onclick="module_ShowHide('fork');"></h3>
+							<div id="module_fork" style="display: none;">
+								<p style="color: #AAAAAB; font-size:14px;">Create a fork for the authenticated user.</p>
+								<div style="width:20px; display: inline-block;">
+									<img src="./images/git-fork-128.png" style="height:20px; vertical-align: middle; margin-top: -2px; margin-left: -4px;"/>
+								</div>
+								<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/forks </div>
+								<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --> <!-- btn-lg -->
+								<button type="button" class="btn btn-success" style="" onclick="CreateFork()">Create fork</button>
+							</div>
 						</div>
 						
 						<!-- ■■■■■■■■■■■■■■■■ Create a branch ■■■■■■■■■■■■■■■■ -->
 						<div class="jumbotron" style="padding: 20px; background-color: #E9F3FF;">
-							<h3 style="margin-top: 10px;">Create a branch</h3>      
-							<p style="color: #AAAAAB; font-size:14px;">Create a branch for pull request.</p>		
-							<div style="width:20px; display: inline-block;">
-								<img src="./images/git-branch-128.png" style="height:20px; vertical-align: middle; margin-top: -2px;"/>
+							<h3 style="margin-top: 10px;">Create a branch <span id="module_branch_icon" class="glyphicon glyphicon-chevron-down" style="float: right; cursor: pointer;" onclick="module_ShowHide('branch');"></span></h3>
+							<div id="module_branch" style="display: none;">
+								<p style="color: #AAAAAB; font-size:14px;">Create a branch for pull request.</p>		
+								<div style="width:20px; display: inline-block;">
+									<img src="./images/git-branch-128.png" style="height:20px; vertical-align: middle; margin-top: -2px;"/>
+								</div>
+								<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/git/refs </div>		
+								<div class="" style="display: inline-block; margin-right: 4px;">
+									<input type="text" class="form-control" id="branch_name" placeholder="branch name" style="background-color: #fff;">
+								</div>
+								<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --><!-- btn-lg -->
+								<button type="button" class="btn btn-info" style="" onclick="repo_branch44(document.getElementById('branch_name').value);">Create branch</button>
 							</div>
-							<div class="well" style="width: 40%; display: inline-block; height: 36px; margin: 0; padding: 5px 10px; margin-right: 4px;">POST /repos/:owner/:repo/git/refs </div>		
-							<div class="" style="display: inline-block; margin-right: 4px;">
-								<input type="text" class="form-control" id="branch_name" placeholder="branch name" style="background-color: #fff;">
-							</div>
-							<!-- <a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a> --><!-- btn-lg -->
-							<button type="button" class="btn btn-info" style="" onclick="repo_branch44(document.getElementById('branch_name').value);">Create branch</button>
 						</div>
 
 						<!-- ■■■■■■■■■■■■■■■■ GitHub Solution Repository 가져오기, 2015-05-12(Tue)_shkwak ■■■■■■■■■■■■■■■■ -->
 						<div class="jumbotron" style="padding: 20px; /*background-color: #C5D5EF;*/">
-							<h3 style="margin-top: 10px;">Edit a Contents</h3>
+							<h3 style="margin-top: 10px;">Edit a Contents <span id="module_contents_icon" class="glyphicon glyphicon-chevron-up" style="float: right; cursor: pointer;" onclick="module_ShowHide('contents');"></h3>
+							<div id="module_contents" style="display: ;">
 							<div style="width:33.1%; display: inline-block; margin-bottom: 5px;">
 								<label for="fork_owner">Owner</label>
 								<input type="text" id="fork_owner" class="form-control" style="display: block;" value="" placeholder="User account" spellcheck="false" readonly>
@@ -2771,14 +2798,14 @@ function win_op(mypage, myname, w, h, scroll){
 								</select>
 							</div>
 							<p style="color: #AAAAAB; font-size:14px;"> The Repo Commits API supports listing, viewing, and comparing commits in a repository. Commit directly to the <code>Branch</code>.</p>
-
-							<select class="form-control width-33" id="select_repo1" style="display: inline-block;" onChange="GetDataF(this.value);">
+							<!-- Edit a Contents : select options -->
+							<select class="form-control width-33" id="select_repo1" style="display: inline-block;" onChange="select_repo_change(1, this.value);">
 								<option value="">----------------------</option>
 							</select>
-							<select class="form-control width-33" id="select_repo2" style="display: inline-block;" onChange="GetData_subF(this.value);">
+							<select class="form-control width-33" id="select_repo2" style="display: inline-block;" onChange="select_repo_change(2, this.value);">
 								<option value="">----------------------</option>
 							</select>	
-							<select class="form-control width-33" id="select_repo3" style="display: inline-block;" onChange="GetData_sub_subF(this.value);">
+							<select class="form-control width-33" id="select_repo3" style="display: inline-block;" onChange="select_repo_change(3, this.value);">
 								<option value="">----------------------</option>
 							</select>	
 							<br>
@@ -2818,7 +2845,7 @@ function win_op(mypage, myname, w, h, scroll){
 							</div>
 
 							<!-- edit UI for CMakeLists.txt -->
-							<div class="list-group-item height-225" id="solution-edit0" style="display: block; background-color:  #fff; margin-bottom: 5px; height: 200px;">
+							<!-- <div class="list-group-item height-225" id="solution-edit0" style="display: block; background-color:  #fff; margin-bottom: 5px; height: 200px;">
 							  <div class="table-responsive" style="font-size:12px;">
 							  <button type="button" id="solution-overrideBtn_0" class="btn btn-info" style="position: absolute; right: 25px; height: 30px; font-size: 12px;" onclick="">Preview</button>
 								<table class="table">
@@ -2843,18 +2870,19 @@ function win_op(mypage, myname, w, h, scroll){
 										</tr>
 									</tbody>
 								</table>
-							  </div>
-							  <!-- <div id="git-advancedBtn_0" style="float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;" onclick="advancedViewE(0);">Advanced</div> -->
-							</div>
-
-							<br>
+							  </div> --
+							  <!-- <div id="git-advancedBtn_0" style="float:right; padding-right: 10px; color: #C90808; font-size: 12px; margin-top: -14px; cursor: pointer;" onclick="advancedViewE(0);">Advanced</div> --
+							</div> 
+							<br>-->
 							<button type="button" class="btn btn-warning" style="float:right;" onclick="FileUpdate_subF();">Commit changes</button>
 							<input type="text" id="updateMsg" class="form-control" id="" style="width: 40%; float: right; display: inline-block; margin-right: 4px;" placeholder="Insert update message here." spellcheck="false"><br><br>
+							</div>
 						</div>
 						
 						<!-- ■■■■■■■■■■■■■■■■ Create a pull request ■■■■■■■■■■■■■■■■ -->
 						<div class="jumbotron" style="padding: 20px; background-color: #CFE2F3;">
-							<h3 style="margin-top: 10px;">Create a pull request</h3>      
+							<h3 style="margin-top: 10px;">Create a pull request <span id="module_pr_icon" class="glyphicon glyphicon-chevron-up" style="float: right; cursor: pointer;" onclick="module_ShowHide('pr');"></h3>
+							<div id="module_pr" style="display: ;">
 							<p style="color: #AAAAAB; font-size:14px;">Compare changes across branches, commits, tags, and more below. If you need to, you can also compare across forks.</p>
 							<div style="width:20px; display: inline-block;">
 								<img src="./images/git-pull-request-128.png" style="height:18px; vertical-align: middle; margin-top: -2px;"/>
@@ -2879,6 +2907,7 @@ function win_op(mypage, myname, w, h, scroll){
 								<input class="form-control" id="head_repo2" style="width:86%; display: none;" placeholder="<user>:<branch> ex) shkwak:master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="head_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('head_repo2_cancel');"></span>
 							</div>
 							<a href="#PullRequestModal" class="btn btn-primary" data-toggle="modal"><span class="glyphicon glyphicon-retweet"></span>&nbsp; Create new pull request</a><!-- btn-lg -->	
+							</div>
 						</div>
 
 						<!-- <button type="button" class="btn btn-warning" style="" onclick="GetGitHubBranchList()">Get Branch List</button>
