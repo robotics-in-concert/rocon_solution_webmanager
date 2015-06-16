@@ -694,8 +694,9 @@ function select_repo_change(select_num, option_value)
 
 var module_fork_opened = false; //2015-06-11
 var module_branch_opened = false; 
-var module_contents_opened = true;
+var module_contents_opened = false;
 var module_pr_opened = true;
+var module_run_opened = true; //2015-06-15
 
 function module_ShowHide(module)
 {	//기능 항목 접기/펼치기, 2015-06-11(Thu)_shkwak
@@ -765,6 +766,69 @@ function module_ShowHide(module)
 				module_pr_opened = false;
 			}
 			break;
+		case 'run': //solution run
+			if (!module_run_opened)
+			{
+				$('#module_run_icon').removeClass();
+				$('#module_run_icon').attr('class', 'glyphicon glyphicon-chevron-up');
+				$('#module_run').attr('style', 'display: block;');
+				module_run_opened = true;
+			}
+			else
+			{
+				$('#module_run_icon').removeClass();
+				$('#module_run_icon').attr('class', 'glyphicon glyphicon-chevron-down');
+				$('#module_run').attr('style', 'display: none;');
+				module_run_opened = false;
+			}
+			break;
+	}
+}
+
+function GitHubSolutionRepoListG() //(1)
+{	//GitHub Solution Repository에서 Solution 리스트를 가져온다. 2015-06-15(Mon)_shkwak
+	var select = document.getElementById('select_solution_list');
+
+	/*selectbox option 삭제*/
+	select.options.length = 0; //option 전체삭제
+	var option_line = document.createElement('option');
+	option_line.value = option_line.text = "------ Select a solution ------";
+	select.add(option_line);
+
+	owner = localStorage.getItem("solution_owner");
+	repo = localStorage.getItem('solution_repo');
+	
+	if (owner == "" || repo == "")
+	{
+		alert("Check Owner and Repository value!");		
+	}
+	else
+	{
+		jQuery.support.cors = true;
+		$.ajax({
+			url: "https://api.github.com/repos/" + owner + "/" + repo + "/contents",
+			type: "GET",
+			dataType: "json",
+			success: function (data) {
+				var j = 1;
+				for (var i=0;i<data.length;i++)
+				{
+					var option = document.createElement('option');
+					if (data[i].type == "dir")
+					{	//솔루션만 리스트업_2014-04-16_유진로봇 요청사항
+						option.value = option.text = data[i].name;
+						select.add(option);
+						/*--data_type 저장--*/
+						//data_typeG[j] = data[i].type; //★
+						console.log(data[i].name + ', ' + data[i].type);
+						j++;
+					}
+				}
+			},
+			error: function (x, y, z) {
+				alert(x + "\n" + y + "\n" + z);
+			}
+		});	
 	}
 }
 

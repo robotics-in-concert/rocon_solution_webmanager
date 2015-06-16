@@ -596,3 +596,23 @@ function escapeHTML (unsafe_str)
       .replace(/\"/g, '&quot;')
       .replace(/\'/g, '&#39;'); // '&apos;' is not valid HTML 4
 }
+
+function packageName_check(name) //★
+{	//기술적인 이슈 처리 : Name 정보는 (*)영문으로 하고, (1)소문자로 변환하고 (2)공백은 “_” 밑첨자로 변경_2015-04-29(Wed)
+	console.log(name); //제거 전
+	var pName = name.trim(); //좌우 공백제거
+	console.log(pName); //제거 후
+	
+	//var solutionName = document.getElementById('inputName').value;
+
+	//(1)소문자로 변환
+	pName = pName.toLowerCase();
+	console.log(pName); //변환 후
+
+	//(2)공백 "_" 변경
+	//pName = pName.replace(" ","_"); //첫번째 공백만 '_'으로 변경하고 나머지는 변경이 되지 않는 문제 확인!
+	pName = pName.replace(/ /gi,"_"); //따옴표를 슬래시로 대체하고 뒤에 gi 를 붙이면 replaceAll 과 같은 결과를 볼 수 있다.
+	console.log(pName); //변경 후
+
+	return pName;
+}
