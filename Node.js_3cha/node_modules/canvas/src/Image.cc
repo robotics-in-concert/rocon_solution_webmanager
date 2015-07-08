@@ -201,15 +201,18 @@ NAN_SETTER(Image::SetSource) {
 
 cairo_status_t
 Image::loadFromBuffer(uint8_t *buf, unsigned len) {
-  if (isPNG(buf)) return loadPNGFromBuffer(buf);
+  uint8_t data[4] = {0};
+  memcpy(data, buf, (len < 4 ? len : 4) * sizeof(uint8_t));
+
+  if (isPNG(data)) return loadPNGFromBuffer(buf);
 #ifdef HAVE_GIF
-  if (isGIF(buf)) return loadGIFFromBuffer(buf, len);
+  if (isGIF(data)) return loadGIFFromBuffer(buf, len);
 #endif
 #ifdef HAVE_JPEG
 #if CAIRO_VERSION_MINOR < 10
-  if (isJPEG(buf)) return loadJPEGFromBuffer(buf, len);
+  if (isJPEG(data)) return loadJPEGFromBuffer(buf, len);
 #else
-  if (isJPEG(buf)) {
+  if (isJPEG(data)) {
     if (DATA_IMAGE == data_mode) return loadJPEGFromBuffer(buf, len);
     if (DATA_MIME == data_mode) return decodeJPEGBufferIntoMimeSurface(buf, len);
     if ((DATA_IMAGE | DATA_MIME) == data_mode) {
@@ -392,7 +395,7 @@ Image::error(Local<Value> err) {
 
 cairo_status_t
 Image::loadSurface() {
-  FILE *stream = fopen(filename, "r");
+  FILE *stream = fopen(filename, "rb");
   if (!stream) return CAIRO_STATUS_READ_ERROR;
   uint8_t buf[5];
   if (1 != fread(&buf, 5, 1, stream)) {
@@ -944,7 +947,7 @@ Image::extension(const char *filename) {
 }
 
 /*
- * Sniff bytes for JPEG's magic number ff d8.
+ * Sniff bytes 0..1 for JPEG's magic number ff d8.
  */
 
 int
