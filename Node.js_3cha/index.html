@@ -1594,6 +1594,11 @@ function sectionG_click()
 
 function RunSolution(para)
 {	//2015-07-09(Thu)_shkwak
+
+	var solution_repo_name = localStorage.getItem('service_owner') + '/' + localStorage.getItem('service_repo');
+
+	var para = $('#select_solution_list').val() +','+ solution_repo_name;
+
 	var cmd = "RunSolution"; 
 	var parameters = para; //인수가 몇개인지 정해지지 않았기 때문에 ','로 구분하여 연결. node server 쪽에서 split 하여 사용. ex) para1,para2,....
 	var message = {cmd : cmd, parameter : parameters};
@@ -1607,6 +1612,7 @@ function RunSolution(para)
 		return;
 	});	
 }
+
 
 </script>
 
@@ -2922,9 +2928,9 @@ function win_op(mypage, myname, w, h, scroll){
 								</select>
 								<!-- <input class="form-control" id="base_repo2" style="width:86%; display: none;" placeholder="<branch> ex) master" spellcheck="false"/><span class="glyphicon glyphicon-remove" id="base_repo2_icon" style="display: none; margin-left: -20px;" onclick="PR_base_head_change('base_repo2_cancel');"></span> -->
 							</div>							
-							<button type="button" class="btn btn-primary" style="float:right;" onclick="console.log('RUN SOLUTION'); RunSolution('para1, para2');">RUN SOLUTION</button>						
+							<button type="button" class="btn btn-primary" style="float:right;" onclick="RunSolution()">RUN SOLUTION</button>						
 							</div>
-						</div>					
+						</div>
 
 						</div>
 					</div>
