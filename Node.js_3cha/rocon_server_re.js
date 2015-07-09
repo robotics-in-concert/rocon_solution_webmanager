@@ -613,6 +613,27 @@ io.sockets.on('connection', function(socket) {
 
 				aNum = 0;
 				break;
+			case 'RunSolution': //2015-07-09(Thu)_shkwak, RUN SOLUTION - node server 연동
+				console.log('RunSolution'); //data.cmd 
+				process.chdir(mainPath);				
+				//console.log("Path : " + process.cwd()); //Path : /home/imappak/gazeborocon/src
+
+				//parameters 출력
+				console.log(data.parameter);
+				var para = data.parameter.split(',');
+				para.forEach (function(parameter){
+					console.log(parameter.trim()); //trim : 좌우 공백제거
+				});				
+
+				var sys = require('sys')
+				var exec = require('child_process').exec; //var exec = require('child_process').spawn;
+				
+				/*-- ubuntu shell command 실행방법 --*/
+				//exec("catkin_create_pkg " + data.name + ' std_msgs rospy -D \'' + data.description + '\' -l ' + data.license + ' -V ' + data.version + ' -m ' + data.maintainer, puts); 
+				//gnome-terminal -x bash -c 'roslaunch rosbridge_server rosbridge_websocket.launch'
+				//function puts(error, stdout, stderr) { sys.puts(stdout) }
+				//exec("ls -la", puts);	//exec("sudo start avahi-daemon", puts); //ok				
+				break;
 		}
 
 /*-- Node.js : fs --
@@ -686,7 +707,10 @@ io.sockets.on('connection', function(socket) {
     });
 });
 
-
+String.prototype.trim = function()
+{   //Javascript에서 trim 사용하기 
+    return this.replace(/(^\s*)|(\s*$)/g, "");
+}
 
 //Base64 API
 var Base64 = { 
