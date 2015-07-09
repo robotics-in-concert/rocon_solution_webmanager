@@ -413,7 +413,8 @@ function GitHubService_launchContent_Create() //use this!!
 	launchContent += "    <arg name='services' default='" + solutionName + "/" + solutionName + ".services'/>\n";
 	launchContent += "    <arg name='auto_enabled_services' default='[" + auto_enabled_services + "]'/>\n";
 	launchContent += "\n";
-	launchContent += "    <include file='$(find " + solutionName + ")/launch/" + solutionName + ".launch'>\n";
+//	launchContent += "    <include file='$(find " + solutionName + ")/launch/" + solutionName + ".launch'>\n";
+	launchContent += "    <include file='$(find concert_master)/launch/concert_master.launch'>\n"; //concert_master
 	launchContent += "        <arg name='concert_name' value='$(arg concert_name)'/>\n";
 	launchContent += "        <arg name='services' value='$(arg services)'/>\n";
 	launchContent += "        <arg name='conductor_auto_invite' value='true'/>\n";
