@@ -419,7 +419,7 @@ function GitHubService_launchContent_Create() //use this!!
 	launchContent += "        <arg name='services' value='$(arg services)'/>\n";
 	launchContent += "        <arg name='conductor_auto_invite' value='true'/>\n";
 	launchContent += "        <arg name='conductor_local_clients_only' value='true'/>\n";
-	launchContent += "        <arg name='auto_enable_services' value='$(arg default_auto_enable_services)'/>\n";
+	launchContent += "        <arg name='default_auto_enable_services' value='$(arg default_auto_enable_services)'/>\n";
 //	launchContent += "        <arg name='scheduler_type' value='compatibility_tree'/>\n";
 	launchContent += "    </include>\n";
 	launchContent += "</launch>";
