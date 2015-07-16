@@ -412,6 +412,9 @@ function GitHubService_launchContent_Create() //use this!!
 	launchContent += "    <arg name='concert_name' default='" + solutionName + "'/>\n";
 	launchContent += "    <arg name='services' default='" + solutionName + "/" + solutionName + ".services'/>\n";
 	launchContent += "    <arg name='default_auto_enable_services' default='[" + auto_enabled_services + "]'/>\n";
+	launchContent += "    <arg name='rosbridge_address'     default='$(env CONCERT_ROSBRIDGE_ADDRESS)'/>\n";
+	launchContent += "    <arg name='webserver_address'     default='$(env CONCERT_WEBSERVER_ADDRESS)'/>\n";
+	
 	launchContent += "\n";
 //	launchContent += "    <include file='$(find " + solutionName + ")/launch/" + solutionName + ".launch'>\n";
 	launchContent += "    <include file='$(find concert_master)/launch/concert_master.launch'>\n"; //concert_master
@@ -420,6 +423,9 @@ function GitHubService_launchContent_Create() //use this!!
 	launchContent += "        <arg name='conductor_auto_invite' value='true'/>\n";
 	launchContent += "        <arg name='conductor_local_clients_only' value='true'/>\n";
 	launchContent += "        <arg name='default_auto_enable_services' value='$(arg default_auto_enable_services)'/>\n";
+	launchContent += "        <arg name='enable_rosbridge'  value='true'/>\n";	
+	launchContent += "        <arg name='rosbridge_address' value='$(arg rosbridge_address)'/>\n";
+	launchContent += "        <arg name='webserver_address' value='$(arg webserver_address)'/>\n";
 //	launchContent += "        <arg name='scheduler_type' value='compatibility_tree'/>\n";
 	launchContent += "    </include>\n";
 	launchContent += "</launch>";

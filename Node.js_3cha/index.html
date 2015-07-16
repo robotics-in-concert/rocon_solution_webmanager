@@ -1596,7 +1596,7 @@ function RunSolution()
 {	//2015-07-09(Thu)_shkwak
 	var param = {};
 
-	var solution_repo_name = localStorage.getItem('service_owner') + '/' + localStorage.getItem('service_repo');
+	var solution_repo_name = localStorage.getItem('solution_owner') + '/' + localStorage.getItem('solution_repo');
 	param['solution_repo_name'] = solution_repo_name;
 	param['target_solution'] = $('#select_solution_list').val();
 	param['concert_name'] = $('#select_solution_list').val() + ".launch";

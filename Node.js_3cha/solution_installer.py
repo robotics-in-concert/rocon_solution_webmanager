@@ -106,25 +106,28 @@ class SolutionInstaller():
             solution_repo_git_path = 'https://github.com/%s.git' % (solution_repo_name)
             ros_ws_path = self._get_ros_ws()
             if len(ros_ws_path):
-                # get solution from repo
-                # self._get_src_from_gitbase(solution_repo_git_path, taget_local_path)
-                # ros_ws_src_path = os.path.join(ros_ws_path, 'src')
-                # if not os.path.isdir(ros_ws_src_path):
-                #     self.logwarn('Do not set ROS workspace: [%s]' % ros_ws_src_path)
-                # else:
-                #     src = self._find_solution(taget_local_path, target_solution)
-                #     dst = os.path.join(ros_ws_src_path, target_solution)
-                #     if not os.path.isdir(dst):
-                #         self.logwarn('Create solution in workpace: [%s]' % dst)
-                #     else:
-                #         self.logwarn('Already existed solution in workpace: [%s]' % dst)
-                # shutil.rmtree(dst) ## change into overwrite way
-                #     shutil.copytree(src, dst)
-                # build solution ws
-                #     self._check_dependency(ros_ws_path)
-                #     self._build_workspace(ros_ws_path)
-                self._setup_solution_env(ros_ws_path)
-                self._launch_target_solution(target_solution, concert_name)
+                ## get solution from repo
+                self._get_src_from_gitbase(solution_repo_git_path, taget_local_path)
+                ros_ws_src_path = os.path.join(ros_ws_path, 'src')
+                if not os.path.isdir(ros_ws_src_path):
+                    self.logwarn('Do not set ROS workspace: [%s]' % ros_ws_src_path)
+                else:
+                    src = self._find_solution(taget_local_path, target_solution)
+                    dst = os.path.join(ros_ws_src_path, target_solution)
+                    if src != None and dst != None:
+                        if not os.path.isdir(dst):
+                            self.logwarn('Create solution in workpace: [%s]' % dst)
+                        else:
+                            self.logwarn('Already existed solution in workpace: [%s]' % dst)
+                            shutil.rmtree(dst) ## change into overwrite way
+                        shutil.copytree(src, dst)
+                        ## build solution ws
+                        self._check_dependency(ros_ws_path) 
+                        self._build_workspace(ros_ws_path)
+                        self._setup_solution_env(ros_ws_path)
+                        self._launch_target_solution(target_solution, concert_name)
+                    else:
+                        self.logwarn('Copy solution path src: [%s] dst: [%s]' % (src, dst))
             else:
                 self.logwarn('Do not set ROS workspace: [%s]' % ros_ws_path)
 
