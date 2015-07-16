@@ -165,6 +165,7 @@ var read = require('fs-readdir-recursive');
 
 var timer = ""; //var timer = new Array();
 var startTime = "", endTime = "";
+var childProcessList = [];
 
 // this handles socket.io comm from html files 
 io.sockets.on('connection', function(socket) {
@@ -613,6 +614,14 @@ io.sockets.on('connection', function(socket) {
 
 				aNum = 0;
 				break;
+			case 'StopSolution': //2015-07-09(Thu)_shkwak, RUN SOLUTION - node server 연동
+				console.log('StopSolution'); //data.cmd
+				for(var i= 0 ; i< childProcessList.length ; i ++){
+					var ls = childProcessList[i];
+					ls.kill("SIGINT");
+				}
+
+				break;
 			case 'RunSolution': //2015-07-09(Thu)_shkwak, RUN SOLUTION - node server 연동
 				console.log('RunSolution'); //data.cmd 
 				process.chdir(mainPath);				
@@ -620,13 +629,29 @@ io.sockets.on('connection', function(socket) {
 
 				//parameters 출력
 				console.log(data.parameter);
-				var para = data.parameter.split(',');
-				para.forEach (function(parameter){
-					console.log(parameter.trim()); //trim : 좌우 공백제거
-				});				
+				var para = JSON.parse(data.parameter);
+				// para.forEach (function(parameter){
+				// 	console.log(parameter.trim()); //trim : 좌우 공백제거
+				// });
 
 				var sys = require('sys')
-				var exec = require('child_process').exec; //var exec = require('child_process').spawn;
+				//var exec = require('child_process').exec; //var exec = require('child_process').spawn;
+				//
+				//yujin work
+				var spawn = require('child_process').spawn;
+				ls = spawn('python',['solution_installer.py','-t',para['target_solution'],'-r',para['solution_repo_name'],'-c',para['concert_name'],]);
+				childProcessList.push(ls);
+				ls.stdout.on('data', function (data) {
+				  console.log('stdout: ' + data);
+				});
+
+				ls.stderr.on('data', function (data) {
+				  console.log('stderr: ' + data);
+				});
+
+				ls.on('close', function (code, signal) {
+				  console.log('child process exited with code ' , code + ": " + signal);
+				});
 				
 				/*-- ubuntu shell command 실행방법 --*/
 				//exec("catkin_create_pkg " + data.name + ' std_msgs rospy -D \'' + data.description + '\' -l ' + data.license + ' -V ' + data.version + ' -m ' + data.maintainer, puts); 
